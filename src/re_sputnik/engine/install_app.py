@@ -39,8 +39,8 @@ APP_PKG = "luci-app-re-homeproxy"
 # Pin specific releases for ongoing testing — install the LuCI package from
 # THESE exact tags instead of scanning for the newest. Set BOTH to None to
 # resume the newest-first "latest" scan once a stable release is the target.
-PINNED_TAG: Optional[str] = "2026.06.19-r1-dev"            # 24.10+ / non-legacy
-PINNED_TAG_LEGACY: Optional[str] = "2026.06.19-r1-legacy"  # OpenWrt 23.05 (legacy .ipk)
+PINNED_TAG: Optional[str] = "2026.06.20-r1-dev"            # 24.10+ / non-legacy
+PINNED_TAG_LEGACY: Optional[str] = "2026.06.20-r1-legacy"  # OpenWrt 23.05 (legacy .ipk)
 
 Progress = Callable[[str], None]
 
