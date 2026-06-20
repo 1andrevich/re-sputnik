@@ -13,6 +13,8 @@ from PyInstaller.utils.hooks import collect_all, collect_submodules, copy_metada
 PROJ = os.path.abspath(globals().get("SPECPATH", os.getcwd()))
 SRC = os.path.join(PROJ, "src", "re_sputnik")
 IS_MAC = sys.platform == "darwin"
+IS_WIN = sys.platform.startswith("win")
+# anything else (Linux) gets the Secret Service keyring backend + no icon embed.
 
 datas = []
 binaries = []
@@ -36,12 +38,19 @@ if IS_MAC:
             hiddenimports += [mod]
         except Exception:
             pass
-else:
+elif IS_WIN:
     hiddenimports += ["keyring.backends.Windows"]
     try:  # the Windows backend leans on pywin32-ctypes
         hiddenimports += collect_submodules("win32ctypes")
     except Exception:
         pass
+else:  # Linux: keyring talks to the Secret Service (GNOME Keyring/KWallet) over D-Bus
+    hiddenimports += ["keyring.backends.SecretService"]
+    for mod in ("secretstorage", "jeepney"):
+        try:
+            hiddenimports += collect_submodules(mod)
+        except Exception:
+            pass
 
 # paramiko + cryptography submodules (SSH transport).
 hiddenimports += collect_submodules("paramiko")
@@ -66,7 +75,7 @@ datas += [
 # succeeds (the app also sets its icon at runtime via iconphoto).
 _icns = os.path.join(SRC, "resources", "branding", "icon.icns")
 _ico = os.path.join(SRC, "resources", "branding", "icon.ico")
-icon_path = _icns if IS_MAC else _ico
+icon_path = _icns if IS_MAC else (_ico if IS_WIN else None)  # Linux: PyInstaller ignores icon anyway
 if not (icon_path and os.path.exists(icon_path)):
     icon_path = None
 

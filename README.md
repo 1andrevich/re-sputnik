@@ -56,8 +56,9 @@ python -m re_sputnik
 
 ## Distribution
 
-A single portable `.exe` (Windows) and a `.app` (macOS, Apple Silicon) — no installer; drag
-to the Desktop / Applications. Both are built with PyInstaller via GitHub Actions
+A single portable `.exe` (Windows), `.app` (macOS, Apple Silicon), and `.AppImage` (Linux
+x86_64) — no installer; drag to the Desktop / Applications (or `chmod +x` the AppImage and
+double-click). All built with PyInstaller via GitHub Actions
 ([`.github/workflows/build.yml`](.github/workflows/build.yml)) and published on the
 [Releases page](https://github.com/1andrevich/re-sputnik/releases) on each `v*` tag. Builds are
 currently **unsigned** (Windows SmartScreen / macOS Gatekeeper will warn — see the workflow for

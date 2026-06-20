@@ -96,7 +96,7 @@ class VerifyScreen(ctk.CTkFrame):
         self._sites.grid(row=4, column=0, padx=32, pady=(10, 12), sticky="ew")
         self._sites.grid_columnconfigure(0, weight=1)
 
-        self._retry = ctk.CTkButton(body, text="↻ Проверить снова", font=fonts.body(),
+        self._retry = ctk.CTkButton(body, text=f"{kit.REFRESH_GLYPH} Проверить снова", font=fonts.body(),
                                     fg_color=palette.surface, hover_color=palette.surface_hover,
                                     command=self.refresh)
         self._retry.grid(row=5, column=0, padx=32, pady=(0, 6), sticky="w")

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
-"""Make the mouse wheel scroll the page under the pointer — reliably.
+"""Make the mouse wheel scroll the page under the pointer — reliably, on every OS.
 
-Three stock customtkinter problems this fixes:
+Stock customtkinter problems this fixes:
 
 1. **Wheel decided by focus, not the pointer.** customtkinter binds the wheel
    with ``bind_all`` and picks which scrollable reacts from ``event.widget``. On
@@ -13,12 +13,16 @@ Three stock customtkinter problems this fixes:
    widget (buttons, cards, frames) on an internal ``Canvas``. A naive "walk up
    until the first Canvas" treats those as scroll boundaries, so the page only
    scrolled over its bare background and went dead over any card/button. We
-   instead resolve the owning scrollable by its nearest **CTkScrollableFrame**
-   ancestor — internal widget canvases are ignored, and nested lists still scroll
+   resolve the owning scrollable by its nearest **CTkScrollableFrame** ancestor —
+   internal widget canvases are ignored, and nested lists still scroll
    independently (innermost wins).
 
-3. **Sluggish wheel on Windows.** customtkinter uses ``yscrollincrement=1`` and
-   ``delta/6`` (~20 px/notch). We scroll a more natural ~60 px/notch there.
+3. **Sluggish wheel on Windows** (``delta/6`` ≈ 20 px/notch) → ~60 px/notch.
+
+4. **No scrolling at all on Linux/X11.** There the wheel arrives as ``<Button-4>``
+   / ``<Button-5>`` (not ``<MouseWheel>``), which customtkinter never binds, and
+   it leaves the canvas ``yscrollincrement`` at 0 (so "units" scrolling jumps a
+   huge fraction of the view). We bind Button-4/5 and pin the increment to 1 px.
 
 Idempotent; ``apply()`` is called once before any scrollable frame is built.
 """
@@ -63,13 +67,39 @@ def apply() -> None:
         view = canvas.xview() if horizontal else canvas.yview()
         if view == (0.0, 1.0):
             return  # nothing to scroll — don't fight a non-overflowing view
+        delta = getattr(event, "delta", 0)
         if sys.platform == "darwin":
-            step = -event.delta                      # increment=8; ctk's own math
-        elif sys.platform.startswith("win"):
-            step = -int(event.delta / 2)             # increment=1 px; ~60 px/notch
+            step = -delta                              # increment=8; ctk's own math
         else:
-            step = -event.delta                      # X11 (Button-4/5 not handled)
+            # Linux/X11: ctk never sets the increment → "units" scroll a huge
+            # fraction of the view; pin it to 1 px. (Windows already sets it to 1.)
+            if not sys.platform.startswith("win"):
+                try:
+                    inc = float(canvas.cget("yscrollincrement"))
+                except (ValueError, TypeError):
+                    inc = 0.0
+                if inc <= 0:
+                    canvas.configure(yscrollincrement=1, xscrollincrement=1)
+            step = -int(delta / 2) or (-1 if delta > 0 else 1)   # ~60 px/notch
         (canvas.xview if horizontal else canvas.yview)("scroll", step, "units")
 
     ctk.CTkScrollableFrame._mouse_wheel_all = _mouse_wheel_all
+
+    # X11/Linux: the wheel is delivered as <Button-4>/<Button-5>, which customtkinter
+    # never binds. Hook each scrollable's __init__ to also bind them, translating to
+    # the same handler with a synthetic delta (±120, like a Windows notch). Harmless
+    # on Windows/macOS, where those button events don't occur.
+    _orig_init = ctk.CTkScrollableFrame.__init__
+
+    def _patched_init(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        _orig_init(self, *args, **kwargs)
+
+        def _on_button(ev, d):
+            ev.delta = d
+            self._mouse_wheel_all(ev)
+
+        self.bind_all("<Button-4>", lambda e: _on_button(e, 120), add="+")
+        self.bind_all("<Button-5>", lambda e: _on_button(e, -120), add="+")
+
+    ctk.CTkScrollableFrame.__init__ = _patched_init
     setattr(ctk.CTkScrollableFrame, _FLAG, True)

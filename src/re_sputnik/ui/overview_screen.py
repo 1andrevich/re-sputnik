@@ -21,6 +21,7 @@ from ..engine import nodes as nodes_engine
 from ..engine import overview as ov_engine
 from ..engine import rules as rules_engine
 from ..router import RouterClient
+from . import flags
 from . import icons
 from . import kit
 from .theme import Palette, fonts
@@ -387,7 +388,7 @@ class OverviewScreen(ctk.CTkFrame):
             # WAN info is loaded once (not auto-polled) — a small button refreshes
             # just this card on demand.
             self._up_refresh_btn = ctk.CTkButton(
-                card, text="⟳", width=28, height=28, corner_radius=8, font=fonts.body(),
+                card, text=kit.REFRESH_GLYPH, width=28, height=28, corner_radius=8, font=fonts.body(),
                 fg_color=p.surface_hover, hover_color=p.border, text_color=p.text,
                 command=self._refresh_uplink)
             self._up_refresh_btn.grid(row=0, column=1, padx=(0, 12), pady=(10, 0), sticky="e")
@@ -485,7 +486,7 @@ class OverviewScreen(ctk.CTkFrame):
             self._active_built = True
         # Update in place (no destroy/rebuild = no flicker).
         self._act_dot.configure(text_color=main_dot)
-        self._act_txt.configure(text=main_text)
+        flags.apply_to_label(self._act_txt, main_text)
         self._core_dot.configure(text_color=core_color)
         self._core_lbl.configure(text=core_txt)
         self._bd_dot.configure(text_color=bd_color)
@@ -636,12 +637,23 @@ class OverviewScreen(ctk.CTkFrame):
                       key=self._node_sort_key)
         state = "normal" if self._pool_enabled else "disabled"
         for i, n in enumerate(chosen + rest):
-            cb = ctk.CTkCheckBox(self._pool_list, text=self._node_caption(n), font=fonts.body(),
+            # Row = [checkbox] [flag-image name label]. A checkbox can't hold the
+            # flag image, so the name lives in its own label (flags.name_label draws
+            # the flag as a picture on Windows/Linux); clicking it toggles the box.
+            row = ctk.CTkFrame(self._pool_list, fg_color="transparent")
+            row.grid(row=i, column=0, sticky="ew", padx=8, pady=2)
+            row.grid_columnconfigure(1, weight=1)
+            cb = ctk.CTkCheckBox(row, text="", width=20, checkbox_width=20, checkbox_height=20,
                                  fg_color=p.accent, hover_color=p.accent_hover, state=state,
                                  command=lambda sec=n.section: self._toggle_pool(sec))
+            cb.grid(row=0, column=0, padx=(0, 6))
             if n.section in self._pool_selected:
                 cb.select()
-            cb.grid(row=i, column=0, sticky="w", padx=8, pady=2)
+            lbl = flags.name_label(row, self._node_caption(n), font=fonts.body(),
+                                   text_color=p.text, anchor="w")
+            lbl.grid(row=0, column=1, sticky="w")
+            if self._pool_enabled:
+                lbl.bind("<Button-1>", lambda _e, c=cb: c.toggle())
 
     def _toggle_pool(self, section: str) -> None:
         # Only track the selection — do NOT re-render. The checkbox toggles its

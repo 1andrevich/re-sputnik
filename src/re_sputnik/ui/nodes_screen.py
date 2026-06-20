@@ -17,6 +17,7 @@ import customtkinter as ctk
 
 from ..engine import nodes as nodes_engine
 from ..router import RouterClient
+from . import flags
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
@@ -364,8 +365,10 @@ class NodesScreen(ctk.CTkFrame):
         listbox.grid_columnconfigure(0, weight=1)
         for i, node in enumerate(shown):
             label = node.label or node.section
-            ctk.CTkLabel(listbox, text=f"• {label}", font=fonts.body(), text_color=p.text,
-                         anchor="w").grid(row=i, column=0, padx=6, pady=1, sticky="w")
+            # flags.name_label draws the country flag as an image (Win/Linux) and
+            # serves as the row marker; macOS keeps the emoji. No "•" bullet needed.
+            flags.name_label(listbox, label, font=fonts.body(), text_color=p.text,
+                             anchor="w").grid(row=i, column=0, padx=6, pady=1, sticky="w")
             ctk.CTkLabel(listbox, text=node.type, font=fonts.small(), text_color=p.text_muted,
                          anchor="e").grid(row=i, column=1, padx=8, pady=1, sticky="e")
         if len(ordered) > self._MAX_NODES:

@@ -19,7 +19,7 @@ RULE_TYPE = "proxy_ru_rule"
 
 # Source lists/services offered, mirroring client.js (value -> label).
 SERVICE_SOURCES: list[tuple[str, str]] = [
-    ("refilter", "Re-filter — блок-лист РФ (60000+ доменов + 25000+ IP)"),
+    ("refilter", "Re:filter — блок-лист РФ (60000+ доменов + 25000+ IP)"),
     ("russia-inside", "Russia Inside — must-have РФ (1000+ доменов)"),
     ("youtube", "YouTube"),
     ("telegram", "Telegram"),
@@ -125,7 +125,7 @@ def ensure_ru_defaults(client: RouterClient) -> None:
 
     Idempotent and non-destructive: if no routing mode is set yet, switch to RU
     selective ('proxy_banned_ru', default route Direct); and if there are no rules
-    yet, route the Re-filter RU blocklist through the main pool. Never clobbers an
+    yet, route the Re:filter RU blocklist through the main pool. Never clobbers an
     existing mode choice or existing rules.
     """
     mode = client.uci_get("homeproxy.config.routing_mode") or ""
@@ -144,5 +144,5 @@ def ensure_ru_defaults(client: RouterClient) -> None:
         client.uci_commit("homeproxy")
         mode = "proxy_banned_ru"
     if mode == "proxy_banned_ru" and not list_rules(client):
-        # One preset list: Re-filter (РКН registry) through the main server pool.
+        # One preset list: Re:filter (РКН registry) through the main server pool.
         add_rule(client, "refilter", "main-out")

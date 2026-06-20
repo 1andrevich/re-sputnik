@@ -159,11 +159,30 @@ def _load_paramiko_key(priv_pem: str) -> paramiko.PKey:
         raise SecretsError(f"stored SSH key is unreadable: {exc}") from exc
 
 
+# Per-process cache of keychain reads. On macOS an UNSIGNED app gets no durable
+# "Always Allow", so EVERY keychain access re-prompts — and a single connect reads
+# several items (app key ×2, host-key pin, password). Without caching the user sees
+# the permission dialog "again and again", and a denial that callers swallow makes
+# the next action re-prompt in a loop. Caching reads each item at most once per
+# launch; a denial is remembered too (restart the app to re-grant).
+_KR_DENIED = object()
+_kr_cache: dict[str, object] = {}
+
+
 def _kr_get(name: str) -> str | None:
+    if name in _kr_cache:
+        cached = _kr_cache[name]
+        if cached is _KR_DENIED:
+            raise SecretsError("keychain access was denied earlier this session "
+                               "(restart the app to retry)")
+        return cached  # type: ignore[return-value]
     try:
-        return keyring.get_password(SERVICE, name)
+        val = keyring.get_password(SERVICE, name)
     except keyring.errors.KeyringError as exc:
+        _kr_cache[name] = _KR_DENIED  # don't re-prompt for this item this session
         raise SecretsError(f"keychain not available: {exc}") from exc
+    _kr_cache[name] = val
+    return val
 
 
 def _kr_set(name: str, value: str) -> None:
@@ -171,6 +190,7 @@ def _kr_set(name: str, value: str) -> None:
         keyring.set_password(SERVICE, name, value)
     except keyring.errors.KeyringError as exc:
         raise SecretsError(f"cannot write to keychain: {exc}") from exc
+    _kr_cache[name] = value  # keep the cache coherent with the new value
 
 
 def existing_public_key() -> str | None:
@@ -205,6 +225,7 @@ def get_router_password(host: str) -> str | None:
 
 
 def forget_router_password(host: str) -> None:
+    _kr_cache.pop(f"root@{host}", None)
     try:
         keyring.delete_password(SERVICE, f"root@{host}")
     except keyring.errors.KeyringError:
@@ -227,6 +248,7 @@ def pin_hostkey(host: str, fingerprint: str) -> None:
 
 
 def forget_hostkey(host: str) -> None:
+    _kr_cache.pop(f"hostkey@{host}", None)
     try:
         keyring.delete_password(SERVICE, f"hostkey@{host}")
     except keyring.errors.KeyringError:
@@ -264,6 +286,7 @@ def delete_app_identity() -> None:
     old key no longer grants access anywhere.
     """
     for name in (_KEY_PRIV, _KEY_PUB):
+        _kr_cache.pop(name, None)
         try:
             keyring.delete_password(SERVICE, name)
         except keyring.errors.KeyringError:

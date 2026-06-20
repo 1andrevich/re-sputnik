@@ -1,6 +1,7 @@
-name: Build (Windows + macOS)
+name: Build (Windows + macOS + Linux)
 
-# Builds Re:Sputnik for Windows (x64 .exe) and macOS (Apple Silicon .app).
+# Builds Re:Sputnik for Windows (x64 .exe), macOS (Apple Silicon .app), and
+# Linux (x86_64 AppImage).
 # Private repo: GitHub Actions runs the same; releases need `contents: write`.
 #
 # Triggers:
@@ -34,6 +35,9 @@ jobs:
           - os: macos-14          # Apple Silicon (arm64) runner
             label: macOS arm64
             artifact: Re-Sputnik-macos-arm64
+          - os: ubuntu-latest
+            label: Linux x64
+            artifact: Re-Sputnik-linux-x86_64
 
     steps:
       - uses: actions/checkout@v7
@@ -42,6 +46,15 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
+
+      - name: Install Linux build deps (Tk runtime + FUSE for AppImage)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk libfuse2
+          # Fail fast with a clear signal if the build interpreter has no Tk
+          # (the app can't run without it; PyInstaller would bundle a broken build).
+          python -c "import tkinter; print('tkinter OK', tkinter.TkVersion)"
 
       - name: Install dependencies
         run: |
@@ -90,6 +103,25 @@ jobs:
           cd dist
           ditto -c -k --keepParent "Re-Sputnik.app" "../${{ matrix.artifact }}.zip"
 
+      - name: Package (Linux — AppImage)
+        if: runner.os == 'Linux'
+        run: |
+          set -e
+          APP=Re-Sputnik
+          mkdir -p AppDir/usr/bin
+          cp "dist/$APP" "AppDir/usr/bin/$APP"
+          chmod +x "AppDir/usr/bin/$APP"
+          # Icon (best-effort: baked PNG; placeholder if absent so appimagetool is happy).
+          ICON=src/re_sputnik/resources/branding/icon_256.png
+          if [ -f "$ICON" ]; then cp "$ICON" "AppDir/$APP.png"; else : > "AppDir/$APP.png"; fi
+          # .desktop and AppRun via printf (no heredoc → no YAML-indent pitfalls).
+          printf '[Desktop Entry]\nType=Application\nName=Re:Sputnik\nExec=%s\nIcon=%s\nCategories=Network;Utility;\nTerminal=false\n' "$APP" "$APP" > "AppDir/$APP.desktop"
+          printf '#!/bin/sh\nHERE="$(dirname "$(readlink -f "$0")")"\nexec "$HERE/usr/bin/%s" "$@"\n' "$APP" > AppDir/AppRun
+          chmod +x AppDir/AppRun
+          wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+          chmod +x appimagetool
+          ARCH=x86_64 ./appimagetool --appimage-extract-and-run AppDir "${{ matrix.artifact }}.AppImage"
+
       - name: Upload artifact (Windows)
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v7
@@ -104,6 +136,13 @@ jobs:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}.zip
 
+      - name: Upload artifact (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.AppImage
+
       - name: Attach to Release (tag builds only)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v3
@@ -111,4 +150,5 @@ jobs:
           files: |
             dist/Re-Sputnik.exe
             ${{ matrix.artifact }}.zip
+            ${{ matrix.artifact }}.AppImage
           fail_on_unmatched_files: false

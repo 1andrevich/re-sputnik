@@ -37,6 +37,12 @@ Universal (CC0-1.0) public domain dedication. No copyright attribution is
 required for that artwork. The brand names and logos they depict remain
 the trademarks of their respective owners, as listed below.
 
+Country-flag images shown in server names (resources/flags/) are derived
+from Twemoji (https://github.com/jdecked/twemoji), copyright 2020 Twitter,
+Inc. and other contributors, licensed under CC-BY 4.0
+(https://creativecommons.org/licenses/by/4.0/). The flag artwork was
+trimmed and downscaled; no other changes were made.
+
 The following icons depict third-party brands and services. The logos and
 names are trademarks (registered or otherwise) of their respective owners.
 They are used here SOLELY to identify the corresponding service so that the
@@ -63,9 +69,9 @@ sponsorship by, or endorsement from the trademark owners.
 The following icons refer to community-maintained routing lists or generic
 traffic categories and are used to identify those lists/categories:
 
-  refilter.png       — Re:filter routing list (community project)
-  russia-inside.png  — "Russia Inside" routing list (community project)
-  hodca.png          — HODCA routing list (community project)
+  refilter.png       — Re:filter routing list (by 1andrevich/re-filter)
+  russia-inside.png  — "Russia Inside" routing list (by itdoginfo)
+  hodca.png          — HODCA routing list (by itdoginfo)
   cloudfront.png     — generic CDN icon (not Amazon's logo); label text
                        "CloudFront" names the service nominatively only
   geoblock.png       — generic geo-blocking category icon
@@ -80,7 +86,30 @@ respective owners. If you are a rights holder and believe an icon is used
 improperly, please open an issue and it will be addressed promptly.
 
 
-3. Notes for Redistributors and Branded Builds
+3. Routing Lists and Rule-sets
+------------------------------
+
+Re:Sputnik configures Re:HomeProxy to route traffic using community-
+maintained domain/IP lists. Re:Sputnik does NOT bundle the list data; it
+references the lists by name and the router downloads them from their
+upstream sources. Ownership and credit:
+
+  - "Re:filter" — the RKN-registry blocklist (domains + IPs). Maintained by
+    1andrevich (https://github.com/1andrevich/re-filter).
+
+  - "Russia Inside" AND all of the per-service routing lists used here
+    (YouTube, Telegram, Discord, Twitter/X, TikTok, Meta, Roblox, anime,
+    HDRezka, news, 18+, Google AI, Google Play, GeoBlock, Cloudflare,
+    CloudFront, OVH, Hetzner, DigitalOcean, HODCA, and the rest) are made
+    and owned by ITDOG (https://github.com/itdoginfo). All rights and credit
+    for these lists belong to itdoginfo; consult that project for its
+    license and terms of use.
+
+The service names and trademarks above are used nominatively to identify
+which traffic each list affects (see section 2).
+
+
+4. Notes for Redistributors and Branded Builds
 ----------------------------------------------
 
 - The brand logos above may continue to be used as service identifiers in
