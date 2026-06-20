@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "re-sputnik"
+version = "0.1.0"
+description = "Re:Sputnik — desktop wizard to set up and manage Re:HomeProxy on an OpenWRT router over SSH"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "GPL-2.0-only" }
+authors = [{ name = "1andrevich" }]
+keywords = ["openwrt", "homeproxy", "vpn", "byedpi", "router", "ssh"]
+
+# Runtime deps — pure-Python where possible; cryptography (via paramiko) and
+# Pillow are the only "impure" ones and both ship Windows-ARM64 wheels.
+dependencies = [
+    "paramiko>=3.4",        # SSH transport to the router (LGPL-2.1)
+    "customtkinter>=5.2",   # modern Tk-based UI, pure Python (MIT)
+    "Pillow>=10.0",         # CTkImage backing for icons (HPND)
+    "keyring>=24.0",        # store router secrets in OS keychain (MIT)
+    "PyYAML>=6.0",          # declarative phase recipes (MIT)
+    "qrcode>=7.4",          # Wi-Fi join QR on the overview page, pure Python (BSD), renders via Pillow
+    "certifi>=2024.0",      # pinned CA bundle so HTTPS verifies in the frozen app (MPL-2.0)
+]
+
+[project.urls]
+Homepage = "https://github.com/1andrevich/re-sputnik"
+Repository = "https://github.com/1andrevich/re-sputnik"
+Issues = "https://github.com/1andrevich/re-sputnik/issues"
+
+[project.optional-dependencies]
+# Build-time only: rasterize SVG icons to PNG so the shipped app carries no
+# cairo/C dependency (keeps Windows-ARM64 and onefile clean).
+build = [
+    "resvg-py>=0.3",        # self-contained SVG rasterizer (Rust wheel, no native cairo)
+    "pyinstaller>=6.3",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+re-sputnik = "re_sputnik.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.spec
+!re_sputnik.spec   # hand-written build config — keep this one tracked
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Packaging output
+*.exe
+*.app
+*.dmg
+*.msix
+
+# Generated icon PNGs (baked from SVG at build time)
+src/re_sputnik/assets/icons/*.png
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local secrets / scratch
+*.local
+secrets.json
+
+# Draft legal docs — not committed until finalized
+EULA.DRAFT.txt
+*.DRAFT.*

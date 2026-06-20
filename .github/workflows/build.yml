@@ -1,0 +1,114 @@
+name: Build (Windows + macOS)
+
+# Builds Re:Sputnik for Windows (x64 .exe) and macOS (Apple Silicon .app).
+# Private repo: GitHub Actions runs the same; releases need `contents: write`.
+#
+# Triggers:
+#   - push a tag like `v0.1.0`  → builds + attaches binaries to a GitHub Release
+#   - manual "Run workflow"     → builds + uploads artifacts only (no release)
+#
+# NOTE: builds are UNSIGNED. Windows shows a SmartScreen warning; macOS Gatekeeper
+# quarantines the .app (users right-click → Open, or `xattr -dr com.apple.quarantine`).
+# To sign later, add the signing/notarization steps + repo secrets (see the
+# commented placeholders near each build step).
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed to create the Release on tag builds
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: Windows x64
+            artifact: Re-Sputnik-windows-x64
+          - os: macos-14          # Apple Silicon (arm64) runner
+            label: macOS arm64
+            artifact: Re-Sputnik-macos-arm64
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[build]"
+
+      - name: Bake icons (SVG → PNG)
+        continue-on-error: true   # committed PNGs are the fallback if this can't run
+        run: |
+          python scripts/render_icons.py
+          python scripts/gen_icons.py
+
+      - name: Generate .icns (macOS app icon)
+        if: runner.os == 'macOS'
+        continue-on-error: true
+        run: |
+          set -e
+          ICONDIR=src/re_sputnik/resources/branding
+          SRC_PNG="$ICONDIR/icon_256.png"
+          if [ -f "$SRC_PNG" ]; then
+            mkdir -p icon.iconset
+            for s in 16 32 64 128 256 512; do
+              sips -z $s $s "$SRC_PNG" --out "icon.iconset/icon_${s}x${s}.png" >/dev/null 2>&1 || true
+              d=$((s*2)); sips -z $d $d "$SRC_PNG" --out "icon.iconset/icon_${s}x${s}@2x.png" >/dev/null 2>&1 || true
+            done
+            iconutil -c icns icon.iconset -o "$ICONDIR/icon.icns" || true
+          fi
+
+      - name: Build with PyInstaller
+        run: pyinstaller --clean --noconfirm re_sputnik.spec
+
+      # --- Windows: sign here later (signtool + WINDOWS_CERT secrets) ---
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir staging
+          copy "dist\Re-Sputnik.exe" "staging\Re-Sputnik.exe"
+        shell: cmd
+
+      # --- macOS: codesign + notarize here later (APPLE_* secrets) ---
+
+      - name: Package (macOS — zip the .app, preserving bundle)
+        if: runner.os == 'macOS'
+        run: |
+          cd dist
+          ditto -c -k --keepParent "Re-Sputnik.app" "../${{ matrix.artifact }}.zip"
+
+      - name: Upload artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/Re-Sputnik.exe
+
+      - name: Upload artifact (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.zip
+
+      - name: Attach to Release (tag builds only)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            dist/Re-Sputnik.exe
+            ${{ matrix.artifact }}.zip
+          fail_on_unmatched_files: false

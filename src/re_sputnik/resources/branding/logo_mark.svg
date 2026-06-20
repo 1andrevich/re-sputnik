@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Re:Sputnik logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#10131A"></stop>
+      <stop offset="1" stop-color="#1B2230"></stop>
+    </linearGradient>
+    <linearGradient id="sat" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B82F6"></stop>
+      <stop offset="1" stop-color="#38BDF8"></stop>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#38BDF8" stop-opacity="0.35"></stop>
+      <stop offset="1" stop-color="#38BDF8" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="earthg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22507a"></stop>
+      <stop offset="1" stop-color="#12233a"></stop>
+    </linearGradient>
+    <clipPath id="plateClip"><rect x="0" y="0" width="256" height="256" rx="56"></rect></clipPath>
+  </defs>
+
+  <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#bg)"></rect>
+
+  <g clip-path="url(#plateClip)">
+    <circle cx="128" cy="426" r="248" fill="none" stroke="#38BDF8" stroke-opacity="0.14" stroke-width="8"></circle>
+    <circle cx="128" cy="426" r="240" fill="url(#earthg)"></circle>
+    <circle cx="128" cy="426" r="240" fill="none" stroke="#93dffa" stroke-opacity="0.55" stroke-width="2.5"></circle>
+    <ellipse cx="86" cy="206" rx="36" ry="10" fill="#356f9c" fill-opacity="0.4"></ellipse>
+    <ellipse cx="178" cy="220" rx="28" ry="8" fill="#356f9c" fill-opacity="0.35"></ellipse>
+  </g>
+
+  <path d="M 116 124 Q 130 158 150 188" fill="none" stroke="#38BDF8" stroke-opacity="0.3" stroke-width="1.6"></path>
+  <circle cx="126" cy="143" r="2.3" fill="#38BDF8" fill-opacity="0.9"></circle>
+  <circle cx="135" cy="160" r="2.1" fill="#38BDF8" fill-opacity="0.7"></circle>
+  <circle cx="144" cy="176" r="1.9" fill="#38BDF8" fill-opacity="0.5"></circle>
+  <circle cx="150" cy="188" r="3.6" fill="#38BDF8"></circle>
+  <circle cx="150" cy="188" r="6.5" fill="none" stroke="#38BDF8" stroke-opacity="0.4" stroke-width="1.5"></circle>
+
+  <circle cx="106" cy="104" r="82" fill="url(#glow)"></circle>
+
+  <g stroke="#E7E8EA" stroke-width="4" stroke-linecap="round">
+    <line x1="122" y1="94" x2="208" y2="60"></line>
+    <line x1="128" y1="102" x2="222" y2="98"></line>
+    <line x1="128" y1="112" x2="218" y2="142"></line>
+    <line x1="120" y1="123" x2="190" y2="178"></line>
+  </g>
+  <g fill="#E7E8EA">
+    <circle cx="208" cy="60" r="3.6"></circle>
+    <circle cx="222" cy="98" r="3.6"></circle>
+    <circle cx="218" cy="142" r="3.6"></circle>
+    <circle cx="190" cy="178" r="3.6"></circle>
+  </g>
+
+  <circle cx="102" cy="105" r="29" fill="url(#sat)"></circle>
+  <circle cx="102" cy="105" r="29" fill="none" stroke="#0B0E14" stroke-opacity="0.25" stroke-width="2"></circle>
+  <circle cx="92" cy="95" r="7" fill="#FFFFFF" fill-opacity="0.55"></circle>
+</svg>

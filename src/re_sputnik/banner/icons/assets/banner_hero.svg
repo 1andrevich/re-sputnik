@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="12%" r="120%"><stop offset="0%" stop-color="#11192a"></stop><stop offset="50%" stop-color="#0c121d"></stop><stop offset="100%" stop-color="#0a0e16"></stop></radialGradient>
+    <linearGradient id="earth" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#21384e"></stop><stop offset="45%" stop-color="#18293b"></stop><stop offset="100%" stop-color="#101f2e"></stop></linearGradient>
+    <radialGradient id="air" cx="50%" cy="100%" r="72%"><stop offset="0%" stop-color="#78c3f0" stop-opacity="0.15"></stop><stop offset="74%" stop-color="#78c3f0" stop-opacity="0"></stop></radialGradient>
+    <radialGradient id="sphere" cx="34%" cy="30%" r="72%"><stop offset="0%" stop-color="#bfe6fb"></stop><stop offset="50%" stop-color="#38BDF8"></stop><stop offset="100%" stop-color="#1273b8"></stop></radialGradient>
+    <radialGradient id="mglow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#38BDF8" stop-opacity="0.5"></stop><stop offset="60%" stop-color="#38BDF8" stop-opacity="0"></stop></radialGradient>
+    <clipPath id="card"><rect width="880" height="300" rx="12"></rect></clipPath>
+  </defs>
+  <g clip-path="url(#card)">
+    <rect width="880" height="300" fill="url(#bg)"></rect>
+    <circle cx="120" cy="54" r="1.5" fill="#9fd9f5" fill-opacity="0.7"></circle>
+    <circle cx="700" cy="64" r="1.4" fill="#9fd9f5" fill-opacity="0.6"></circle>
+    <circle cx="770" cy="150" r="1.4" fill="#9fd9f5" fill-opacity="0.5"></circle>
+    <circle cx="160" cy="150" r="1.4" fill="#9fd9f5" fill-opacity="0.5"></circle>
+    <ellipse cx="440" cy="665" rx="800" ry="350" fill="url(#earth)"></ellipse>
+    <ellipse cx="440" cy="315" rx="800" ry="350" fill="none" stroke="#96cdf5" stroke-opacity="0.28" stroke-width="1.6"></ellipse>
+    <rect x="0" y="112" width="880" height="120" fill="url(#air)"></rect>
+    
+    <g transform="translate(362,58)">
+      <circle cx="48" cy="56" r="42" fill="url(#mglow)"></circle>
+      <g stroke="#eef3f8" stroke-width="3" stroke-linecap="round">
+        <line x1="60" y1="50" x2="144" y2="10"></line><line x1="62" y1="55" x2="150" y2="37"></line>
+        <line x1="61" y1="61" x2="143" y2="63"></line><line x1="55" y1="66" x2="120" y2="89"></line>
+      </g>
+      <g fill="#f3f7fa"><circle cx="144" cy="10" r="3.4"></circle><circle cx="150" cy="37" r="3.4"></circle><circle cx="143" cy="63" r="3.4"></circle><circle cx="120" cy="89" r="3.4"></circle></g>
+      <circle cx="48" cy="56" r="17" fill="url(#sphere)"></circle>
+      <circle cx="42" cy="50" r="5" fill="#ffffff" fill-opacity="0.5"></circle>
+    </g>
+    <text x="440" y="200" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="40" font-weight="800"><tspan fill="#38BDF8">Re:</tspan><tspan fill="#E7E8EA">Sputnik</tspan></text>
+    <text x="440" y="228" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="16" fill="#93A0AE">Настройка Re:HomeProxy на роутере OpenWRT</text>
+  </g>
+</svg>

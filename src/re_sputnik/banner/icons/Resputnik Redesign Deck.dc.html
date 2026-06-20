@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style> body { margin:0; } </style>
+</helmet>
+
+<x-import component-from-global-scope="deck-stage" from="./deck-stage.js" width="1920" height="1080" hint-size="100%,100%">
+
+  <!-- 1 · TITLE -->
+  <section data-label="Title" data-speaker-notes="Design polish pass on the Re:Sputnik Quick Setup wizard. Goal: keep the flow, Russian copy, palette, type and the fixed 900x650 window, but unify the chrome and standardize components so it reads as one crafted product." style="width:1920px;height:1080px;background:#0B0E14;font-family:Inter,Arial,sans-serif;color:#E7E8EA;box-sizing:border-box;padding:120px 130px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-160px;right:-120px;width:620px;height:620px;border:1px solid rgba(125,211,252,.16);border-radius:50%;transform:rotate(28deg) scaleY(.5)"></div>
+    <div style="position:absolute;top:90px;right:240px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 32% 28%, #bae6fd, #38BDF8 50%, #0c6aa8);box-shadow:0 0 80px rgba(56,189,248,.45)"></div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:46px">
+      <div style="font-size:30px;font-weight:700;letter-spacing:.3px"><span style="color:#38BDF8">Re:</span>Sputnik</div>
+      <div style="width:1px;height:26px;background:#2b3547"></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:20px;color:#7b8a9c;letter-spacing:.4px">Quick Setup · redesign</div>
+    </div>
+    <h1 style="margin:0;font-size:96px;font-weight:800;line-height:1.02;letter-spacing:-1.5px;max-width:1320px">Implementation guide<br>for the redesign pass</h1>
+    <p style="margin:40px 0 0;font-size:30px;color:#93A0AE;line-height:1.5;max-width:1080px">Unify the chrome, standardize the components, fix the broken empty states — without touching the flow, copy, palette, logo, or the fixed 900×650 window.</p>
+  </section>
+
+  <!-- 2 · WHAT CHANGED -->
+  <section data-label="What changed" data-speaker-notes="High-level summary of the seven changes applied across all nine screens." style="width:1920px;height:1080px;background:#10131A;font-family:Inter,Arial,sans-serif;color:#E7E8EA;box-sizing:border-box;padding:96px 130px;display:flex;flex-direction:column">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:#38BDF8;letter-spacing:1px;margin-bottom:18px">01 · OVERVIEW</div>
+    <h2 style="margin:0 0 56px;font-size:64px;font-weight:800;letter-spacing:-1px">What the pass changed</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px 60px">
+      <div style="display:flex;gap:22px;align-items:flex-start"><div style="font-family:'JetBrains Mono',monospace;font-size:26px;color:#38BDF8;font-weight:600;min-width:34px">01</div><div style="font-size:27px;line-height:1.45;color:#cdd5df">Persistent <b style="color:#fff">app chrome</b> — branded titlebar + a 9-step progress strip on every screen.</div></div>
+      <div style="display:flex;gap:22px;align-items:flex-start"><div style="font-family:'JetBrains Mono',monospace;font-size:26px;color:#38BDF8;font-weight:600;min-width:34px">02</div><div style="font-size:27px;line-height:1.45;color:#cdd5df"><b style="color:#fff">Icon-chip section headers</b> replace ad-hoc card titles.</div></div>
+      <div style="display:flex;gap:22px;align-items:flex-start"><div style="font-family:'JetBrains Mono',monospace;font-size:26px;color:#38BDF8;font-weight:600;min-width:34px">03</div><div style="font-size:27px;line-height:1.45;color:#cdd5df">One spec for <b style="color:#fff">checkbox / radio / toggle / field / dropdown / buttons</b>.</div></div>
+      <div style="display:flex;gap:22px;align-items:flex-start"><div style="font-family:'JetBrains Mono',monospace;font-size:26px;color:#38BDF8;font-weight:600;min-width:34px">04</div><div style="font-size:27px;line-height:1.45;color:#cdd5df">Empty loading voids → <b style="color:#fff">orbital loader + skeleton</b> (Интернет, Проверка).</div></div>
+      <div style="display:flex;gap:22px;align-items:flex-start"><div style="font-family:'JetBrains Mono',monospace;font-size:26px;color:#38BDF8;font-weight:600;min-width:34px">05</div><div style="font-size:27px;line-height:1.45;color:#cdd5df">Raw black consoles → titled <b style="color:#fff">log panels</b> (Установка ПО, Предустановить).</div></div>
+      <div style="display:flex;gap:22px;align-items:flex-start"><div style="font-family:'JetBrains Mono',monospace;font-size:26px;color:#38BDF8;font-weight:600;min-width:34px">06</div><div style="font-size:27px;line-height:1.45;color:#cdd5df"><b style="color:#fff">Saved-router rows</b> rebuilt: icon chip + name + mono endpoint + delete.</div></div>
+    </div>
+  </section>
+
+  <!-- 3 · DO NOT TOUCH BRAND -->
+  <section data-label="Brand: do not touch" data-speaker-notes="The logo and Orbit-Cyan palette already exist and are final. Reuse assets and tokens verbatim. The new tokens are only tints of the same ramp, not new brand colors." style="width:1920px;height:1080px;background:#1a1408;font-family:Inter,Arial,sans-serif;color:#E7E8EA;box-sizing:border-box;padding:96px 130px;display:flex;flex-direction:column;justify-content:center;border-left:10px solid #F59E0B">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:#F59E0B;letter-spacing:1px;margin-bottom:18px">⚠ CONSTRAINT</div>
+    <h2 style="margin:0 0 44px;font-size:64px;font-weight:800;letter-spacing:-1px;max-width:1400px">Do not redesign the brand</h2>
+    <div style="display:flex;flex-direction:column;gap:28px;max-width:1380px">
+      <div style="font-size:31px;line-height:1.5;color:#f0ead8">The logo
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,93 @@
+Re:Sputnik — Third-Party Notices and Attributions
+===================================================
+
+This file documents third-party software and assets distributed with, or
+used by, Re:Sputnik, together with their licenses and trademark status.
+It is provided for informational purposes and to comply with the
+attribution requirements of the licenses listed below.
+
+
+1. Third-Party Software Dependencies
+------------------------------------
+
+Re:Sputnik depends on the following Python packages. They are not
+modified and are fetched at install time from PyPI; their licenses apply
+to those packages, not to Re:Sputnik's own source.
+
+  paramiko        — LGPL-2.1     — https://github.com/paramiko/paramiko
+  customtkinter   — MIT          — https://github.com/TomSchimansky/CustomTkinter
+  Pillow          — HPND (PIL)   — https://github.com/python-pillow/Pillow
+  qrcode          — BSD-3-Clause — https://github.com/lincolnloop/python-qrcode
+
+paramiko is licensed under the GNU Lesser General Public License v2.1.
+LGPL components are used as dynamically-available libraries; users may
+replace them with compatible versions. A copy of the LGPL-2.1 text is
+available at https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+
+2. Icons and Brand Logos
+------------------------
+
+Re:Sputnik's routing screens display small icons to help the user
+identify the service, network, or list that a routing rule applies to.
+
+Most brand icons are sourced from Simple Icons (https://simpleicons.org),
+whose icon artwork is released under the Creative Commons Zero v1.0
+Universal (CC0-1.0) public domain dedication. No copyright attribution is
+required for that artwork. The brand names and logos they depict remain
+the trademarks of their respective owners, as listed below.
+
+The following icons depict third-party brands and services. The logos and
+names are trademarks (registered or otherwise) of their respective owners.
+They are used here SOLELY to identify the corresponding service so that the
+user can recognize which traffic a routing rule affects. This is a
+nominative, descriptive use. It does NOT imply any affiliation with,
+sponsorship by, or endorsement from the trademark owners.
+
+  discord.png        — Discord       — Discord Inc.
+  telegram.png       — Telegram      — Telegram FZ-LLC
+  tiktok.png         — TikTok        — ByteDance Ltd.
+  twitter.png        — X / Twitter   — X Corp.
+  whatsapp.png       — WhatsApp      — Meta Platforms, Inc.
+  meta.png           — Meta          — Meta Platforms, Inc.
+  youtube.png        — YouTube       — Google LLC
+  google_play.png    — Google Play   — Google LLC
+  google_ai.png      — Google AI     — Google LLC
+  roblox.png         — Roblox        — Roblox Corporation
+  cloudflare.png     — Cloudflare    — Cloudflare, Inc.
+  digitalocean.png   — DigitalOcean  — DigitalOcean, LLC
+  hetzner.png        — Hetzner       — Hetzner Online GmbH
+  ovh.png            — OVH / OVHcloud— OVH Groupe SAS
+  hdrezka.png        — HDrezka       — respective owner
+
+The following icons refer to community-maintained routing lists or generic
+traffic categories and are used to identify those lists/categories:
+
+  refilter.png       — Re:filter routing list (community project)
+  russia-inside.png  — "Russia Inside" routing list (community project)
+  hodca.png          — HODCA routing list (community project)
+  cloudfront.png     — generic CDN icon (not Amazon's logo); label text
+                       "CloudFront" names the service nominatively only
+  geoblock.png       — generic geo-blocking category icon
+  anime.png          — generic category icon
+  news.png           — generic category icon
+  porn.png           — generic category icon
+  torrent.png        — generic BitTorrent category icon
+  _default.png       — generic fallback icon
+
+All trademarks, service marks, and logos are the property of their
+respective owners. If you are a rights holder and believe an icon is used
+improperly, please open an issue and it will be addressed promptly.
+
+
+3. Notes for Redistributors and Branded Builds
+----------------------------------------------
+
+- The brand logos above may continue to be used as service identifiers in
+  derivative or rebranded builds, as this remains a nominative use.
+- Do NOT use any third-party logo as the application's own brand, launcher
+  icon, or in a manner that implies endorsement by the trademark owner.
+- Do NOT modify logos whose owners publish brand guidelines.
+- Re:Sputnik communicates with Re:HomeProxy over SSH/RPC as a separate
+  program and does not bundle its source; Re:HomeProxy is licensed
+  separately (GPL) and its source is available from its own repository.
