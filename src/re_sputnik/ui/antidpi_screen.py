@@ -294,11 +294,16 @@ class _ZapretSection(ctk.CTkFrame):
         installed = bool(st.get("installed"))
         self._installed = installed
         self._pkg_manager = st.get("pkg_manager")
+        # kmod_ok: NFQUEUE kernel module present. None = unknown (old backend) → don't warn/block.
+        self._kmod_ok = st.get("kmod_ok")
+        kmod_missing = installed and self._kmod_ok is False
         self._status.configure(
             text=("🟢 установлен и запущен" if running else
                   ("🟡 установлен, остановлен" if installed else "🔴 не установлен"))
-            + (f"  ·  nfqws2 {st.get('version')}" if st.get("version") else ""),
-            text_color=(p.ok if running else (p.warn if installed else p.fail)))
+            + (f"  ·  nfqws2 {st.get('version')}" if st.get("version") else "")
+            + ("   ⚠ нет модуля NFQUEUE (kmod-nft-queue)" if kmod_missing else ""),
+            text_color=(p.fail if kmod_missing else
+                        (p.ok if running else (p.warn if installed else p.fail))))
 
         rows = [("Версия", st.get("version") or "—"), ("Архитектура", st.get("arch") or "—")]
         for i, (k, v) in enumerate(rows):
@@ -469,6 +474,15 @@ class _ZapretSection(ctk.CTkFrame):
             # Cannot enable what isn't installed — bounce back and point at the install prompt.
             self._enabled.set("0")
             self._save_note.configure(text="Сначала установите Zapret (кнопка выше).", text_color=self.p.warn)
+            return
+        if on and getattr(self, "_kmod_ok", None) is False:
+            # Installed but the NFQUEUE kmod is missing — enabling would emit `queue num`
+            # and nft would reject the whole fw4 set. Block it.
+            self._enabled.set("0")
+            self._save_note.configure(
+                text="Нет модуля ядра NFQUEUE (kmod-nft-queue). Переустановите Zapret на странице «Ядро» "
+                     "или установите kmod-nft-queue — иначе включение сломает firewall.",
+                text_color=self.p.fail)
             return
         client = self._client
         run_async(self, lambda: zp.set_enabled(client, on),
