@@ -69,8 +69,8 @@ def main() -> int:
     cases.append(("adv:rules", lambda: RulesScreen(root, p, cl)))
     from re_sputnik.ui.access_screen import AccessScreen
     cases.append(("adv:access", lambda: AccessScreen(root, p, cl)))
-    from re_sputnik.ui.byedpi_screen import ByeDPIScreen
-    cases.append(("adv:byedpi", lambda: ByeDPIScreen(root, p, cl)))
+    from re_sputnik.ui.antidpi_screen import AntiDPIScreen
+    cases.append(("antidpi", lambda: AntiDPIScreen(root, p, cl)))
     from re_sputnik.ui.core_screen import CoreScreen
     cases.append(("adv:core", lambda: CoreScreen(root, p, cl, st)))
     from re_sputnik.ui.diagnostics_screen import DiagnosticsScreen

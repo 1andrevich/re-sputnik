@@ -43,6 +43,7 @@ _ICON_FOR = {
     "nodes": "nodes", "verify": "verify", "finalize": "finalize", "resource": "resource",
     "connect": "connect",
     "overview": "overview", "rules": "rules", "access": "access", "byedpi": "byedpi",
+    "antidpi": "byedpi", "zapret": "strategy",
     "strategy": "strategy", "diagnostics": "diagnostics", "security": "security",
     "traffic": "traffic", "alert": "alert", "info": "info",
 }

@@ -49,6 +49,7 @@ NODE_SPECIAL: list[tuple[str, str]] = [
     ("main-out", "Основной пул серверов"),
     ("urltest", "Отдельный URLTest (авто)"),
     ("byedpi-out", "ByeDPI"),
+    ("zapret-out", "Zapret"),
 ]
 _SPECIAL_LABELS = dict(NODE_SPECIAL)
 
@@ -105,6 +106,9 @@ def add_rule(client: RouterClient, source: str, node: str) -> None:
         f"uci add homeproxy {RULE_TYPE}").stdout.strip()
     client.run(f"uci set homeproxy.{sec}.source='{source}'")
     client.run(f"uci set homeproxy.{sec}.node='{node}'")
+    # MUST set enabled='1' — generate_client.uc only emits rule_sets for rules where
+    # `enabled === '1'`; without it the rule (and its RU lists) is silently skipped.
+    client.run(f"uci set homeproxy.{sec}.enabled='1'")
     if node == "urltest":
         client.run(f"uci -q delete homeproxy.{sec}.urltest_nodes")
         pool = nd.build_urltest_pool(nd.list_nodes(client), nd.active_core(client))

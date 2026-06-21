@@ -274,6 +274,8 @@ class DiagnosticsScreen(ctk.CTkFrame):
         ]
         if core.get("byedpi_installed"):
             checks.append(("ByeDPI", bool(core.get("byedpi_running")), ""))
+        if core.get("zapret_installed"):
+            checks.append(("Zapret", bool(core.get("zapret_running")), ""))
         # DNS now has its own card with per-test results (see _render_dns).
 
         card = self._card("Состояние", row)

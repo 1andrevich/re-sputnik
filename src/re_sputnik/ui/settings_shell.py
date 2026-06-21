@@ -23,7 +23,7 @@ _SECTIONS = [
     ("nodes", "Ключи и подписки"),
     ("rules", "Правила"),
     ("access", "Контроль доступа"),
-    ("byedpi", "ByeDPI"),
+    ("antidpi", "AntiDPI"),
     ("core", "Ядро"),
     ("diagnostics", "Диагностика"),
     ("security", "Безопасность"),
@@ -121,10 +121,10 @@ class SettingsShell(ctk.CTkFrame):
             from .access_screen import AccessScreen
 
             self._content = AccessScreen(self, self.p, self._client)
-        elif key == "byedpi":
-            from .byedpi_screen import ByeDPIScreen
+        elif key == "antidpi":
+            from .antidpi_screen import AntiDPIScreen
 
-            self._content = ByeDPIScreen(self, self.p, self._client)
+            self._content = AntiDPIScreen(self, self.p, self._client)
         elif key == "security":
             from .security_screen import SecurityScreen
 

@@ -9,6 +9,8 @@ running ByeDPI.
 
 from __future__ import annotations
 
+from typing import Callable, Optional
+
 from ..router import RouterClient
 
 ENABLED_KEY = "homeproxy.config.byedpi_enabled"
@@ -130,3 +132,39 @@ def run_test(client: RouterClient, cmd_opts: str) -> dict:
     Returns {result, passed, total, results:[{tag,label,ok,reason}]} or {error}.
     """
     return client.ubus_homeproxy("byedpi_strategy_test", {"cmd_opts": cmd_opts}, timeout=120)
+
+
+def install(client: RouterClient, progress: Optional[Callable[[str], None]] = None) -> tuple[bool, str]:
+    """Install (or reinstall to latest) ByeDPI: prepare -> curl -> wget -> install_pkg.
+
+    curl is pulled too because the strategy tester needs it. Returns (ok, message)."""
+    def say(m: str) -> None:
+        if progress:
+            progress(m)
+
+    say("Проверяю требования…")
+    prep = client.ubus_homeproxy("byedpi_prepare_install", timeout=60)
+    if prep.get("error") or not prep.get("dl_url"):
+        return False, prep.get("error") or "Не удалось подготовить установку (нет ссылки)."
+
+    pm = prep.get("pkg_manager")
+    say("Устанавливаю curl (нужен тестеру)…")
+    add = "apk add" if pm == "apk" else "opkg install"
+    client.run(f"{add} curl 2>&1; true", timeout=120)
+
+    say("Скачиваю пакет…")
+    if not client.run(f"wget -qO {prep['tmp_path']} '{prep['dl_url']}'", timeout=300).ok:
+        return False, "Не удалось скачать пакет ByeDPI."
+
+    say("Устанавливаю…")
+    inst = client.ubus_homeproxy(
+        "byedpi_install_pkg",
+        {"tmp_path": prep["tmp_path"], "pkg_manager": pm}, timeout=180)
+    if not inst.get("result"):
+        return False, inst.get("error") or "Установка ByeDPI не удалась."
+    return True, "ByeDPI установлен."
+
+
+def remove(client: RouterClient) -> bool:
+    res = client.ubus_homeproxy("byedpi_remove", timeout=60)
+    return bool(res.get("result"))

@@ -178,6 +178,8 @@ class RulesScreen(ctk.CTkFrame):
             return "URLTest"
         if value == "byedpi-out":
             return "ByeDPI"
+        if value == "zapret-out":
+            return "Zapret"
         for n in nodes:
             if n.section == value:
                 return f"{n.label or n.section} ({n.type})"

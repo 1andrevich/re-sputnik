@@ -17,7 +17,9 @@ from typing import Any, Optional
 
 import customtkinter as ctk
 
+from ..engine import byedpi as bd
 from ..engine import core_health, install_app, preinstall
+from ..engine import zapret as zp
 from ..router import RouterClient, RouterState
 from . import kit
 from .theme import Palette, fonts
@@ -75,6 +77,7 @@ class CoreScreen(ctk.CTkFrame):
         self._body.bind("<Configure>", self._on_resize)
         self._load_core_info()
         self._load_app_version()
+        self._load_tools()
 
     # ----- layout -------------------------------------------------------
 
@@ -179,6 +182,20 @@ class CoreScreen(ctk.CTkFrame):
         self._info_rows = ctk.CTkFrame(self._info_card, fg_color="transparent")
         self._info_rows.grid(row=1, column=0, columnspan=2, padx=16, pady=(0, 12), sticky="ew")
         self._info_rows.grid_columnconfigure(1, weight=1)
+
+        # DPI-bypass tools (ByeDPI, Zapret) — install / update / delete. Configured
+        # on the AntiDPI screen; managed (package lifecycle) here next to the core.
+        self._tools_card = ctk.CTkFrame(self._body, fg_color=p.surface, corner_radius=12)
+        self._tools_card.grid(row=6, column=0, sticky="ew", pady=(0, 12))
+        self._tools_card.grid_columnconfigure(0, weight=1)
+        ctk.CTkLabel(self._tools_card, text="Инструменты обхода DPI", font=fonts.heading(),
+                     text_color=p.text).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
+        ctk.CTkLabel(self._tools_card, text="Настройка — на странице AntiDPI. Здесь — установка и удаление.",
+                     font=fonts.small(), text_color=p.text_muted).grid(row=1, column=0, padx=16, sticky="w")
+        self._tools_rows = ctk.CTkFrame(self._tools_card, fg_color="transparent")
+        self._tools_rows.grid(row=2, column=0, padx=16, pady=(6, 12), sticky="ew")
+        self._tools_rows.grid_columnconfigure(1, weight=1)
+        self._tool_btns: list[ctk.CTkButton] = []
 
         # Progress log for install/update actions — pinned to the BOTTOM of the
         # screen (a direct child of self, NOT the scrollable body) so it stays fully
@@ -380,6 +397,8 @@ class CoreScreen(ctk.CTkFrame):
             b.configure(state="disabled")
         self._app_btn.configure(state="disabled")
         self._restart_btn.configure(state="disabled")
+        for b in getattr(self, "_tool_btns", []):
+            b.configure(state="disabled")
 
     def _core_action(self, core: str) -> None:
         if self._busy:
@@ -425,3 +444,86 @@ class CoreScreen(ctk.CTkFrame):
         self._busy = False
         self._load_core_info()    # re-enables/relabels core buttons via _render_info
         self._load_app_version()  # re-enables/relabels the app button
+        self._load_tools()        # re-enables/relabels the DPI-tool buttons
+
+    # ----- DPI-bypass tools (ByeDPI / Zapret) ---------------------------
+
+    def _load_tools(self) -> None:
+        client = self._client
+
+        def task() -> dict[str, Any]:
+            return {"byedpi": bd.get_status(client), "zapret": zp.get_status(client)}
+
+        run_async(self, task, self._render_tools, lambda _e: None)
+
+    def _render_tools(self, d: dict[str, Any]) -> None:
+        if self._busy:
+            return
+        p = self.p
+        for w in self._tools_rows.winfo_children():
+            w.destroy()
+        self._tool_btns = []
+        tools = [("byedpi", "ByeDPI", d.get("byedpi") or {}),
+                 ("zapret", "Zapret", d.get("zapret") or {})]
+        for i, (key, name, st) in enumerate(tools):
+            installed = bool(st.get("installed"))
+            running = bool(st.get("running"))
+            ver = st.get("version")
+            ctk.CTkLabel(self._tools_rows, text=name, font=fonts.body(), text_color=p.text).grid(
+                row=i, column=0, padx=(0, 10), pady=4, sticky="w")
+            if installed:
+                stxt = ("🟢 запущен" if running else "🟡 установлен") + (f" · {ver}" if ver else "")
+                scol = p.ok if running else p.warn
+            else:
+                stxt, scol = "🔴 не установлен", p.text_muted
+            ctk.CTkLabel(self._tools_rows, text=stxt, font=fonts.small(), text_color=scol,
+                         anchor="w").grid(row=i, column=1, pady=4, sticky="w")
+            actrow = ctk.CTkFrame(self._tools_rows, fg_color="transparent")
+            actrow.grid(row=i, column=2, sticky="e")
+            if installed:
+                upd = ctk.CTkButton(actrow, text="Обновить", font=fonts.small(), width=110, height=28,
+                                    fg_color=p.surface_hover, hover_color=p.border, text_color=p.text,
+                                    command=lambda k=key: self._tool_install(k))
+                upd.grid(row=0, column=0, padx=(0, 6))
+                dele = ctk.CTkButton(actrow, text="Удалить", font=fonts.small(), width=90, height=28,
+                                     fg_color=p.surface_hover, hover_color=p.fail, text_color=p.text_muted,
+                                     command=lambda k=key: self._tool_remove(k))
+                dele.grid(row=0, column=1)
+                self._tool_btns += [upd, dele]
+            else:
+                ins = ctk.CTkButton(actrow, text="Установить", font=fonts.small(), width=110, height=28,
+                                    fg_color=p.accent, hover_color=p.accent_hover, text_color=p.accent_fg,
+                                    command=lambda k=key: self._tool_install(k))
+                ins.grid(row=0, column=0)
+                self._tool_btns.append(ins)
+
+    def _tool_install(self, key: str) -> None:
+        if self._busy:
+            return
+        self._lock()
+        self._show_log()
+        name = "ByeDPI" if key == "byedpi" else "Zapret"
+        self._append_log(f"▶ Установка/обновление: {name}…")
+        client = self._client
+        eng = bd if key == "byedpi" else zp
+
+        def task() -> tuple[bool, str]:
+            return eng.install(client, progress=lambda m: post_to(self, lambda: self._append_log(m)))
+
+        run_async(self, task, self._op_done, self._op_err)
+
+    def _tool_remove(self, key: str) -> None:
+        if self._busy:
+            return
+        self._lock()
+        self._show_log()
+        name = "ByeDPI" if key == "byedpi" else "Zapret"
+        self._append_log(f"▶ Удаление: {name}…")
+        client = self._client
+        eng = bd if key == "byedpi" else zp
+
+        def task() -> tuple[bool, str]:
+            ok = eng.remove(client)
+            return (ok, f"{name} удалён." if ok else f"Не удалось удалить {name}.")
+
+        run_async(self, task, self._op_done, self._op_err)

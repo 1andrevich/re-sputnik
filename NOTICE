@@ -109,7 +109,29 @@ The service names and trademarks above are used nominatively to identify
 which traffic each list affects (see section 2).
 
 
-4. Notes for Redistributors and Branded Builds
+4. Router-Side DPI-Bypass Tools
+-------------------------------
+
+Re:Sputnik can install and configure two on-router DPI-circumvention
+engines through Re:HomeProxy (the AntiDPI screen). Re:Sputnik does NOT
+bundle their source or binaries; the router fetches the packages from
+their upstream releases. Credit and licenses belong to the upstream
+projects:
+
+  - ByeDPI (ciadpi) — SOCKS-level DPI bypass by hufrea
+    (https://github.com/hufrea/byedpi). OpenWrt packages by 1andrevich
+    (https://github.com/1andrevich/ByeDPI-OpenWrt).
+
+  - zapret / nfqws2 / blockcheck2 — packet-level DPI bypass by bol-van
+    (https://github.com/bol-van/zapret). OpenWrt packages by 1andrevich
+    (https://github.com/1andrevich/zapret2-openwrt). Some bundled strategy
+    presets were adapted from flowseal/zapret-discord-youtube
+    (https://github.com/flowseal/zapret-discord-youtube), MIT-licensed.
+
+Consult each upstream project for its license and terms of use.
+
+
+5. Notes for Redistributors and Branded Builds
 ----------------------------------------------
 
 - The brand logos above may continue to be used as service identifiers in
