@@ -61,6 +61,7 @@ class SoftwareStatus:
     singbox: bool = False    # /usr/bin/sing-box
     kmods: bool = False      # kmod-nft-tproxy + kmod-tun
     byedpi: bool = False     # ciadpi binary / init script
+    zapret: bool = False     # /opt/zapret2/nfq2/nfqws2 present
     # Authoritative: HomeProxy's own get_active_core() resolved a usable core binary
     # (diag_core_check.binary) — the SAME signal the Verify step uses. File presence
     # (hiddify/singbox) alone can disagree with it (e.g. a failed/rolled-back core
@@ -94,7 +95,8 @@ def software_status(client: RouterClient) -> SoftwareStatus:
         "\"$([ -d /usr/share/homeproxy ] && echo a)"
         "$([ -x /usr/bin/hiddify-core ] && echo h)"
         "$([ -x /usr/bin/sing-box ] && echo s)"
-        "$({ [ -x /usr/bin/ciadpi ] || [ -f /etc/init.d/ciadpi ]; } && echo b)\""
+        "$({ [ -x /usr/bin/ciadpi ] || [ -f /etc/init.d/ciadpi ]; } && echo b)"
+        "$([ -x /opt/zapret2/nfq2/nfqws2 ] && echo z)\""
     ).stdout
     app = "a" in out
     core_usable = False
@@ -106,8 +108,8 @@ def software_status(client: RouterClient) -> SoftwareStatus:
         except Exception:  # noqa: BLE001 — fall back to file presence below
             core_usable = "h" in out or "s" in out
     return SoftwareStatus(app=app, hiddify="h" in out, singbox="s" in out,
-                          byedpi="b" in out, kmods=kmods_installed(client),
-                          core_usable=core_usable)
+                          byedpi="b" in out, zapret="z" in out,
+                          kmods=kmods_installed(client), core_usable=core_usable)
 
 
 # ----- PC-side release/asset resolution ---------------------------------
@@ -307,6 +309,7 @@ def _install_luci_i18n(client: RouterClient, pm: str, language: str,
 
 
 def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
+        with_zapret: bool = False,
         language: str = "ru", progress: Optional[Progress] = None,
         start_service: bool = True) -> InstallResult:
     res = InstallResult()
@@ -440,6 +443,23 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                     res.steps.append("ByeDPI")
                 else:
                     say("ByeDPI: установка не удалась.")
+
+        # --- E2. Zapret (zapret2/nfqws2 — pulls kmod-nft-queue via depends) --
+        if with_zapret:
+            say("Устанавливаю Zapret…")
+            zp = client.ubus_homeproxy("zapret_prepare_install", timeout=60)
+            if zp.get("error") or not zp.get("dl_url"):
+                say(f"Zapret: не удалось подготовить ({zp.get('error', 'нет ссылки')}).")
+            elif not _wget(client, zp["dl_url"], zp["tmp_path"]):
+                say("Zapret: не удалось скачать пакет.")
+            else:
+                zi = client.ubus_homeproxy(
+                    "zapret_install_pkg",
+                    {"tmp_path": zp["tmp_path"], "pkg_manager": zp["pkg_manager"]}, timeout=180)
+                if zi.get("result"):
+                    res.steps.append("Zapret")
+                else:
+                    say("Zapret: установка не удалась.")
 
         # --- F. select core + start ------------------------------------
         say("Выбираю ядро и запускаю сервис…")

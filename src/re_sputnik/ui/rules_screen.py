@@ -142,7 +142,9 @@ class RulesScreen(ctk.CTkFrame):
             client = self._client
             run_async(self, lambda: client.ubus_homeproxy("diag_service_restart", timeout=40),
                       lambda _r: (self._after_restart(_r), self._on_done()),
-                      lambda e: self._status.configure(text=f"Ошибка: {e}", text_color=self.p.fail))
+                      lambda e: (self._restart_btn.configure(state="normal", text="Применить изменения"),
+                                 self._status.configure(text=f"Ошибка применения: {e}. Повторите или «Пропустить».",
+                                                        text_color=self.p.fail)))
         elif self._on_done is not None:
             self._on_done()
 

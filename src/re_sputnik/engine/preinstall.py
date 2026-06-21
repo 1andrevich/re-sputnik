@@ -23,7 +23,9 @@ from ._net import http_get
 
 OPENWRT_DL = "https://downloads.openwrt.org"
 KMODS = ("kmod-nft-tproxy", "kmod-tun")
+ZAPRET_KMOD = "kmod-nft-queue"   # NFQUEUE — needed only when installing Zapret
 BYEDPI_REPO = "1andrevich/ByeDPI-OpenWrt"
+ZAPRET_REPO = "1andrevich/zapret2-openwrt"
 
 # curl's runtime closure, resolved from the OpenWrt packages feed by *directory
 # listing* (the apk `index.json` omits SONAME library packages like libcurl4 —
@@ -128,7 +130,7 @@ def resolve_core_url(ti: TargetInfo, core: str) -> str:
     raise RuntimeError(f"нет пакета sing-box-extended для {ti.arch}")
 
 
-def resolve_kmod_urls(ti: TargetInfo) -> list[Pkg]:
+def resolve_kmod_urls(ti: TargetInfo, names: tuple[str, ...] = KMODS) -> list[Pkg]:
     """The kmod packages from the (single) kernel dir under the target's kmods/."""
     base = f"{OPENWRT_DL}/releases/{ti.version}/targets/{ti.board}/kmods/"
     subdirs = [l for l in _links(_http_get(base).decode()) if l.endswith("/") and l[0].isdigit()]
@@ -137,7 +139,7 @@ def resolve_kmod_urls(ti: TargetInfo) -> list[Pkg]:
     kdir = base + subdirs[0]
     files = _links(_http_get(kdir).decode())
     pkgs: list[Pkg] = []
-    for want in KMODS:
+    for want in names:
         # apk names as `kmod-nft-tproxy-<ver>.apk` (hyphen), opkg as `kmod-..._<ver>.ipk`
         # (underscore). Require the separator be followed by a version digit so a
         # longer package name can't be matched by accident.
@@ -179,6 +181,20 @@ def resolve_byedpi_url(ti: TargetInfo) -> tuple[str, str]:
     raise RuntimeError(f"нет пакета ByeDPI для {ti.arch}")
 
 
+def resolve_zapret_url(ti: TargetInfo) -> tuple[str, str]:
+    """(download URL, version) for Zapret's (zapret2) prebuilt package for this arch.
+
+    Asset names are version-less: ``zapret2_<arch>.<ext>`` (see zapret2-openwrt)."""
+    data = json.loads(_http_get(
+        f"https://api.github.com/repos/{ZAPRET_REPO}/releases/latest").decode())
+    tag = data.get("tag_name", "")
+    want = f"zapret2_{ti.arch}{ti.ext}"
+    for a in data.get("assets", []):
+        if a.get("name", "") == want:
+            return a["browser_download_url"], tag.lstrip("v")
+    raise RuntimeError(f"нет пакета Zapret для {ti.arch}")
+
+
 def resolve_curl_pkgs(client: RouterClient, ti: TargetInfo) -> list[Pkg]:
     """curl + its runtime closure, minus whatever the router already has.
 
@@ -213,12 +229,14 @@ def resolve_curl_pkgs(client: RouterClient, ti: TargetInfo) -> list[Pkg]:
 
 
 def plan_packages(client: RouterClient, ti: TargetInfo, core: str,
-                  *, with_byedpi: bool = False, with_app: bool = False,
-                  language: str = "ru") -> list[Pkg]:
+                  *, with_byedpi: bool = False, with_zapret: bool = False,
+                  with_app: bool = False, language: str = "ru") -> list[Pkg]:
     """Resolve every package URL the PC will download (core + kmods
-    [+ LuCI app + i18n] [+ ByeDPI + curl])."""
+    [+ LuCI app + i18n] [+ ByeDPI] [+ Zapret + kmod-nft-queue] [+ curl])."""
     pkgs = [Pkg(name=f"{core}-core", url=resolve_core_url(ti, core))]
-    pkgs += resolve_kmod_urls(ti)
+    # Zapret's `nft queue` needs the NFQUEUE module; pull it alongside the core kmods.
+    kmods = KMODS + ((ZAPRET_KMOD,) if with_zapret else ())
+    pkgs += resolve_kmod_urls(ti, kmods)
     if with_app:
         # Lazy import: install_app imports THIS module at top level, so importing
         # it at module load would be circular. By call time both are fully loaded.
@@ -230,11 +248,17 @@ def plan_packages(client: RouterClient, ti: TargetInfo, core: str,
     if with_byedpi:
         url, ver = resolve_byedpi_url(ti)
         pkgs.append(Pkg(name=f"byedpi-{ver}", url=url))
+    if with_zapret:
+        url, ver = resolve_zapret_url(ti)
+        pkgs.append(Pkg(name=f"zapret2-{ver}", url=url))
+    # curl is a runtime dep of BOTH testers — resolve its closure once if either is on.
+    if with_byedpi or with_zapret:
         pkgs += resolve_curl_pkgs(client, ti)
     return pkgs
 
 
 def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
+        with_zapret: bool = False,
         with_app: bool = False, language: str = "ru",
         progress: Optional[Progress] = None, do_install: bool = True) -> PreinstallResult:
     """Download (PC) → push → install (router) the core + kmods offline.
@@ -264,7 +288,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         say(f"Роутер: {ti.board} · {ti.version} · {ti.arch} ({ti.pkg_manager})")
         say("Определяю ссылки на пакеты…")
         pkgs = plan_packages(client, ti, core, with_byedpi=with_byedpi,
-                             with_app=with_app, language=language)
+                             with_zapret=with_zapret, with_app=with_app, language=language)
         if ti.is_snapshot:
             pkgs = [p for p in pkgs if not p.name.startswith("kmod-")]  # kmods already present
     except Exception as exc:  # noqa: BLE001
@@ -314,5 +338,10 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         # preinstall — it's enabled later from Re:HomeProxy's ByeDPI section.
         client.run("/etc/init.d/ciadpi stop 2>/dev/null; "
                    "/etc/init.d/ciadpi disable 2>/dev/null; true")
+    if with_zapret:
+        # Same as zapret_install_pkg: HomeProxy runs its OWN nfqws2 (qnum 200), so the
+        # package's bundled service must stay stopped/disabled.
+        client.run("/etc/init.d/zapret2 stop 2>/dev/null; "
+                   "/etc/init.d/zapret2 disable 2>/dev/null; true")
     say("Готово.")
     return res

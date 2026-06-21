@@ -477,7 +477,7 @@ class OverviewScreen(ctk.CTkFrame):
             name = self._resolve_node_name(node.get("node"), d.get("nodes", []))
             main_text = f"{name}   ·   {node.get('type') or '—'}   ·   {delay_s}{grp}"
 
-        core_txt, core_color, bd_txt, bd_color = self._core_status(core)
+        core_txt, core_color, bd_txt, bd_color, zp_txt, zp_color = self._core_status(core)
 
         if not self._active_built:
             card = self._card("Активный сервер", 0, parent=self._active_host)
@@ -486,11 +486,12 @@ class OverviewScreen(ctk.CTkFrame):
             self._act_dot, self._act_txt = self._status_row(inner, 0, big=True)
             self._core_dot, self._core_lbl = self._status_row(inner, 1, big=False)
             self._bd_dot, self._bd_lbl = self._status_row(inner, 2, big=False)
+            self._zapret_dot, self._zapret_lbl = self._status_row(inner, 3, big=False)
             # Config-error explainer (hidden unless the core won't start). Tells the
             # user it's a config problem on a NAMED server, not a broken core.
             self._fail_lbl = ctk.CTkLabel(inner, text="", font=fonts.small(), text_color=p.warn,
                                           anchor="w", justify="left", wraplength=560)
-            self._fail_lbl.grid(row=3, column=0, sticky="w", pady=(8, 0))
+            self._fail_lbl.grid(row=4, column=0, sticky="w", pady=(8, 0))
             self._fail_lbl.grid_remove()
             self._active_built = True
         # Update in place (no destroy/rebuild = no flicker).
@@ -500,6 +501,8 @@ class OverviewScreen(ctk.CTkFrame):
         self._core_lbl.configure(text=core_txt)
         self._bd_dot.configure(text_color=bd_color)
         self._bd_lbl.configure(text=bd_txt)
+        self._zapret_dot.configure(text_color=zp_color)
+        self._zapret_lbl.configure(text=zp_txt)
         cf = d.get("core_failure")
         if cf:
             head, steps = core_health.failure_message(cf)
@@ -533,7 +536,7 @@ class OverviewScreen(ctk.CTkFrame):
         m = re.search(r"\d+\.\d+\.\d+(?:[-.][0-9A-Za-z.]+)?", v)
         return m.group(0) if m else v.split()[0][:24]
 
-    def _core_status(self, core: dict) -> tuple[str, str, str, str]:
+    def _core_status(self, core: dict) -> tuple[str, str, str, str, str, str]:
         """(core_text, core_colour, byedpi_text, byedpi_colour) — pure data, no
         widgets, so the active card can be refreshed in place."""
         p = self.p
@@ -562,7 +565,14 @@ class OverviewScreen(ctk.CTkFrame):
             bd_txt, bd_color = "ByeDPI: запущен", p.ok
         else:
             bd_txt, bd_color = "ByeDPI: установлен, остановлен", p.warn
-        return core_txt, core_color, bd_txt, bd_color
+        # Zapret (nfqws2) runs independently of the core too — show it like ByeDPI.
+        if not core.get("zapret_installed"):
+            zp_txt, zp_color = "Zapret: не установлен", p.text_muted
+        elif core.get("zapret_running"):
+            zp_txt, zp_color = "Zapret: запущен", p.ok
+        else:
+            zp_txt, zp_color = "Zapret: установлен, остановлен", p.warn
+        return core_txt, core_color, bd_txt, bd_color, zp_txt, zp_color
 
     # ----- main node / URLTest pool (interactive) -----------------------
 

@@ -55,11 +55,14 @@ class FinalizeScreen(ctk.CTkFrame):
         hrow = ctk.CTkFrame(hn, fg_color="transparent")
         hrow.grid(row=2, column=0, padx=16, pady=(6, 12), sticky="ew")
         hrow.grid_columnconfigure(0, weight=1)
-        self._host = ctk.CTkEntry(hrow, font=fonts.body(), placeholder_text="Например, Home-Router")
+        # Disabled until the page loads the CURRENT hostname — so the user can't type
+        # a new name into an empty field before the existing value arrives.
+        self._host = ctk.CTkEntry(hrow, font=fonts.body(), placeholder_text="Загрузка текущего имени…",
+                                  state="disabled")
         self._host.grid(row=0, column=0, sticky="ew")
         self._host_btn = ctk.CTkButton(hrow, text="Переименовать", font=fonts.body(), width=130,
                                        fg_color=palette.accent, text_color=palette.accent_fg, hover_color=palette.accent_hover,
-                                       command=self._rename)
+                                       state="disabled", command=self._rename)
         self._host_btn.grid(row=0, column=1, padx=(8, 0))
         # Feedback right here, next to the button — the screen-wide status line is far
         # down a long scroll and would be off-screen.
@@ -167,10 +170,20 @@ class FinalizeScreen(ctk.CTkFrame):
                     "dhcp_hidden": fin.dhcp_hostname_hidden(client),
                     "ntp_ru": fin.ntp_is_ru(client)}
 
-        run_async(self, task, self._render, lambda e: self._status.configure(
-            text=f"Ошибка: {e}", text_color=self.p.fail))
+        run_async(self, task, self._render, self._load_err)
+
+    def _unlock_host(self) -> None:
+        self._host.configure(state="normal")
+        self._host_btn.configure(state="normal")
+
+    def _load_err(self, e: BaseException) -> None:
+        # Unlock the field even if the load failed, so the user isn't stuck.
+        self._unlock_host()
+        self._status.configure(text=f"Ошибка: {e}", text_color=self.p.fail)
 
     def _render(self, d: dict[str, Any]) -> None:
+        # Page loaded → unlock the name field and fill in the current hostname.
+        self._unlock_host()
         if d.get("hostname") and not self._host.get():
             self._host.insert(0, d["hostname"])
         for pkg, installed in (d.get("apps") or {}).items():

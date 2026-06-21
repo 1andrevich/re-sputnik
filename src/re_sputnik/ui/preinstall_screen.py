@@ -34,6 +34,7 @@ class PreinstallScreen(ctk.CTkFrame):
         self._core = ctk.StringVar(value="singbox")
         self._app = ctk.StringVar(value="1")
         self._byedpi = ctk.StringVar(value="0")
+        self._zapret = ctk.StringVar(value="0")
         self._busy = False
 
         self._sc = kit.WizardScaffold(self, palette, step=4, label="Компоненты", footer=False)
@@ -95,6 +96,14 @@ class PreinstallScreen(ctk.CTkFrame):
                      "вручную подобрать параметры под вашего провайдера.", font=fonts.small(),
                      text_color=palette.text_muted, wraplength=520, justify="left", anchor="w").grid(
             row=1, column=0, padx=16, pady=(0, 12), sticky="w")
+        ctk.CTkSwitch(bd_card, text="Также установить Zapret", font=fonts.body(),
+                      variable=self._zapret, onvalue="1", offvalue="0",
+                      progress_color=palette.accent).grid(row=2, column=0, padx=16, pady=(0, 2), sticky="w")
+        ctk.CTkLabel(bd_card, text="Другой движок обхода DPI: умеет ещё видео (QUIC) и звонки, "
+                     "с которыми ByeDPI не справляется. Нужный модуль ядра (kmod-nft-queue) "
+                     "скачивается и ставится вместе с ним.", font=fonts.small(),
+                     text_color=palette.text_muted, wraplength=520, justify="left", anchor="w").grid(
+            row=3, column=0, padx=16, pady=(0, 12), sticky="w")
 
         self._go = ctk.CTkButton(body, text="Скачать и установить", font=fonts.heading(), height=42,
                                  fg_color=palette.accent, text_color=palette.accent_fg, hover_color=palette.accent_hover,
@@ -137,9 +146,11 @@ class PreinstallScreen(ctk.CTkFrame):
         self._app.set("0" if st.app else "1")
         if st.byedpi:
             self._byedpi.set("1")
+        if st.zapret:
+            self._zapret.set("1")
         if st.ready:
             core_label = "hiddify-core" if st.core == "hiddify" else "sing-box-extended"
-            extra = " + ByeDPI" if st.byedpi else ""
+            extra = "".join(x for x, on in ((" + ByeDPI", st.byedpi), (" + Zapret", st.zapret)) if on)
             self._banner.configure(
                 text=f"✓ На роутере уже есть: приложение, {core_label}, модули ядра{extra}. "
                      "Предустановка не нужна — можно сразу к настройке." if self._on_continue
@@ -182,6 +193,7 @@ class PreinstallScreen(ctk.CTkFrame):
         self._log.configure(state="disabled")
         core = self._core.get()
         with_byedpi = self._byedpi.get() == "1"
+        with_zapret = self._zapret.get() == "1"
         with_app = self._app.get() == "1"
         client = self._client
 
@@ -190,7 +202,7 @@ class PreinstallScreen(ctk.CTkFrame):
 
         def task() -> preinstall.PreinstallResult:
             return preinstall.run(client, core, with_byedpi=with_byedpi,
-                                  with_app=with_app, progress=progress)
+                                  with_zapret=with_zapret, with_app=with_app, progress=progress)
 
         run_async(self, task, self._done, self._err)
 
