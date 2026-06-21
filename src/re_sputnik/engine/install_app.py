@@ -24,10 +24,11 @@ download/kmod steps need it anyway).
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
-from ..router import RouterClient
+from ..router import RouterClient, CommandResult
 from ._net import http_get
 from .preinstall import TargetInfo, get_target_info
 
@@ -138,6 +139,25 @@ def _pick(assets: dict[str, str], prefix: str, ext: str,
     return None
 
 
+_VER_RE = re.compile(r"(\d+)\.(\d+)\.(\d+)(?:-r(\d+))?")
+
+
+def _ver_key(version: str) -> tuple:
+    """Order key for a ``YYYY.MM.DD-rN`` release version (missing -rN = r0).
+    Unparseable strings sort lowest so they never masquerade as 'newer'."""
+    m = _VER_RE.search(version or "")
+    return tuple(int(g or 0) for g in m.groups()) if m else (0, 0, 0, 0)
+
+
+def is_newer(candidate: str, installed: str) -> bool:
+    """True only if release version ``candidate`` is *strictly* newer than
+    ``installed`` — so a same/older 'latest' (e.g. while we run a pinned dev build
+    ahead of the public release) never offers a downgrade as an 'update'."""
+    if not candidate or not installed:
+        return False
+    return _ver_key(candidate) > _ver_key(installed)
+
+
 def resolve_app_assets(ti: TargetInfo, language: str, *, use_latest: bool = False) -> AppAssets:
     """Find the newest release carrying the LuCI app, and take its sibling
     publisher key + language pack from that SAME release.
@@ -165,6 +185,15 @@ def resolve_app_assets(ti: TargetInfo, language: str, *, use_latest: bool = Fals
         releases = [pinned] if isinstance(pinned, dict) else list(pinned)
     else:
         releases = _gh(f"https://api.github.com/repos/{HP_REPO}/releases")  # newest first
+
+    # GitHub lists by created_at, which can disagree with the version (a higher
+    # version may have an OLDER release-object date), so we don't take the first
+    # match — we rank by parsed version and prefer a stable release, falling back
+    # to the newest prerelease only while no stable carries the asset. A pinned
+    # lookup returns its one release as-is. Once the pin is dropped (real "latest"),
+    # this picks the genuine newest stable and its sibling links automatically.
+    best_any: Optional[tuple] = None      # (ver_key, AppAssets)
+    best_stable: Optional[tuple] = None
     for rel in releases:
         assets = {a.get("name", ""): a.get("browser_download_url", "")
                   for a in rel.get("assets", [])}
@@ -175,8 +204,19 @@ def resolve_app_assets(ti: TargetInfo, language: str, *, use_latest: bool = Fals
         version = app_name[len(APP_PKG) + 1:-len(suffix)]  # <pkg>_<VER>_all.apk → VER
         i18n = (_pick(assets, f"luci-i18n-homeproxy-{language}", ext, legacy_ok)
                 if language and language != "en" else None)
-        return AppAssets(app_url=app_url, pubkey_url=assets.get(PUBKEY_NAME),
+        cand = AppAssets(app_url=app_url, pubkey_url=assets.get(PUBKEY_NAME),
                          i18n_url=(i18n[1] if i18n else None), version=version)
+        if pin:
+            return cand  # exact pinned release — take its assets verbatim
+        key = _ver_key(version)
+        if best_any is None or key > best_any[0]:
+            best_any = (key, cand)
+        if not rel.get("prerelease"):
+            if best_stable is None or key > best_stable[0]:
+                best_stable = (key, cand)
+    chosen = best_stable or best_any
+    if chosen:
+        return chosen[1]
     where = f"релизе {pin}" if pin else f"релизах {HP_REPO}"
     raise RuntimeError(f"в {where} нет пакета {APP_PKG}{ext}")
 
@@ -184,10 +224,35 @@ def resolve_app_assets(ti: TargetInfo, language: str, *, use_latest: bool = Fals
 # ----- router-side helpers ----------------------------------------------
 
 
-def _core_mgmt(client: RouterClient, *args: str, timeout: int = 300) -> dict:
-    """Run a core_mgmt.uc action and parse its JSON reply."""
+def _run_retry(client: RouterClient, command: str, *, timeout: int, attempts: int = 3,
+               say: Optional["Progress"] = None, what: str = "") -> CommandResult:
+    """Run a network command, retrying on TimeoutError.
+
+    A slow uplink can blow a single timeout without the operation being truly
+    stuck (the observed failure: ``apk update`` over a poor link). Every package
+    comes from the same feed, so the right answer is to *complete* the fetch on a
+    retry, not to skip the step. Re-raises the final TimeoutError if all attempts
+    time out; a non-zero exit is returned to the caller unchanged (not retried —
+    that's a real error, e.g. a missing package, not a slow link)."""
+    for n in range(1, attempts + 1):
+        try:
+            return client.run(command, timeout=timeout)
+        except TimeoutError:
+            if n >= attempts:
+                raise
+            if say:
+                say(f"Медленный интернет — повтор {n + 1}/{attempts}: {what or command[:40]}…")
+    raise AssertionError("unreachable")  # loop body either returns or raises
+
+
+def _core_mgmt(client: RouterClient, *args: str, timeout: int = 300, attempts: int = 1,
+               say: Optional["Progress"] = None, what: str = "операции с ядром") -> dict:
+    """Run a core_mgmt.uc action and parse its JSON reply. Network-bound actions
+    (download/install over the same feed) pass ``attempts`` > 1 so a transient
+    slow moment retries the fetch instead of aborting the whole install."""
     quoted = " ".join(f"'{a}'" for a in args)
-    out = client.run(f"ucode {CORE_MGMT} {quoted}", timeout=timeout)
+    out = _run_retry(client, f"ucode {CORE_MGMT} {quoted}", timeout=timeout,
+                     attempts=attempts, say=say, what=what)
     text = out.stdout.strip()
     try:
         return json.loads(text) if text else {"error": "no output"}
@@ -216,15 +281,22 @@ def _install_luci_i18n(client: RouterClient, pm: str, language: str,
     if not language or language == "en":
         return False
     say(f"Устанавливаю язык интерфейса LuCI ({language})…")
+    # 180s caps + retry: on a slow uplink the repo refresh alone can run past 90s
+    # without ever stalling, and the index download is all-or-nothing — so give it
+    # ~3 min and retry a couple of times before giving up (rather than aborting the
+    # whole install on a single slow fetch).
     if pm == "apk":
-        client.run("apk update 2>/dev/null", timeout=90)
+        _run_retry(client, "apk update 2>/dev/null", timeout=180, say=say,
+                   what="обновление репозитория")
         add = "apk add"
     else:
-        client.run("opkg update 2>/dev/null", timeout=120)
+        _run_retry(client, "opkg update 2>/dev/null", timeout=180, say=say,
+                   what="обновление репозитория")
         add = "opkg install"
     for comp in _LUCI_I18N_COMPONENTS:
         # Per-package so one missing pack can't abort the rest; failures ignored.
-        client.run(f"{add} luci-i18n-{comp}-{language} 2>/dev/null", timeout=90)
+        _run_retry(client, f"{add} luci-i18n-{comp}-{language} 2>/dev/null", timeout=180,
+                   say=say, what=f"luci-i18n-{comp}")
     # Force the LuCI UI to this language (rather than leaving 'auto'/browser-locale),
     # so the web interface is actually localized for the user's audience.
     client.run(f"uci set luci.main.lang={language}; uci commit luci 2>/dev/null; true", timeout=15)
@@ -321,12 +393,14 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         if prep.get("note"):
             say(prep["note"])
         say("Скачиваю ядро на роутер…")
-        dl = _core_mgmt(client, "download_pkg", prep["dl_url"], prep["tmp_path"])
+        dl = _core_mgmt(client, "download_pkg", prep["dl_url"], prep["tmp_path"],
+                        attempts=3, say=say, what="скачивание ядра")
         if not dl.get("result"):
             res.error = f"скачивание ядра: {dl.get('error', 'не удалось')}"
             return res
         say("Устанавливаю ядро…")
-        ins = _core_mgmt(client, "install_pkg", core, prep["tmp_path"], prep["pkg_manager"])
+        ins = _core_mgmt(client, "install_pkg", core, prep["tmp_path"], prep["pkg_manager"],
+                         attempts=3, say=say, what="установка ядра")
         if not ins.get("result"):
             res.error = f"установка ядра: {ins.get('error', 'не удалось')}"
             return res
@@ -334,7 +408,8 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
 
         # --- D. kernel modules -----------------------------------------
         say("Устанавливаю модули ядра (kmod-nft-tproxy, kmod-tun)…")
-        km = _core_mgmt(client, "install_kmods", pm, timeout=120)
+        km = _core_mgmt(client, "install_kmods", pm, timeout=120,
+                        attempts=3, say=say, what="установка модулей ядра")
         if not km.get("result"):
             # Enrich the raw failure with a firmware-capability diagnosis: is the
             # kmod genuinely unavailable for this kernel (incompatible firmware),
@@ -408,15 +483,18 @@ def install_core(client: RouterClient, ti: TargetInfo, core: str, *,
     if prep.get("note"):
         say(prep["note"])
     say("Скачиваю ядро на роутер…")
-    if not _core_mgmt(client, "download_pkg", prep["dl_url"], prep["tmp_path"]).get("result"):
+    if not _core_mgmt(client, "download_pkg", prep["dl_url"], prep["tmp_path"],
+                      attempts=3, say=say, what="скачивание ядра").get("result"):
         return False, "скачивание ядра не удалось"
     say("Устанавливаю ядро…")
-    ins = _core_mgmt(client, "install_pkg", core, prep["tmp_path"], prep["pkg_manager"])
+    ins = _core_mgmt(client, "install_pkg", core, prep["tmp_path"], prep["pkg_manager"],
+                     attempts=3, say=say, what="установка ядра")
     if not ins.get("result"):
         return False, f"установка ядра: {ins.get('error', 'не удалось')}"
     if not kmods_installed(client):
         say("Устанавливаю модули ядра (kmod-nft-tproxy, kmod-tun)…")
-        if not _core_mgmt(client, "install_kmods", ti.pkg_manager, timeout=120).get("result"):
+        if not _core_mgmt(client, "install_kmods", ti.pkg_manager, timeout=120,
+                          attempts=3, say=say, what="установка модулей ядра").get("result"):
             return False, "не удалось установить модули ядра"
     return True, f"Ядро {core} установлено ({prep.get('variant', 'standard')})"
 

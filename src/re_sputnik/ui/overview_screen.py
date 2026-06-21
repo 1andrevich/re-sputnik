@@ -16,6 +16,7 @@ from typing import Any, Callable, Optional
 import customtkinter as ctk
 
 from ..engine import access as access_engine
+from ..engine import core_health
 from ..engine import network as net_engine
 from ..engine import nodes as nodes_engine
 from ..engine import overview as ov_engine
@@ -139,6 +140,7 @@ class OverviewScreen(ctk.CTkFrame):
         d["uplink"] = safe(lambda: net_engine.uplink_info(client), None)
         d["active"] = safe(lambda: client.ubus_homeproxy("clash_active_node", timeout=15), {})
         d["core"] = safe(lambda: client.ubus_homeproxy("diag_core_check", timeout=15), {})
+        d["core_failure"] = safe(lambda: core_health.diagnose_core_failure(client, core=d["core"]), None)
         d["nodes"] = safe(lambda: nodes_engine.list_nodes(client), [])
         d["main"] = safe(lambda: nodes_engine.get_main_node(client), "")
         d["pool"] = safe(lambda: client.uci_get_list(nodes_engine.URLTEST_NODES_KEY), [])
@@ -167,6 +169,7 @@ class OverviewScreen(ctk.CTkFrame):
         d["sys"] = safe(lambda: ov_engine.system_info(client), ov_engine.SystemInfo(lan_ip=client.host))
         d["active"] = safe(lambda: client.ubus_homeproxy("clash_active_node", timeout=15), {})
         d["core"] = safe(lambda: client.ubus_homeproxy("diag_core_check", timeout=15), {})
+        d["core_failure"] = safe(lambda: core_health.diagnose_core_failure(client, core=d["core"]), None)
         d["nodes"] = safe(lambda: nodes_engine.list_nodes(client), [])
         return d
 
@@ -483,6 +486,12 @@ class OverviewScreen(ctk.CTkFrame):
             self._act_dot, self._act_txt = self._status_row(inner, 0, big=True)
             self._core_dot, self._core_lbl = self._status_row(inner, 1, big=False)
             self._bd_dot, self._bd_lbl = self._status_row(inner, 2, big=False)
+            # Config-error explainer (hidden unless the core won't start). Tells the
+            # user it's a config problem on a NAMED server, not a broken core.
+            self._fail_lbl = ctk.CTkLabel(inner, text="", font=fonts.small(), text_color=p.warn,
+                                          anchor="w", justify="left", wraplength=560)
+            self._fail_lbl.grid(row=3, column=0, sticky="w", pady=(8, 0))
+            self._fail_lbl.grid_remove()
             self._active_built = True
         # Update in place (no destroy/rebuild = no flicker).
         self._act_dot.configure(text_color=main_dot)
@@ -491,6 +500,13 @@ class OverviewScreen(ctk.CTkFrame):
         self._core_lbl.configure(text=core_txt)
         self._bd_dot.configure(text_color=bd_color)
         self._bd_lbl.configure(text=bd_txt)
+        cf = d.get("core_failure")
+        if cf:
+            head, steps = core_health.failure_message(cf)
+            self._fail_lbl.configure(text="⚠ " + head + "\n• " + "\n• ".join(steps))
+            self._fail_lbl.grid()
+        else:
+            self._fail_lbl.grid_remove()
 
     def _status_row(self, parent: ctk.CTkBaseClass, r: int, *, big: bool
                     ) -> tuple[ctk.CTkLabel, ctk.CTkLabel]:
@@ -529,11 +545,15 @@ class OverviewScreen(ctk.CTkFrame):
         elif "sing-box" in binary or core.get("singbox_installed"):
             name = "sing-box"
         else:
-            name = "ядро"
+            name = ""  # no core binary present
         running = bool(core.get("running"))
         ver = self._clean_version(core.get("version") or "")
-        core_txt = f"Ядро: {name}" + (f" {ver}" if ver else "")
-        core_txt += "   ·   запущено" if running else "   ·   остановлено"
+        if not name:
+            # No core installed at all — say so plainly instead of "Ядро: ядро · остановлено".
+            core_txt = "Ядро: не установлено"
+        else:
+            core_txt = f"Ядро: {name}" + (f" {ver}" if ver else "")
+            core_txt += "   ·   запущено" if running else "   ·   остановлено"
         core_color = p.ok if running else p.fail
         # ByeDPI runs independently of the core; show it whatever its state.
         if not core.get("byedpi_installed"):

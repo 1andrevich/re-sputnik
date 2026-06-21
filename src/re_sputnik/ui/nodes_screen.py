@@ -52,12 +52,10 @@ class NodesScreen(ctk.CTkFrame):
         self._status.grid(row=2, column=0, sticky="w", pady=(0, 8))
         self._status.grid_remove()  # collapses while empty — no gap before the cards
 
-        self._subs_card = self._card("Подписки", 3, "links")
-        self._links_card = self._card("Ключи / ссылки", 4, "file")
-        self._conf_card = self._card("WireGuard / AmneziaWG", 5, "file")
-        self._nodes_card = self._card("Серверы", 6, "nodes")
-        self._build_subs_card()
-        self._build_links_card()
+        self._input_card = self._card("Ключи и подписки", 3, "links")
+        self._conf_card = self._card("WireGuard / AmneziaWG", 4, "file")
+        self._nodes_card = self._card("Серверы", 5, "nodes")
+        self._build_input_card()
         self._build_conf_card()
         self.refresh()
 
@@ -134,32 +132,48 @@ class NodesScreen(ctk.CTkFrame):
 
     # ----- subscriptions ------------------------------------------------
 
-    def _build_subs_card(self) -> None:
-        """Static parts of the subscriptions card (list area + add/update controls +
-        a result label). Only the list area is rebuilt on refresh, so the status
-        message survives a reload."""
+    def _build_input_card(self) -> None:
+        """One paste field for BOTH subscriptions and keys (auto-classified), the
+        saved-subscriptions list, the update controls and the auto-update toggle.
+        Only the list area is rebuilt on refresh, so the status message survives a
+        reload."""
         p = self.p
-        self._subs_list = ctk.CTkFrame(self._subs_card, fg_color="transparent")
-        self._subs_list.grid(row=1, column=0, sticky="ew")
-        self._subs_list.grid_columnconfigure(0, weight=1)
+        card = self._input_card
 
-        add_row = ctk.CTkFrame(self._subs_card, fg_color="transparent")
-        add_row.grid(row=2, column=0, padx=12, pady=(8, 12), sticky="ew")
-        add_row.grid_columnconfigure(0, weight=1)
-        self._sub_entry = ctk.CTkEntry(add_row, font=fonts.body(),
-                                       placeholder_text="Вставьте ссылку-подписку…")
-        self._sub_entry.grid(row=0, column=0, padx=(0, 8), sticky="ew")
-        ctk.CTkButton(add_row, text="+ Добавить", font=fonts.body(), width=110, fg_color=p.accent, text_color=p.accent_fg,
-                      hover_color=p.accent_hover, command=self._add_sub).grid(row=0, column=1, padx=(0, 6))
-        ctk.CTkButton(add_row, text=f"{kit.REFRESH_GLYPH} Обновить все", font=fonts.body(), width=140, fg_color=p.surface_hover,
-                      hover_color=p.border, command=self._update_subs).grid(row=0, column=2)
+        ctk.CTkLabel(
+            card,
+            text="Вставьте сюда либо ссылку-подписку (начинается с http:// или https://), "
+            "либо ключи отдельных серверов (vless:// vmess:// hysteria2:// trojan:// "
+            "ss:// vpn:// …) — по одному в строке. Приложение само определит, где "
+            "подписка, а где ключ.",
+            font=fonts.small(), text_color=p.text_muted, wraplength=600, justify="left"
+        ).grid(row=1, column=0, padx=16, pady=(0, 2), sticky="w")
+
+        self._input_box = ctk.CTkTextbox(card, font=ctk.CTkFont(family="Consolas", size=12),
+                                         fg_color=p.bg, text_color=p.text, height=74, wrap="none")
+        self._input_box.grid(row=2, column=0, padx=16, pady=(6, 6), sticky="ew")
+
+        add_row = ctk.CTkFrame(card, fg_color="transparent")
+        add_row.grid(row=3, column=0, padx=12, pady=(0, 8), sticky="ew")
+        add_row.grid_columnconfigure(2, weight=1)
+        ctk.CTkButton(add_row, text="+ Добавить", font=fonts.body(), width=130, fg_color=p.accent,
+                      text_color=p.accent_fg, hover_color=p.accent_hover,
+                      command=self._add_input).grid(row=0, column=0, padx=(4, 6))
+        ctk.CTkButton(add_row, text=f"{kit.REFRESH_GLYPH} Обновить все", font=fonts.body(), width=140,
+                      fg_color=p.surface_hover, hover_color=p.border,
+                      command=self._update_subs).grid(row=0, column=1)
         self._subs_status = self._big_status_label(add_row)
         self._subs_status.configure(wraplength=560)
         self._subs_status.grid(row=1, column=0, columnspan=3, sticky="w", pady=(8, 0))
 
+        # Saved subscriptions (managed list — each with a delete button).
+        self._subs_list = ctk.CTkFrame(card, fg_color="transparent")
+        self._subs_list.grid(row=4, column=0, sticky="ew", pady=(2, 0))
+        self._subs_list.grid_columnconfigure(0, weight=1)
+
         # Daily auto-update (the device's own cron: update_crond.sh at the chosen hour).
-        au = ctk.CTkFrame(self._subs_card, fg_color="transparent")
-        au.grid(row=3, column=0, padx=12, pady=(0, 12), sticky="w")
+        au = ctk.CTkFrame(card, fg_color="transparent")
+        au.grid(row=5, column=0, padx=12, pady=(4, 12), sticky="w")
         self._autoupd_var = ctk.StringVar(value="0")
         self._autoupd_switch = ctk.CTkSwitch(
             au, text="Автообновление подписок", font=fonts.body(), variable=self._autoupd_var,
@@ -201,15 +215,43 @@ class NodesScreen(ctk.CTkFrame):
                           hover_color=p.surface_hover,
                           command=lambda u=url: self._remove_sub(u)).grid(row=0, column=1)
 
-    def _add_sub(self) -> None:
-        url = self._sub_entry.get().strip()
-        if not url:
-            self._set_subs_status("Введите ссылку-подписку.", "warn")
+    def _add_input(self) -> None:
+        text = self._input_box.get("1.0", "end").strip()
+        if not text:
+            self._set_subs_status("Вставьте ссылку-подписку или ключ сервера.", "warn")
             return
         client = self._client
-        self._set_subs_status("Добавляю подписку…")
-        run_async(self, lambda: nodes_engine.add_subscription(client, url),
-                  lambda _r: self._subs_done("Подписка добавлена."), self._subs_err)
+        self._set_subs_status("Добавляю…")
+        from ..engine import vpn_link
+        # add_mixed_input sorts each line: http(s):// → subscription, the rest → key
+        # import; new subscriptions are fetched right away (fetch=True).
+        run_async(self, lambda: vpn_link.add_mixed_input(client, text, fetch=True),
+                  self._after_input, self._subs_err)
+
+    def _after_input(self, res: dict[str, Any]) -> None:
+        subs_added = res.get("subs_added") or 0
+        imported = res.get("imported") or 0
+        failed = res.get("failed") or 0
+        errors = res.get("errors") or []
+        parts: list[str] = []
+        if subs_added:
+            parts.append(f"подписок добавлено: {subs_added}")
+        upd = res.get("update")
+        if upd and upd.get("ok") and upd.get("added") is not None:
+            parts.append(f"серверов из подписок: +{upd['added']} / −{upd['removed']}")
+        if imported:
+            parts.append(f"ключей импортировано: {imported}")
+        if failed:
+            parts.append(f"пропущено: {failed}")
+        if not parts and not errors:
+            self._set_subs_status("Ничего не распознано — проверьте формат ссылок.", "warn")
+            return
+        msg = ("Готово — " + ", ".join(parts) + ".") if parts else "Не удалось добавить."
+        if errors:
+            msg += " " + "; ".join(errors)[:140]
+        self._set_subs_status(msg, "ok" if (subs_added or imported) else "warn")
+        self._input_box.delete("1.0", "end")
+        self.refresh()
 
     def _remove_sub(self, url: str) -> None:
         client = self._client
@@ -236,66 +278,6 @@ class NodesScreen(ctk.CTkFrame):
         else:
             msg = "Подписки обновлены."
         self._set_subs_status(msg, "ok")
-        self.refresh()
-
-    # ----- key / share-link import --------------------------------------
-
-    def _build_links_card(self) -> None:
-        p = self.p
-        ctk.CTkLabel(self._links_card,
-                     text="Вставьте ссылку-ключ (vless:// vmess:// hysteria2:// trojan:// ss:// "
-                     "vpn:// …), по одной в строке:",
-                     font=fonts.small(), text_color=p.text_muted, wraplength=600,
-                     justify="left").grid(row=1, column=0, padx=16, sticky="w")
-        self._links_box = ctk.CTkTextbox(self._links_card, font=ctk.CTkFont(family="Consolas", size=12),
-                                         fg_color=p.bg, text_color=p.text, height=70, wrap="none")
-        self._links_box.grid(row=2, column=0, padx=16, pady=(6, 6), sticky="ew")
-        actions = ctk.CTkFrame(self._links_card, fg_color="transparent")
-        actions.grid(row=3, column=0, padx=16, pady=(0, 12), sticky="ew")
-        actions.grid_columnconfigure(1, weight=1)
-        ctk.CTkButton(actions, text="+ Импортировать ключи", font=fonts.body(),
-                      fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
-                      command=self._import_links).grid(row=0, column=0, sticky="w")
-        # Import result is shown right here, next to the button, in a larger font —
-        # not in the small status line at the very top of the screen.
-        self._links_status = ctk.CTkLabel(actions, text="", font=ctk.CTkFont(size=15, weight="bold"),
-                                          text_color=p.text_muted, anchor="w", justify="left",
-                                          wraplength=380)
-        self._links_status.grid(row=0, column=1, padx=(14, 0), sticky="w")
-
-    def _set_links_status(self, text: str, kind: str = "muted") -> None:
-        color = {"muted": self.p.text_muted, "ok": self.p.ok,
-                 "warn": self.p.warn, "fail": self.p.fail}[kind]
-        self._links_status.configure(text=text, text_color=color)
-
-    def _links_err(self, exc: BaseException) -> None:
-        self._set_links_status(f"Ошибка: {exc}", "fail")
-
-    def _import_links(self) -> None:
-        text = self._links_box.get("1.0", "end").strip()
-        if not text:
-            self._set_links_status("Вставьте хотя бы одну ссылку.", "warn")
-            return
-        client = self._client
-        self._set_links_status("Импортирую ключи…")
-        # import_mixed_links routes vpn:// (decoded on the PC) and ordinary
-        # share-links to the right importer — one paste can mix both.
-        from ..engine import vpn_link
-        run_async(self, lambda: vpn_link.import_mixed_links(client, text),
-                  self._after_links, self._links_err)
-
-    def _after_links(self, res: dict[str, Any]) -> None:
-        imported = res.get("imported") or 0
-        failed = res.get("failed") or 0
-        if imported == 0 and failed:
-            errs = "; ".join(res.get("errors") or []) or "нет валидных ссылок"
-            self._set_links_status(f"Импорт не удался: {errs[:140]}", "fail")
-            return
-        msg = f"Импортировано: {imported}, пропущено: {failed}."
-        if res.get("errors"):
-            msg += " " + "; ".join(res["errors"])[:100]
-        self._set_links_status(msg, "ok" if imported else "warn")
-        self._links_box.delete("1.0", "end")
         self.refresh()
 
     # ----- .conf import -------------------------------------------------

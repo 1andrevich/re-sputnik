@@ -288,3 +288,54 @@ def import_mixed_links(client: RouterClient, text: str) -> dict:
         failed += r["failed"]
         errors += r["errors"]
     return {"imported": imported, "failed": failed, "errors": errors}
+
+
+def add_mixed_input(client: RouterClient, text: str, *, fetch: bool = True) -> dict:
+    """One paste field → the right destination, classified per line.
+
+    A line that starts with ``http://`` / ``https://`` is treated as a
+    **subscription** URL (registered via add_subscription); everything else
+    (``vless://`` ``vmess://`` ``hysteria2://`` ``trojan://`` ``ss://`` ``vpn://``…)
+    is a single server **key** and goes through import_mixed_links. This is what
+    lets the UI present one box instead of a separate "subscription" vs "key" field.
+
+    When ``fetch`` is set and at least one *new* subscription was registered, runs
+    update_subscriptions once so the servers appear immediately (skip it offline —
+    fetching needs internet). Returns
+    ``{subs_added:int, imported:int, failed:int, errors:[str], update?:dict}``.
+    """
+    subs: list[str] = []
+    links: list[str] = []
+    for line in text.splitlines():
+        s = line.strip()
+        if not s:
+            continue
+        (subs if s.lower().startswith(("http://", "https://")) else links).append(s)
+
+    errors: list[str] = []
+    subs_added = 0
+    if subs:
+        existing = set(nd.list_subscriptions(client))
+        for url in subs:
+            if url in existing:
+                continue  # add_subscription is idempotent, but skip to keep the count honest
+            try:
+                nd.add_subscription(client, url)
+                existing.add(url)
+                subs_added += 1
+            except Exception as exc:  # RouterError / empty URL — report, keep going
+                errors.append(str(exc))
+
+    imported = 0
+    failed = 0
+    if links:
+        r = import_mixed_links(client, "\n".join(links))
+        imported = r["imported"]
+        failed = r["failed"]
+        errors += r["errors"]
+
+    result: dict = {"subs_added": subs_added, "imported": imported,
+                    "failed": failed, "errors": errors}
+    if fetch and subs_added:
+        result["update"] = nd.update_subscriptions(client)
+    return result

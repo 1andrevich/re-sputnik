@@ -15,6 +15,7 @@ from typing import Any, Callable, Optional
 
 import customtkinter as ctk
 
+from ..engine import core_health
 from ..engine import ip_info
 from ..engine import nodes as nodes_engine
 from ..router import RouterClient
@@ -68,6 +69,16 @@ def _gather(client: RouterClient, progress: Optional[Progress] = None) -> dict[s
     data: dict[str, Any] = {}
     step("ядро"); data["core"] = safe("diag_core_check")
     step("конфиг"); data["config"] = safe("diag_config_check")
+    # If the core is down because the config won't parse, identify the offending
+    # server by name (reuses the core/config dicts just fetched — no extra RPC).
+    data["core_failure"] = None
+    if isinstance(data["core"], dict) and not data["core"].get("running") and \
+            (data["core"].get("singbox_installed") or data["core"].get("hiddify_installed")):
+        try:
+            data["core_failure"] = core_health.diagnose_core_failure(
+                client, core=data["core"], config=data["config"])
+        except Exception:  # noqa: BLE001 — diagnosis is best-effort
+            data["core_failure"] = None
     step("активный сервер"); data["active_node"] = safe("clash_active_node")
     step("серверы")
     try:
@@ -186,6 +197,7 @@ class DiagnosticsScreen(ctk.CTkFrame):
 
         row = 0
         row = self._render_status_chips(d, row)
+        row = self._render_core_failure(d, row)
         row = self._render_active_node(d, row)
         row = self._render_ip(d, row)
         row = self._render_dns(d, row)
@@ -197,6 +209,28 @@ class DiagnosticsScreen(ctk.CTkFrame):
                 self._body, text="← Назад", font=fonts.body(), fg_color="transparent",
                 hover_color=p.surface_hover, width=90, command=self._on_back,
             ).grid(row=row, column=0, pady=(12, 8), sticky="w")
+
+    def _render_core_failure(self, d: dict[str, Any], row: int) -> int:
+        """Prominent explainer when the core won't start because one node's config
+        is invalid — names the server so the user can remove it from the pool."""
+        failure = d.get("core_failure")
+        if not failure:
+            return row
+        card = ctk.CTkFrame(self._body, fg_color=self.p.surface, corner_radius=12,
+                            border_width=1, border_color=self.p.warn)
+        card.grid(row=row, column=0, pady=(0, 12), sticky="ew")
+        card.grid_columnconfigure(0, weight=1)
+        head, steps = core_health.failure_message(failure)
+        ctk.CTkLabel(card, text="⚠ Ядро не запускается", font=fonts.heading(),
+                     text_color=self.p.warn).grid(row=0, column=0, padx=16, pady=(12, 4), sticky="w")
+        ctk.CTkLabel(card, text=head + "\n\n• " + "\n• ".join(steps), font=fonts.small(),
+                     text_color=self.p.text, anchor="w", justify="left", wraplength=560).grid(
+            row=1, column=0, padx=16, pady=(0, 8), sticky="w")
+        if failure.raw:
+            ctk.CTkLabel(card, text="Сообщение ядра: " + failure.raw, font=fonts.small(),
+                         text_color=self.p.text_muted, anchor="w", justify="left",
+                         wraplength=560).grid(row=2, column=0, padx=16, pady=(0, 12), sticky="w")
+        return row + 1
 
     def _card(self, title: str, row: int) -> ctk.CTkFrame:
         card = ctk.CTkFrame(self._body, fg_color=self.p.surface, corner_radius=12)

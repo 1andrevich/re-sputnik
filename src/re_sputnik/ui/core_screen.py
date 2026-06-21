@@ -17,7 +17,7 @@ from typing import Any, Optional
 
 import customtkinter as ctk
 
-from ..engine import install_app, preinstall
+from ..engine import core_health, install_app, preinstall
 from ..router import RouterClient, RouterState
 from . import kit
 from .theme import Palette, fonts
@@ -90,9 +90,20 @@ class CoreScreen(ctk.CTkFrame):
         )
         self._status.grid(row=1, column=0, sticky="w", pady=(0, 8))
 
+        # Config-error explainer card — hidden unless the core won't start because
+        # of a bad node. Names the offending server so the user can remove it.
+        self._fail_card = ctk.CTkFrame(self._body, fg_color=p.surface, corner_radius=12,
+                                       border_width=1, border_color=p.warn)
+        self._fail_card.grid(row=2, column=0, sticky="ew", pady=(0, 12))
+        self._fail_card.grid_columnconfigure(0, weight=1)
+        self._fail_lbl = ctk.CTkLabel(self._fail_card, text="", font=fonts.small(),
+                                      text_color=p.warn, anchor="w", justify="left", wraplength=560)
+        self._fail_lbl.grid(row=0, column=0, padx=16, pady=12, sticky="w")
+        self._fail_card.grid_remove()
+
         # Active-core selection card.
         self._sel_card = ctk.CTkFrame(self._body, fg_color=p.surface, corner_radius=12)
-        self._sel_card.grid(row=2, column=0, sticky="ew", pady=(0, 12))
+        self._sel_card.grid(row=3, column=0, sticky="ew", pady=(0, 12))
         self._sel_card.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(
             self._sel_card, text="Активное ядро", font=fonts.heading(), text_color=p.text
@@ -145,7 +156,7 @@ class CoreScreen(ctk.CTkFrame):
 
         # App (luci-app-re-homeproxy) update card.
         self._app_card = ctk.CTkFrame(self._body, fg_color=p.surface, corner_radius=12)
-        self._app_card.grid(row=3, column=0, sticky="ew", pady=(0, 12))
+        self._app_card.grid(row=4, column=0, sticky="ew", pady=(0, 12))
         self._app_card.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(self._app_card, text="Приложение Re:HomeProxy", font=fonts.heading(),
                      text_color=p.text).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
@@ -160,7 +171,7 @@ class CoreScreen(ctk.CTkFrame):
 
         # "Управление ядром" info panel.
         self._info_card = ctk.CTkFrame(self._body, fg_color=p.surface, corner_radius=12)
-        self._info_card.grid(row=4, column=0, sticky="ew", pady=(0, 12))
+        self._info_card.grid(row=5, column=0, sticky="ew", pady=(0, 12))
         self._info_card.grid_columnconfigure(1, weight=1)
         ctk.CTkLabel(
             self._info_card, text="Управление ядром", font=fonts.heading(), text_color=p.text
@@ -169,11 +180,14 @@ class CoreScreen(ctk.CTkFrame):
         self._info_rows.grid(row=1, column=0, columnspan=2, padx=16, pady=(0, 12), sticky="ew")
         self._info_rows.grid_columnconfigure(1, weight=1)
 
-        # Progress log for install/update actions — hidden until one runs.
-        self._oplog = ctk.CTkTextbox(self._body, font=ctk.CTkFont(family="Consolas", size=12),
+        # Progress log for install/update actions — pinned to the BOTTOM of the
+        # screen (a direct child of self, NOT the scrollable body) so it stays fully
+        # visible while an action runs, instead of being clipped below the fold of
+        # the scroll frame. Hidden until one runs.
+        self._oplog = ctk.CTkTextbox(self, font=ctk.CTkFont(family="Consolas", size=12),
                                      height=150, fg_color=p.surface, text_color=p.text_muted,
                                      wrap="word", corner_radius=10)
-        self._oplog.grid(row=5, column=0, sticky="ew", pady=(0, 8))
+        self._oplog.grid(row=1, column=0, sticky="ew", padx=24, pady=(0, 16))
         self._oplog.configure(state="disabled")
         self._oplog.grid_remove()
 
@@ -196,8 +210,23 @@ class CoreScreen(ctk.CTkFrame):
 
     def _load_core_info(self) -> None:
         client = self._client
-        run_async(self, lambda: client.ubus_homeproxy("diag_core_check", timeout=15),
-                  self._render_info, self._on_error)
+
+        def task() -> dict[str, Any]:
+            info = client.ubus_homeproxy("diag_core_check", timeout=15)
+            # When the core is installed but down, find out WHY (a bad node?) so we
+            # can name the offending server instead of just "остановлено".
+            failure = None
+            if isinstance(info, dict) and not info.get("running") and \
+                    (info.get("singbox_installed") or info.get("hiddify_installed")):
+                try:
+                    failure = core_health.diagnose_core_failure(client, core=info)
+                except Exception:
+                    failure = None
+            if isinstance(info, dict):
+                info["_failure"] = failure
+            return info
+
+        run_async(self, task, self._render_info, self._on_error)
 
     def _on_error(self, exc: BaseException) -> None:
         self._status.configure(text=f"Ошибка чтения ядра: {exc}", text_color=self.p.fail)
@@ -233,6 +262,15 @@ class CoreScreen(ctk.CTkFrame):
 
         running = "запущено 🟢" if info.get("running") else "остановлено 🔴"
         self._status.configure(text=f"Состояние: {running}", text_color=p.text_muted)
+
+        # Config-error explainer: if the core is down because of a bad node, name it.
+        failure = info.get("_failure")
+        if failure:
+            head, steps = core_health.failure_message(failure)
+            self._fail_lbl.configure(text="⚠ " + head + "\n\n• " + "\n• ".join(steps))
+            self._fail_card.grid()
+        else:
+            self._fail_card.grid_remove()
 
         rows = [
             ("Менеджер пакетов", self._state.package_manager.value),
@@ -313,7 +351,7 @@ class CoreScreen(ctk.CTkFrame):
             self._app_ver.configure(text="Приложение не установлено.", text_color=p.warn)
             self._app_btn.configure(text="Установить", state="normal", fg_color=p.accent,
                                     hover_color=p.accent_hover, text_color=p.accent_fg)
-        elif latest and latest != inst:
+        elif install_app.is_newer(latest, inst):
             self._app_ver.configure(text=f"Установлено {inst} · доступно {latest}", text_color=p.warn)
             self._app_btn.configure(text="Обновить приложение", state="normal", fg_color=p.accent,
                                     hover_color=p.accent_hover, text_color=p.accent_fg)

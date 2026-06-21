@@ -23,7 +23,6 @@ from .worker import post_to, run_async
 
 OnDone = Callable[[], None]
 
-MAX_SUBS = 7  # cap on subscription URL rows
 MAX_VISIBLE = 254  # cap on node rows shown in the list (rest collapsed to a tail)
 
 
@@ -66,34 +65,39 @@ class QuickNodesScreen(ctk.CTkFrame):
                      text_color=palette.text_muted, wraplength=560, justify="left").grid(
             row=1, column=0, pady=(0, 12), padx=32, sticky="w")
 
-        # --- subscriptions (online only — need internet to fetch) ------
-        # Up to MAX_SUBS URL rows; "＋" adds the next, "✕" removes one.
-        self._sub_entries: list[ctk.CTkEntry] = []
-        if not offline:
-            sub = ctk.CTkFrame(b, fg_color=palette.surface, corner_radius=12)
-            sub.grid(row=2, column=0, padx=32, sticky="ew")
-            sub.grid_columnconfigure(0, weight=1)
-            kit.SectionHeader(sub, palette, "links", "Подписки (URL)").grid(
-                row=0, column=0, padx=16, pady=(12, 4), sticky="w")
-            self._sub_rows = ctk.CTkFrame(sub, fg_color="transparent")
-            self._sub_rows.grid(row=1, column=0, padx=16, pady=2, sticky="ew")
-            self._sub_rows.grid_columnconfigure(0, weight=1)
-            sub_btns = ctk.CTkFrame(sub, fg_color="transparent")
-            sub_btns.grid(row=2, column=0, padx=16, pady=(6, 12), sticky="w")
-            self._sub_btn = ctk.CTkButton(sub_btns, text="Добавить и обновить", font=fonts.body(),
-                                          fg_color=palette.accent, text_color=palette.accent_fg, hover_color=palette.accent_hover,
-                                          command=self._do_sub)
-            self._sub_btn.grid(row=0, column=0)
-            self._sub_add = ctk.CTkButton(sub_btns, text="Добавить ещё одну подписку",
-                                          font=fonts.small(), width=210,
-                                          fg_color=palette.surface_hover, hover_color=palette.border,
-                                          command=self._add_sub_row)
-            self._sub_add.grid(row=0, column=1, padx=(8, 0))
-            self._add_sub_row()  # start with one
+        # --- subscriptions + keys (one field, auto-classified) ---------
+        # Paste a subscription URL (http/https) or server keys (vless:// vpn://…),
+        # one per line; add_mixed_input sorts them out. Subscriptions need internet
+        # to fetch, so in offline staging they're only registered (fetched later).
+        lk = ctk.CTkFrame(b, fg_color=palette.surface, corner_radius=12)
+        lk.grid(row=2, column=0, padx=32, sticky="ew")
+        lk.grid_columnconfigure(0, weight=1)
+        kit.SectionHeader(lk, palette, "links", "Подписка или ключи серверов").grid(
+            row=0, column=0, padx=16, pady=(12, 2), sticky="w")
+        ctk.CTkLabel(
+            lk, text="Ссылка-подписка (http:// https://) или ключи серверов (vless:// vmess:// "
+            "hysteria2:// trojan:// ss:// vpn:// …) — по одному в строке. "
+            "Приложение само определит, где подписка, а где ключ.",
+            font=fonts.small(), text_color=palette.text_muted, wraplength=540,
+            justify="left").grid(row=1, column=0, padx=16, pady=(0, 4), sticky="w")
+        self._links = ctk.CTkTextbox(lk, font=ctk.CTkFont(family="Consolas", size=12), height=74,
+                                     fg_color=palette.bg, text_color=palette.text)
+        self._links.grid(row=2, column=0, padx=16, pady=4, sticky="ew")
+        btnrow = ctk.CTkFrame(lk, fg_color="transparent")
+        btnrow.grid(row=3, column=0, padx=16, pady=(6, 12), sticky="w")
+        self._link_btn = ctk.CTkButton(btnrow, text="Добавить", font=fonts.body(),
+                                       fg_color=palette.accent, text_color=palette.accent_fg, hover_color=palette.accent_hover,
+                                       command=self._do_input)
+        self._link_btn.grid(row=0, column=0)
+        self._conf_btn = ctk.CTkButton(btnrow, text="Импорт .conf…", font=fonts.body(),
+                                       fg_color=palette.surface_hover, hover_color=palette.border,
+                                       command=self._do_conf)
+        self._conf_btn.grid(row=0, column=1, padx=(8, 0))
 
-            # Daily subscription auto-update (same as Advanced mode — a device cron).
-            au = ctk.CTkFrame(sub, fg_color="transparent")
-            au.grid(row=3, column=0, padx=16, pady=(0, 12), sticky="w")
+        # Daily subscription auto-update (online only — needs internet; a device cron).
+        if not offline:
+            au = ctk.CTkFrame(lk, fg_color="transparent")
+            au.grid(row=4, column=0, padx=16, pady=(0, 12), sticky="w")
             self._autoupd_var = ctk.StringVar(value="0")
             self._autoupd_switch = ctk.CTkSwitch(
                 au, text="Автообновление подписок", font=fonts.body(), variable=self._autoupd_var,
@@ -110,26 +114,6 @@ class QuickNodesScreen(ctk.CTkFrame):
             self._autoupd_time.configure(state="disabled")
             self._autoupd_time.grid(row=0, column=2)
             self._load_autoupdate()  # reflect the device's current setting
-
-        # --- paste links + .conf import --------------------------------
-        lk = ctk.CTkFrame(b, fg_color=palette.surface, corner_radius=12)
-        lk.grid(row=3, column=0, padx=32, pady=(12, 0), sticky="ew")
-        lk.grid_columnconfigure(0, weight=1)
-        kit.SectionHeader(lk, palette, "file", "Ссылки-ключи (vless:// vpn://) и AmneziaWG .conf").grid(
-            row=0, column=0, padx=16, pady=(12, 4), sticky="w")
-        self._links = ctk.CTkTextbox(lk, font=ctk.CTkFont(family="Consolas", size=12), height=70,
-                                     fg_color=palette.bg, text_color=palette.text)
-        self._links.grid(row=1, column=0, padx=16, pady=4, sticky="ew")
-        btnrow = ctk.CTkFrame(lk, fg_color="transparent")
-        btnrow.grid(row=2, column=0, padx=16, pady=(6, 12), sticky="w")
-        self._link_btn = ctk.CTkButton(btnrow, text="Импортировать", font=fonts.body(),
-                                       fg_color=palette.accent, text_color=palette.accent_fg, hover_color=palette.accent_hover,
-                                       command=self._do_links)
-        self._link_btn.grid(row=0, column=0)
-        self._conf_btn = ctk.CTkButton(btnrow, text="Импорт .conf…", font=fonts.body(),
-                                       fg_color=palette.surface_hover, hover_color=palette.border,
-                                       command=self._do_conf)
-        self._conf_btn.grid(row=0, column=1, padx=(8, 0))
 
         # --- main node --------------------------------------------------
         self._mn_card = ctk.CTkFrame(b, fg_color=palette.surface, corner_radius=12)
@@ -231,33 +215,6 @@ class QuickNodesScreen(ctk.CTkFrame):
         run_async(self, lambda: nd.set_subscription_autoupdate(client, enabled, hour),
                   lambda _r: None, lambda e: self._set_status(f"Ошибка: {e}", self.p.fail))
 
-    # ----- subscription rows --------------------------------------------
-
-    def _add_sub_row(self) -> None:
-        if len(self._sub_entries) >= MAX_SUBS:
-            self._set_status(f"Не больше {MAX_SUBS} подписок.", self.p.warn)
-            return
-        i = len(self._sub_entries)
-        row = ctk.CTkFrame(self._sub_rows, fg_color="transparent")
-        row.grid(row=i, column=0, pady=2, sticky="ew")
-        row.grid_columnconfigure(0, weight=1)
-        entry = ctk.CTkEntry(row, font=fonts.body(), placeholder_text="https://…")
-        entry.grid(row=0, column=0, sticky="ew")
-        # First row has no remove button; extra rows can be removed.
-        if i > 0:
-            ctk.CTkButton(row, text="✕", width=32, font=fonts.body(), fg_color=self.p.surface_hover,
-                          hover_color=self.p.fail, command=lambda r=row, e=entry: self._remove_sub_row(r, e)
-                          ).grid(row=0, column=1, padx=(6, 0))
-        self._sub_entries.append(entry)
-        if len(self._sub_entries) >= MAX_SUBS:
-            self._sub_add.configure(state="disabled")
-
-    def _remove_sub_row(self, row: ctk.CTkBaseClass, entry: ctk.CTkEntry) -> None:
-        if entry in self._sub_entries:
-            self._sub_entries.remove(entry)
-        row.destroy()
-        self._sub_add.configure(state="normal")
-
     def _on_mode(self) -> None:
         if self._main_mode.get() == "specific":
             self._node_menu.grid()
@@ -311,70 +268,52 @@ class QuickNodesScreen(ctk.CTkFrame):
 
     # ----- actions ------------------------------------------------------
 
-    def _do_sub(self) -> None:
-        urls = [e.get().strip() for e in self._sub_entries if e.get().strip()]
-        if not urls:
-            self._set_status("Введите хотя бы один URL подписки.", self.p.warn)
-            return
-        self._sub_btn.configure(state="disabled", text="Обновляю…")
-        client = self._client
-
-        def task() -> dict:
-            for url in urls:
-                nd.add_subscription(client, url)
-            return nd.update_subscriptions(client)  # one fetch for all
-
-        def done(result: dict) -> None:
-            self._sub_btn.configure(state="normal", text="Добавить и обновить")
-            if not result.get("ok"):
-                self._set_status(f"Подписок добавлено: {len(urls)}. Ошибка обновления — см. лог роутера.",
-                                 self.p.warn)
-            elif result.get("added") is not None:
-                self._set_status(f"Подписок добавлено: {len(urls)}. Серверов: +{result['added']} / "
-                                 f"−{result['removed']}.", self.p.ok)
-            else:
-                self._set_status(f"Подписок добавлено: {len(urls)}. Обновлено.", self.p.ok)
-            self._import_attempted = True
-            self._refresh_nodes()
-
-        run_async(self, task, done, self._sub_err)
-
-    def _sub_err(self, e: BaseException) -> None:
-        self._sub_btn.configure(state="normal", text="Добавить и обновить")
-        self._set_status(f"Не удалось обновить подписку: {e}", self.p.fail)
-
-    def _do_links(self) -> None:
+    def _do_input(self) -> None:
         text = self._links.get("1.0", "end").strip()
         if not text:
-            self._set_status("Вставьте хотя бы одну ссылку.", self.p.warn)
+            self._set_status("Вставьте ссылку-подписку или ключ сервера.", self.p.warn)
             return
-        self._link_btn.configure(state="disabled", text="Импортирую…")
+        self._link_btn.configure(state="disabled", text="Добавляю…")
         client = self._client
-        # Routes vpn:// (decoded on the PC) and ordinary share-links to the right
-        # importer; one paste can mix both.
+        # add_mixed_input sorts each line: http(s):// → subscription, the rest →
+        # key import (vpn:// is decoded on the PC). Subscriptions are fetched right
+        # away when online; offline they're only registered (no internet to fetch).
+        fetch = not self._offline
         from ..engine import vpn_link
-        run_async(self, lambda: vpn_link.import_mixed_links(client, text),
-                  self._links_done, self._links_err)
+        run_async(self, lambda: vpn_link.add_mixed_input(client, text, fetch=fetch),
+                  self._input_done, self._input_err)
 
-    def _links_done(self, res: dict[str, Any]) -> None:
-        self._link_btn.configure(state="normal", text="Импортировать")
+    def _input_done(self, res: dict[str, Any]) -> None:
+        self._link_btn.configure(state="normal", text="Добавить")
+        subs_added = res.get("subs_added") or 0
         imported = res.get("imported") or 0
         failed = res.get("failed") or 0
-        if imported == 0 and failed:
-            errs = "; ".join(res.get("errors") or []) or "не удалось"
-            self._set_status(f"Импорт не удался: {errs[:140]}", self.p.fail)
+        errors = res.get("errors") or []
+        upd = res.get("update")
+        parts: list[str] = []
+        if subs_added:
+            if upd and upd.get("ok") and upd.get("added") is not None:
+                parts.append(f"подписок: +{subs_added} (серверов +{upd['added']} / −{upd['removed']})")
+            else:
+                parts.append(f"подписок добавлено: {subs_added}")
+        if imported:
+            parts.append(f"ключей: +{imported}")
+        if failed:
+            parts.append(f"пропущено: {failed}")
+        if not parts and not errors:
+            self._set_status("Ничего не распознано — проверьте формат ссылок.", self.p.warn)
             return
+        msg = ", ".join(parts) if parts else "Не удалось добавить."
+        if errors:
+            msg += ". " + "; ".join(errors)[:120]
+        self._set_status(msg, self.p.ok if (subs_added or imported) else self.p.warn)
         self._links.delete("1.0", "end")
-        msg = f"Импортировано: {imported}, пропущено: {failed}."
-        if res.get("errors"):
-            msg += " " + "; ".join(res["errors"])[:100]
-        self._set_status(msg, self.p.ok if imported else self.p.warn)
         self._import_attempted = True
         self._refresh_nodes()
 
-    def _links_err(self, e: BaseException) -> None:
-        self._link_btn.configure(state="normal", text="Импортировать")
-        self._set_status(f"Импорт не удался: {e}", self.p.fail)
+    def _input_err(self, e: BaseException) -> None:
+        self._link_btn.configure(state="normal", text="Добавить")
+        self._set_status(f"Не удалось добавить: {e}", self.p.fail)
 
     def _do_conf(self) -> None:
         path = filedialog.askopenfilename(
