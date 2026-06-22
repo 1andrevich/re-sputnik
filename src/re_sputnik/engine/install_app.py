@@ -42,8 +42,8 @@ APP_PKG = "luci-app-re-homeproxy"
 # Pin specific releases for ongoing testing — install the LuCI package from
 # THESE exact tags instead of scanning for the newest. Set BOTH to None to
 # resume the newest-first "latest" scan once a stable release is the target.
-PINNED_TAG: Optional[str] = "2026.06.21-r1-dev"            # 24.10+ / non-legacy
-PINNED_TAG_LEGACY: Optional[str] = "2026.06.21-r1-legacy"  # OpenWrt 23.05 (legacy .ipk)
+PINNED_TAG: Optional[str] = "2026.06.22-r1-dev"            # 24.10+ / non-legacy
+PINNED_TAG_LEGACY: Optional[str] = "2026.06.22-r1-legacy"  # OpenWrt 23.05 (legacy .ipk)
 
 Progress = Callable[[str], None]
 
@@ -595,11 +595,24 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
     client.run(f"rm -f /tmp/{APP_PKG}{ti.ext}")
     if not inst.ok:
         return False, f"установка не удалась: {inst.stdout.strip()[-200:]}"
-    if assets.i18n_url:
-        say(f"Языковой пакет HomeProxy ({language})…")
-        if _wget(client, assets.i18n_url, f"/tmp/i18n{ti.ext}"):
-            flag = "--allow-untrusted " if (pm == "apk" and not trusted) else ""
-            add = f"apk add {flag}" if pm == "apk" else "opkg install "
+    # Update EVERY homeproxy language pack the router already has (not just the
+    # app's current UI language), so an installed translation like
+    # luci-i18n-homeproxy-ru is bumped to the new version too — otherwise it stays
+    # at the old version after the app is updated and shows stale/untranslated text.
+    installed_i18n = client.run(
+        "(apk info 2>/dev/null || opkg list-installed 2>/dev/null) "
+        "| grep -oE 'luci-i18n-homeproxy-[a-z][a-z-]*'").stdout
+    langs = {t.strip()[len("luci-i18n-homeproxy-"):] for t in installed_i18n.split() if t.strip()}
+    if language and language != "en":
+        langs.add(language)            # also (re)install the UI language's pack
+    flag = "--allow-untrusted " if (pm == "apk" and not trusted) else ""
+    add = f"apk add {flag}" if pm == "apk" else "opkg install "
+    for lang in sorted(langs):
+        a = assets if lang == language else resolve_app_assets(ti, lang, use_latest=True)
+        if not a.i18n_url:
+            continue
+        say(f"Языковой пакет HomeProxy ({lang})…")
+        if _wget(client, a.i18n_url, f"/tmp/i18n{ti.ext}"):
             client.run_stream(f"{add}/tmp/i18n{ti.ext} 2>&1; rm -f /tmp/i18n{ti.ext}",
                               on_line=say_line, timeout=120)
     say(_("Перезапускаю rpcd…"))
