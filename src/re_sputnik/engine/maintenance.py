@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Router maintenance — full config backup, restore, and factory reset.
 
 Mirrors LuCI's "Backup / Flash firmware" page, done over SSH:
@@ -18,6 +19,7 @@ module just performs the action it is told to.
 from __future__ import annotations
 
 from ..router import RouterClient, RouterError
+from ..i18n import _
 
 _RESTORE_TMP = "/tmp/rs-restore.tar.gz"
 
@@ -47,8 +49,8 @@ def create_backup(client: RouterClient) -> bytes:
     log = err.strip()
     if data[:2] != _GZIP_MAGIC:
         head = data[:200].decode("utf-8", "replace").strip()
-        detail = (log or head or "(пустой ответ)")[:600]
-        raise RouterError("резервная копия не создалась на роутере. Ответ sysupgrade:\n" + detail)
+        detail = (log or head or _("(пустой ответ)"))[:600]
+        raise RouterError(_("резервная копия не создалась на роутере. Ответ sysupgrade:\n") + detail)
     return data
 
 
@@ -60,20 +62,20 @@ def restore_backup(client: RouterClient, data: bytes) -> None:
     Raises before touching the system if ``data`` is not a valid gzip tarball.
     """
     if data[:2] != _GZIP_MAGIC:
-        raise ValueError("Это не похоже на резервную копию (.tar.gz).")
+        raise ValueError(_("Это не похоже на резервную копию (.tar.gz)."))
     client.write_file(_RESTORE_TMP, data)
     # Validate it is a readable gzip tar before extracting over the live config.
     check = client.run(f"tar -tzf {_RESTORE_TMP} >/dev/null 2>&1 && echo OK")
     if check.stdout.strip() != "OK":
         client.run(f"rm -f {_RESTORE_TMP}")
-        raise RouterError("Загруженный файл не читается как архив резервной копии.")
+        raise RouterError(_("Загруженный файл не читается как архив резервной копии."))
     # Extract into / synchronously, then reboot detached so the call returns.
     res = client.run(
         f"tar -C / -xzf {_RESTORE_TMP} && sync && rm -f {_RESTORE_TMP} && echo DONE",
         timeout=60,
     )
     if "DONE" not in res.stdout:
-        raise RouterError(f"Не удалось распаковать копию: {res.stderr.strip() or res.stdout.strip()}")
+        raise RouterError(_("Не удалось распаковать копию: {0}").format(res.stderr.strip() or res.stdout.strip()))
     client.run("(sleep 2; reboot) >/dev/null 2>&1 &", timeout=10)
 
 
@@ -86,5 +88,5 @@ def factory_reset(client: RouterClient) -> None:
     """
     res = client.run("which firstboot >/dev/null 2>&1 && echo OK")
     if res.stdout.strip() != "OK":
-        raise RouterError("На устройстве нет команды firstboot — сброс недоступен.")
+        raise RouterError(_("На устройстве нет команды firstboot — сброс недоступен."))
     client.run("(sleep 2; firstboot -y && reboot) >/dev/null 2>&1 &", timeout=10)

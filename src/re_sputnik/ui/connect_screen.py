@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Phase 0 — Connection screen.
 
 The first end-to-end path: the user (or autodetect) supplies the router address
@@ -27,6 +28,7 @@ from ..router.discovery import Candidate, Identity, discover_routers
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import N_, _
 
 # Called with a live client + its detected state when connection succeeds.
 OnConnected = Callable[[RouterClient, RouterState], None]
@@ -64,27 +66,27 @@ class ConnectScreen(ctk.CTkFrame):
         self._help_win: Optional[ctk.CTkToplevel] = None
         self._help_img: Optional[ctk.CTkImage] = None
         self._help_btn = ctk.CTkButton(
-            self, text="❓ Не понимаю, как подключить роутер", font=fonts.small(), height=30,
+            self, text=_("❓ Не понимаю, как подключить роутер"), font=fonts.small(), height=30,
             fg_color=palette.warn, hover_color="#D97706", text_color="#10131A",
             command=self._show_help)
         self._help_btn.place(relx=1.0, rely=0.0, x=-18, y=14, anchor="ne")  # top-right (no chrome)
         # Autodetect: enumerate + probe candidates off-thread, then fill the form.
-        self._set_status("Поиск роутера в сети…", "muted")
+        self._set_status(_("Поиск роутера в сети…"), "muted")
         run_async(self, discover_routers, self._fill_candidates, lambda _e: None)
 
     # ----- "how to connect" help popup ----------------------------------
 
     _HELP_STEPS = [
-        ("1. Питание", "Вставьте блок питания роутера в розетку и в круглый порт питания на "
-         "роутере. Подождите ~1 минуту, пока он загрузится (индикаторы перестанут мигать)."),
-        ("2. Кабель от провайдера", "Кабель интернета, заведённый в квартиру, вставьте в порт "
-         "INTERNET (обычно синий, подписан INTERNET или WAN)."),
-        ("3. Кабель к компьютеру", "Соедините Ethernet-кабелем любой жёлтый порт LAN (LAN 1–4) "
-         "роутера с сетевым разъёмом вашего компьютера."),
-        ("Без кабеля?", "Можно вместо этого подключиться к Wi-Fi роутера — имя сети и пароль "
-         "обычно напечатаны на наклейке снизу роутера."),
-        ("4. Подключиться", "Вернитесь в приложение и нажмите «Подключиться». Если адрес не "
-         "подставился сам — впишите 192.168.1.1."),
+        (N_("1. Питание"), N_("Вставьте блок питания роутера в розетку и в круглый порт питания на "
+         "роутере. Подождите ~1 минуту, пока он загрузится (индикаторы перестанут мигать).")),
+        (N_("2. Кабель от провайдера"), N_("Кабель интернета, заведённый в квартиру, вставьте в порт "
+         "INTERNET (обычно синий, подписан INTERNET или WAN).")),
+        (N_("3. Кабель к компьютеру"), N_("Соедините Ethernet-кабелем любой жёлтый порт LAN (LAN 1–4) "
+         "роутера с сетевым разъёмом вашего компьютера.")),
+        (N_("Без кабеля?"), N_("Можно вместо этого подключиться к Wi-Fi роутера — имя сети и пароль "
+         "обычно напечатаны на наклейке снизу роутера.")),
+        (N_("4. Подключиться"), N_("Вернитесь в приложение и нажмите «Подключиться». Если адрес не "
+         "подставился сам — впишите 192.168.1.1.")),
     ]
 
     def _show_help(self) -> None:
@@ -95,7 +97,7 @@ class ConnectScreen(ctk.CTkFrame):
         p = self.p
         win = ctk.CTkToplevel(self)
         self._help_win = win
-        win.title("Как подключить роутер")
+        win.title(_("Как подключить роутер"))
         win.configure(fg_color=p.bg)
         win.geometry("780x820")
         win.minsize(700, 560)  # don't let it shrink into an unreadable box
@@ -106,12 +108,19 @@ class ConnectScreen(ctk.CTkFrame):
         body.pack(fill="both", expand=True, padx=16, pady=16)
         body.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(body, text="Как подключить роутер", font=fonts.title(),
+        ctk.CTkLabel(body, text=_("Как подключить роутер"), font=fonts.title(),
                      text_color=p.text).grid(row=0, column=0, sticky="w", pady=(0, 8))
 
-        path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                            "resources", "images", "router_scheme.png")
-        if os.path.exists(path):
+        # Localized router-wiring diagram (text baked into the image). The Russian
+        # original is router_scheme.png; other languages have router_<code>.png.
+        from ..i18n import current_language
+        _imgdir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources", "images")
+        _icode = {"zh_Hans": "zh"}.get(current_language(), current_language())
+        path = next(
+            (p for p in (os.path.join(_imgdir, f"router_{_icode}.png"),
+                         os.path.join(_imgdir, "router_scheme.png"))
+             if os.path.exists(p)), "")
+        if path:
             try:
                 pil = Image.open(path)
                 w, h = pil.size
@@ -127,13 +136,13 @@ class ConnectScreen(ctk.CTkFrame):
             card = ctk.CTkFrame(body, fg_color=p.surface, corner_radius=10)
             card.grid(row=i, column=0, sticky="ew", pady=4)
             card.grid_columnconfigure(0, weight=1)
-            ctk.CTkLabel(card, text=title, font=fonts.heading(), text_color=p.text,
+            ctk.CTkLabel(card, text=_(title), font=fonts.heading(), text_color=p.text,
                          anchor="w").grid(row=0, column=0, padx=16, pady=(10, 0), sticky="w")
-            ctk.CTkLabel(card, text=text, font=fonts.body(), text_color=p.text_muted,
+            ctk.CTkLabel(card, text=_(text), font=fonts.body(), text_color=p.text_muted,
                          anchor="w", wraplength=700, justify="left").grid(
                 row=1, column=0, padx=16, pady=(2, 10), sticky="w")
 
-        ctk.CTkButton(body, text="Понятно", font=fonts.body(), fg_color=p.accent, text_color=p.accent_fg,
+        ctk.CTkButton(body, text=_("Понятно"), font=fonts.body(), fg_color=p.accent, text_color=p.accent_fg,
                       hover_color=p.accent_hover, command=win.destroy).grid(
             row=len(self._HELP_STEPS) + 2, column=0, pady=(12, 4), sticky="e")
 
@@ -144,12 +153,12 @@ class ConnectScreen(ctk.CTkFrame):
         body = self._scroll
 
         ctk.CTkLabel(
-            body, text="Подключение к роутеру", font=fonts.title(), text_color=p.text
+            body, text=_("Подключение к роутеру"), font=fonts.title(), text_color=p.text
         ).grid(row=0, column=0, pady=(28, 2), padx=32, sticky="w")
         ctk.CTkLabel(
             body,
-            text="Подключите роутер к ПК кабелем (порт LAN) или войдите в его Wi-Fi, "
-            "затем нажмите «Подключиться».",
+            text=_("Подключите роутер к ПК кабелем (порт LAN) или войдите в его Wi-Fi, "
+            "затем нажмите «Подключиться»."),
             font=fonts.body(),
             text_color=p.text_muted,
             wraplength=560,
@@ -170,12 +179,12 @@ class ConnectScreen(ctk.CTkFrame):
         form.grid_columnconfigure(1, weight=1)
 
         # Detected-routers selector (populated async; picking one fills the IP).
-        ctk.CTkLabel(form, text="Найдено", font=fonts.body(), text_color=p.text_muted).grid(
+        ctk.CTkLabel(form, text=_("Найдено"), font=fonts.body(), text_color=p.text_muted).grid(
             row=0, column=0, padx=(16, 12), pady=8, sticky="w"
         )
         self._candidate_menu = ctk.CTkOptionMenu(
             form,
-            values=["поиск…"],
+            values=[_("поиск…")],
             font=fonts.body(),
             fg_color=p.surface_hover,
             button_color=p.accent,
@@ -184,14 +193,14 @@ class ConnectScreen(ctk.CTkFrame):
         )
         self._candidate_menu.grid(row=0, column=1, padx=(0, 16), pady=8, sticky="ew")
 
-        self._ip = self._field(form, 1, "Адрес роутера", "192.168.1.1")
-        self._port = self._field(form, 2, "Порт", "22", width=80)
-        self._user = self._field(form, 3, "Логин", "root")
-        self._password = self._field(form, 4, "Пароль", "", show="•",
-                                     placeholder="пусто — если пароль ещё не задан")
+        self._ip = self._field(form, 1, _("Адрес роутера"), "192.168.1.1")
+        self._port = self._field(form, 2, _("Порт"), "22", width=80)
+        self._user = self._field(form, 3, _("Логин"), "root")
+        self._password = self._field(form, 4, _("Пароль"), "", show="•",
+                                     placeholder=_("пусто — если пароль ещё не задан"))
         ctk.CTkLabel(
             form,
-            text="Новый роутер обычно без пароля — оставьте поле пустым.",
+            text=_("Новый роутер обычно без пароля — оставьте поле пустым."),
             font=fonts.small(), text_color=p.text_muted,
         ).grid(row=5, column=1, padx=(0, 16), pady=(0, 8), sticky="w")
 
@@ -199,14 +208,14 @@ class ConnectScreen(ctk.CTkFrame):
         # password into the OS keychain) so it appears in the saved list next time.
         self._remember = ctk.StringVar(value="1")
         ctk.CTkCheckBox(
-            form, text="Запомнить роутер (адрес и пароль — в хранилище ОС)", font=fonts.small(),
+            form, text=_("Запомнить роутер (адрес и пароль — в хранилище ОС)"), font=fonts.small(),
             variable=self._remember, onvalue="1", offvalue="0", fg_color=p.accent,
             hover_color=p.accent_hover,
         ).grid(row=6, column=0, columnspan=2, padx=16, pady=(0, 10), sticky="w")
 
         self._connect_btn = ctk.CTkButton(
             body,
-            text="Подключиться",
+            text=_("Подключиться"),
             font=fonts.heading(),
             height=42,
             fg_color=p.accent, text_color=p.accent_fg,
@@ -218,7 +227,7 @@ class ConnectScreen(ctk.CTkFrame):
         # "Далее →" sits right under the connect button so it's visible the moment
         # a connection succeeds — no scrolling needed. Hidden until then.
         self._next_btn = ctk.CTkButton(
-            body, text="Далее →", font=fonts.heading(), height=42,
+            body, text=_("Далее →"), font=fonts.heading(), height=42,
             fg_color=p.ok, text_color=p.accent_fg, hover_color=p.accent_hover, command=self._proceed,
         )
         self._next_btn.grid(row=5, column=0, padx=32, pady=(0, 6), sticky="ew")
@@ -238,7 +247,7 @@ class ConnectScreen(ctk.CTkFrame):
         if self._on_back is not None:
             ctk.CTkButton(
                 body,
-                text="← Назад",
+                text=_("← Назад"),
                 font=fonts.body(),
                 fg_color="transparent",
                 hover_color=p.surface_hover,
@@ -274,7 +283,7 @@ class ConnectScreen(ctk.CTkFrame):
 
     # ----- saved routers ------------------------------------------------
 
-    _SAVED_PLACEHOLDER = "— выбрать сохранённый —"
+    _SAVED_PLACEHOLDER = N_("— выбрать сохранённый —")
 
     def _build_saved(self) -> None:
         """(Re)build the saved-routers picker as a compact dropdown; hide when empty."""
@@ -289,14 +298,14 @@ class ConnectScreen(ctk.CTkFrame):
         self._saved_card.grid_columnconfigure(0, weight=0)
         self._saved_card.grid_columnconfigure(1, weight=1)  # the dropdown expands, not the label
         self._prof_by_label = {f"{pr.title}  ·  {pr.endpoint}": pr for pr in profiles}
-        ctk.CTkLabel(self._saved_card, text="Сохранённые", font=fonts.small(),
+        ctk.CTkLabel(self._saved_card, text=_("Сохранённые"), font=fonts.small(),
                      text_color=p.text_muted).grid(row=0, column=0, padx=(16, 12), pady=10, sticky="w")
         self._saved_menu = ctk.CTkOptionMenu(
-            self._saved_card, values=[self._SAVED_PLACEHOLDER] + list(self._prof_by_label),
+            self._saved_card, values=[_(self._SAVED_PLACEHOLDER)] + list(self._prof_by_label),
             font=fonts.body(), fg_color=p.field_bg, button_color=p.accent,
             button_hover_color=p.accent_hover, dropdown_fg_color=p.surface,
             command=self._on_saved_pick)
-        self._saved_menu.set(self._SAVED_PLACEHOLDER)
+        self._saved_menu.set(_(self._SAVED_PLACEHOLDER))
         self._saved_menu.grid(row=0, column=1, padx=(0, 8), pady=10, sticky="ew")
         ctk.CTkButton(self._saved_card, text="✕", width=32, font=fonts.body(),
                       fg_color="transparent", hover_color=p.fail, text_color=p.text_faint,
@@ -322,12 +331,12 @@ class ConnectScreen(ctk.CTkFrame):
         pw = app_secrets.get_router_password(prof.host)
         if pw:
             self._password.insert(0, pw)
-        self._set_status(f"Готово к подключению: {prof.endpoint}", "muted")
+        self._set_status(_("Готово к подключению: {0}").format(prof.endpoint), "muted")
 
     def _forget_profile(self, prof: app_profiles.RouterProfile) -> None:
         app_profiles.forget_profile(prof.host, prof.port)  # also clears keychain secrets
         self._build_saved()
-        self._set_status(f"Роутер {prof.title} удалён из сохранённых.", "muted")
+        self._set_status(_("Роутер {0} удалён из сохранённых.").format(prof.title), "muted")
 
     # ----- behavior -----------------------------------------------------
 
@@ -339,9 +348,9 @@ class ConnectScreen(ctk.CTkFrame):
         reachable = [c for c in candidates if c.identity is not Identity.UNREACHABLE]
         self._candidates = reachable
         if not reachable:
-            self._candidate_menu.configure(values=["— не найдено —"])
-            self._candidate_menu.set("— не найдено —")
-            self._set_status("Роутер не найден автоматически — введите адрес вручную.", "warn")
+            self._candidate_menu.configure(values=[_("— не найдено —")])
+            self._candidate_menu.set(_("— не найдено —"))
+            self._set_status(_("Роутер не найден автоматически — введите адрес вручную."), "warn")
             return
 
         labels = [c.label for c in reachable]
@@ -356,10 +365,10 @@ class ConnectScreen(ctk.CTkFrame):
         if openwrt:
             c = openwrt[0]
             where = f"{c.hostname} ({c.ip})" if c.hostname else c.ip
-            self._set_status(f"Найден OpenWrt: {where}", "ok")
+            self._set_status(_("Найден OpenWrt: {0}").format(where), "ok")
         else:
             self._set_status(
-                "SSH отвечает, но баннер не OpenWrt — проверьте адрес или выберите кандидата.",
+                _("SSH отвечает, но баннер не OpenWrt — проверьте адрес или выберите кандидата."),
                 "warn",
             )
 
@@ -389,22 +398,22 @@ class ConnectScreen(ctk.CTkFrame):
             return
         host = self._ip.get().strip()
         if not host:
-            self._set_status("Укажите адрес роутера.", "fail")
+            self._set_status(_("Укажите адрес роутера."), "fail")
             return
         try:
             port = int(self._port.get().strip() or "22")
         except ValueError:
-            self._set_status("Порт должен быть числом.", "fail")
+            self._set_status(_("Порт должен быть числом."), "fail")
             return
         user = self._user.get().strip() or "root"
         password = self._password.get()
 
         self._busy = True
         self._pending = (host, port, user, password)
-        self._connect_btn.configure(state="disabled", text="Подключение…")
+        self._connect_btn.configure(state="disabled", text=_("Подключение…"))
         self._next_btn.grid_remove()
         self._state_panel.grid_remove()
-        self._set_status(f"Подключаюсь к {host}:{port}…", "muted")
+        self._set_status(_("Подключаюсь к {0}:{1}…").format(host, port), "muted")
 
         def task() -> tuple[RouterClient, RouterState, firmware.CompatReport]:
             pub = app_secrets.existing_public_key()
@@ -430,53 +439,53 @@ class ConnectScreen(ctk.CTkFrame):
 
     def _on_failure(self, exc: BaseException) -> None:
         self._busy = False
-        self._connect_btn.configure(state="normal", text="Подключиться")
+        self._connect_btn.configure(state="normal", text=_("Подключиться"))
         if isinstance(exc, HostKeyMismatch):
             self._show_hostkey_mismatch(exc)
             return
-        msg = str(exc) if isinstance(exc, RouterError) else f"Ошибка: {exc}"
+        msg = str(exc) if isinstance(exc, RouterError) else _("Ошибка: {0}").format(exc)
         self._set_status(msg, "fail")
 
     def _show_hostkey_mismatch(self, exc: HostKeyMismatch) -> None:
         """Warn that the host key changed and let the user accept the new one."""
         p = self.p
-        self._set_status("⚠ Отпечаток ключа роутера изменился.", "warn")
+        self._set_status(_("⚠ Отпечаток ключа роутера изменился."), "warn")
         for w in self._state_panel.winfo_children():
             w.destroy()
         self._state_panel.grid()
         self._state_panel.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(
             self._state_panel,
-            text="Это нормально после сброса роутера к заводским настройкам, но также может "
+            text=_("Это нормально после сброса роутера к заводским настройкам, но также может "
             "означать подмену устройства в сети. Принимайте новый ключ, только если вы только "
-            "что сбрасывали роутер.",
+            "что сбрасывали роутер."),
             font=fonts.small(), text_color=p.warn, wraplength=520, justify="left",
         ).grid(row=0, column=0, padx=16, pady=(12, 6), sticky="w")
-        ctk.CTkLabel(self._state_panel, text=f"Был:   {exc.expected}", font=fonts.small(),
+        ctk.CTkLabel(self._state_panel, text=_("Был:   {0}").format(exc.expected), font=fonts.small(),
                      text_color=p.text_muted, anchor="w").grid(row=1, column=0, padx=16, sticky="w")
-        ctk.CTkLabel(self._state_panel, text=f"Стал:  {exc.got}", font=fonts.small(),
+        ctk.CTkLabel(self._state_panel, text=_("Стал:  {0}").format(exc.got), font=fonts.small(),
                      text_color=p.text, anchor="w").grid(row=2, column=0, padx=16, pady=(0, 8), sticky="w")
         btns = ctk.CTkFrame(self._state_panel, fg_color="transparent")
         btns.grid(row=3, column=0, padx=16, pady=(0, 12), sticky="w")
-        ctk.CTkButton(btns, text="Принять новый ключ", font=fonts.body(), fg_color=p.warn,
+        ctk.CTkButton(btns, text=_("Принять новый ключ"), font=fonts.body(), fg_color=p.warn,
                       hover_color=p.accent_hover, command=lambda: self._accept_new_key(exc)).grid(
             row=0, column=0, padx=(0, 8))
-        ctk.CTkButton(btns, text="Отмена", font=fonts.body(), fg_color="transparent",
+        ctk.CTkButton(btns, text=_("Отмена"), font=fonts.body(), fg_color="transparent",
                       hover_color=p.surface_hover, command=self._state_panel.grid_remove).grid(
             row=0, column=1)
 
     def _accept_new_key(self, exc: HostKeyMismatch) -> None:
         app_secrets.pin_hostkey(exc.host, exc.got)  # re-pin to the new key
         self._state_panel.grid_remove()
-        self._set_status("Новый ключ принят. Переподключаюсь…", "muted")
+        self._set_status(_("Новый ключ принят. Переподключаюсь…"), "muted")
         self._do_connect()
 
     def _on_success(self, payload: tuple[RouterClient, RouterState, firmware.CompatReport]) -> None:
         client, state, report = payload
         self._busy = False
         self._connected = (client, state)
-        self._connect_btn.configure(state="normal", text="Переподключиться")
-        self._set_status("Подключено.", "ok")
+        self._connect_btn.configure(state="normal", text=_("Переподключиться"))
+        self._set_status(_("Подключено."), "ok")
         # Remember this router for one-click reconnect next time (consented via the
         # checkbox). Non-secret metadata → profiles registry; password → keychain.
         if self._remember.get() == "1" and getattr(self, "_pending", None):
@@ -488,9 +497,9 @@ class ConnectScreen(ctk.CTkFrame):
         # A hard block (e.g. no nftables) means HomeProxy can't work — warn loudly
         # but don't trap: an exotic-yet-working firmware shouldn't be a dead end.
         if report.blocked:
-            self._next_btn.configure(text="Всё равно продолжить →", fg_color=self.p.fail)
+            self._next_btn.configure(text=_("Всё равно продолжить →"), fg_color=self.p.fail)
         else:
-            self._next_btn.configure(text="Далее →", fg_color=self.p.ok)
+            self._next_btn.configure(text=_("Далее →"), fg_color=self.p.ok)
         self._next_btn.grid()  # reveal under the connect button
         self._render_state(client, state)
         self._render_compat(report)
@@ -506,18 +515,18 @@ class ConnectScreen(ctk.CTkFrame):
         self._state_panel.grid()
 
         readiness = {
-            "clean": ("Чистый роутер — потребуется полная настройка", p.warn),
-            "partial": ("ПО установлено, нужна настройка серверов", p.warn),
-            "configured": ("Роутер уже настроен — режим управления", p.ok),
+            "clean": (_("Чистый роутер — потребуется полная настройка"), p.warn),
+            "partial": (_("ПО установлено, нужна настройка серверов"), p.warn),
+            "configured": (_("Роутер уже настроен — режим управления"), p.ok),
         }[state.readiness.value]
 
         # Keep it focused on what matters at connect time; tech details (package
         # manager, core, free space, key fingerprint) live in Core/Diagnostics.
         rows = [
-            ("OpenWrt", (state.openwrt_version or "не определён") + (f" · {state.board}" if state.board else ""), p.text),
-            ("Re:HomeProxy", "установлен" if state.homeproxy_installed else "не установлен",
+            ("OpenWrt", (state.openwrt_version or _("не определён")) + (f" · {state.board}" if state.board else ""), p.text),
+            ("Re:HomeProxy", _("установлен") if state.homeproxy_installed else _("не установлен"),
              p.ok if state.homeproxy_installed else p.text_muted),
-            ("Состояние", readiness[0], readiness[1]),
+            (_("Состояние"), readiness[0], readiness[1]),
         ]
         for i, (label, value, color) in enumerate(rows):
             ctk.CTkLabel(self._state_panel, text=label, font=fonts.small(), text_color=p.text_muted).grid(
@@ -535,7 +544,7 @@ class ConnectScreen(ctk.CTkFrame):
             return
         p = self.p
         r = getattr(self, "_compat_base_row", 3)
-        ctk.CTkLabel(self._state_panel, text="Совместимость прошивки", font=fonts.small(),
+        ctk.CTkLabel(self._state_panel, text=_("Совместимость прошивки"), font=fonts.small(),
                      text_color=p.text_muted).grid(
             row=r, column=0, columnspan=2, padx=16, pady=(10, 2), sticky="w")
         r += 1
@@ -547,7 +556,7 @@ class ConnectScreen(ctk.CTkFrame):
                          text_color=color, anchor="w", wraplength=500, justify="left").grid(
                 row=r, column=0, columnspan=2, padx=16, sticky="w")
             r += 1
-            detail = issue.detail + (f"\nРешение: {issue.fix}" if issue.fix else "")
+            detail = issue.detail + (_("\nРешение: {0}").format(issue.fix) if issue.fix else "")
             ctk.CTkLabel(self._state_panel, text=detail, font=fonts.small(),
                          text_color=p.text_muted, anchor="w", wraplength=500, justify="left").grid(
                 row=r, column=0, columnspan=2, padx=16, pady=(0, 6), sticky="w")

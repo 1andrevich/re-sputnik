@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Public-IP lookup that works on ANY core.
 
 The backend ``clash_ip_info`` reads the ``ipinfo`` field from the Clash API

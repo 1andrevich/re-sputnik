@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Access control section — global filter mode + per-device independent toggles.
 
 Lists DHCP-lease devices. The global mode (Отключён / Только выбранные / Все, кроме
@@ -19,33 +20,32 @@ from ..router import RouterClient
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import N_, _
 
+# Display labels are marked for extraction with N_ and translated with _() at the
+# render/lookup sites, so a runtime language switch is reflected consistently.
 _GLOBAL_LABELS = {
-    "disabled": "Отключён",
-    "listed_only": "Только выбранные",
-    "except_listed": "Все, кроме выбранных",
+    "disabled": N_("Отключён"),
+    "listed_only": N_("Только выбранные"),
+    "except_listed": N_("Все, кроме выбранных"),
 }
-_GLOBAL_TO_KEY = {v: k for k, v in _GLOBAL_LABELS.items()}
 
 _MODE_HINT = {
-    "disabled": "Режим контроля доступа отключён. Вы можете выбрать для устройства режимы "
-                "«Игровой» и «Весь трафик». Подробнее о режимах ниже.",
-    "listed_only": "Заблокированные ресурсы идут через VPN по правилам — только на отмеченных "
-                   "«Через VPN» устройствах. Остальные идут полностью напрямую.",
-    "except_listed": "Заблокированные ресурсы идут через VPN по правилам на всех устройствах, "
-                     "кроме отмеченных «Напрямую» — те идут полностью мимо VPN.",
+    "disabled": N_("Режим контроля доступа отключён. Вы можете выбрать для устройства режимы "
+                "«Игровой» и «Весь трафик». Подробнее о режимах ниже."),
+    "listed_only": N_("Заблокированные ресурсы идут через VPN по правилам — только на отмеченных "
+                   "«Через VPN» устройствах. Остальные идут полностью напрямую."),
+    "except_listed": N_("Заблокированные ресурсы идут через VPN по правилам на всех устройствах, "
+                     "кроме отмеченных «Напрямую» — те идут полностью мимо VPN."),
 }
 
 # Per-device filter checkbox label, by global mode (None = filter toggle hidden).
-_FILTER_LABEL = {"listed_only": "Через VPN", "except_listed": "Напрямую"}
+_FILTER_LABEL = {"listed_only": N_("Через VPN"), "except_listed": N_("Напрямую")}
 
-_GAMING_HINT = ("«Игровой» — через VPN идёт только TCP (сайты, почта), а игровой и голосовой "
+_GAMING_HINT = N_("«Игровой» — через VPN идёт только TCP (сайты, почта), а игровой и голосовой "
                 "трафик идёт напрямую. Включите, если есть проблемы с подключением к игровым серверам.")
-_GLOBAL_HINT = "«Весь трафик» — всё устройство идёт через VPN, в обход правил."
-# "Весь трафик" starts on its own line.
-_LEGEND = _GAMING_HINT + "\n" + _GLOBAL_HINT
-_LEGEND_DISABLED = ("Режим «Отключён»: список «Через VPN / Напрямую» не действует.\n"
-                    + _LEGEND)
+_GLOBAL_HINT = N_("«Весь трафик» — всё устройство идёт через VPN, в обход правил.")
+_LEGEND_DISABLED_PREFIX = N_("Режим «Отключён»: список «Через VPN / Напрямую» не действует.")
 
 
 class AccessScreen(ctk.CTkFrame):
@@ -60,10 +60,10 @@ class AccessScreen(ctk.CTkFrame):
         self._body.grid(row=0, column=0, padx=24, pady=16, sticky="nsew")
         self._body.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(self._body, text="Контроль доступа", font=fonts.title(),
+        ctk.CTkLabel(self._body, text=_("Контроль доступа"), font=fonts.title(),
                      image=kit.icon(kit._ICON_FOR["access"], 26), compound="left",
                      text_color=palette.text).grid(row=0, column=0, pady=(4, 8), sticky="w")
-        self._status = ctk.CTkLabel(self._body, text="Считываю устройства…", font=fonts.small(),
+        self._status = ctk.CTkLabel(self._body, text=_("Считываю устройства…"), font=fonts.small(),
                                     text_color=palette.text_muted, anchor="w")
         self._status.grid(row=1, column=0, sticky="w", pady=(0, 8))
         self._mode_card = ctk.CTkFrame(self._body, fg_color=palette.surface, corner_radius=12)
@@ -76,19 +76,19 @@ class AccessScreen(ctk.CTkFrame):
         top_apply = ctk.CTkFrame(self._body, fg_color="transparent")
         top_apply.grid(row=3, column=0, sticky="ew", pady=(0, 12))
         top_apply.grid_columnconfigure(0, weight=1)
-        self._restart_btn_top = ctk.CTkButton(top_apply, text="Применить изменения", font=fonts.body(),
+        self._restart_btn_top = ctk.CTkButton(top_apply, text=_("Применить изменения"), font=fonts.body(),
                                                width=200, fg_color=palette.accent, text_color=palette.accent_fg,
                                                hover_color=palette.accent_hover, state="disabled",
                                                command=self._restart)
         self._restart_btn_top.grid(row=0, column=0, sticky="w")
-        ctk.CTkLabel(top_apply, text="Выбор режима и настройки устройств вступают в силу только после "
-                     "нажатия «Применить изменения».", font=fonts.small(), text_color=palette.text_muted,
+        ctk.CTkLabel(top_apply, text=_("Выбор режима и настройки устройств вступают в силу только после "
+                     "нажатия «Применить изменения»."), font=fonts.small(), text_color=palette.text_muted,
                      wraplength=560, justify="left", anchor="w").grid(row=1, column=0, sticky="w", pady=(6, 0))
 
         self._dev_card = ctk.CTkFrame(self._body, fg_color=palette.surface, corner_radius=12)
         self._dev_card.grid(row=4, column=0, sticky="ew")
         self._dev_card.grid_columnconfigure(0, weight=1)
-        self._restart_btn = ctk.CTkButton(self._body, text="Применить изменения", font=fonts.body(),
+        self._restart_btn = ctk.CTkButton(self._body, text=_("Применить изменения"), font=fonts.body(),
                                            width=200, fg_color=palette.accent, text_color=palette.accent_fg,
                                            hover_color=palette.accent_hover, state="disabled",
                                            command=self._restart)
@@ -108,7 +108,7 @@ class AccessScreen(ctk.CTkFrame):
             return {"devices": devices, "policy": policy}
 
         run_async(self, task, self._render, lambda e: self._status.configure(
-            text=f"Ошибка: {e}", text_color=self.p.fail))
+            text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     def _render(self, d: dict[str, Any]) -> None:
         self._status.configure(text="")
@@ -122,16 +122,17 @@ class AccessScreen(ctk.CTkFrame):
         for w in self._mode_card.winfo_children():
             w.destroy()
         mode = self._policy["mode"]
-        ctk.CTkLabel(self._mode_card, text="Режим контроля", font=fonts.body(),
+        ctk.CTkLabel(self._mode_card, text=_("Режим контроля"), font=fonts.body(),
                      text_color=p.text_muted).grid(row=0, column=0, padx=(16, 12), pady=(12, 4), sticky="w")
-        gm = ctk.CTkOptionMenu(self._mode_card, values=list(_GLOBAL_LABELS.values()), font=fonts.body(),
+        gm = ctk.CTkOptionMenu(self._mode_card, values=[_(v) for v in _GLOBAL_LABELS.values()],
+                               font=fonts.body(),
                                fg_color=p.surface_hover, button_color=p.accent,
                                button_hover_color=p.accent_hover, command=self._on_global)
-        gm.set(_GLOBAL_LABELS.get(mode, list(_GLOBAL_LABELS.values())[0]))
+        gm.set(_(_GLOBAL_LABELS.get(mode, list(_GLOBAL_LABELS.values())[0])))
         gm.grid(row=0, column=1, padx=(0, 16), pady=(12, 4), sticky="ew")
-        hint = _MODE_HINT.get(mode, "")
+        hint = _MODE_HINT.get(mode)
         if hint:
-            ctk.CTkLabel(self._mode_card, text=hint, font=fonts.small(), text_color=p.text_muted,
+            ctk.CTkLabel(self._mode_card, text=_(hint), font=fonts.small(), text_color=p.text_muted,
                          wraplength=440, justify="left").grid(
                 row=1, column=0, columnspan=2, padx=16, pady=(0, 12), sticky="w")
 
@@ -140,13 +141,16 @@ class AccessScreen(ctk.CTkFrame):
         for w in self._dev_card.winfo_children():
             w.destroy()
         mode = self._policy["mode"]
-        ctk.CTkLabel(self._dev_card, text=f"Устройства ({len(self._devices)})", font=fonts.heading(),
+        ctk.CTkLabel(self._dev_card, text=_("Устройства ({0})").format(len(self._devices)), font=fonts.heading(),
                      text_color=p.text).grid(row=0, column=0, padx=16, pady=(12, 4), sticky="w")
-        ctk.CTkLabel(self._dev_card, text=_LEGEND_DISABLED if mode == "disabled" else _LEGEND,
+        legend = _(_GAMING_HINT) + "\n" + _(_GLOBAL_HINT)
+        if mode == "disabled":
+            legend = _(_LEGEND_DISABLED_PREFIX) + "\n" + legend
+        ctk.CTkLabel(self._dev_card, text=legend,
                      font=fonts.small(), text_color=p.text_muted, wraplength=560,
                      justify="left", anchor="w").grid(row=1, column=0, padx=16, pady=(0, 8), sticky="w")
         if not self._devices:
-            ctk.CTkLabel(self._dev_card, text="Нет устройств в DHCP-лизах.", font=fonts.small(),
+            ctk.CTkLabel(self._dev_card, text=_("Нет устройств в DHCP-лизах."), font=fonts.small(),
                          text_color=p.text_muted).grid(row=2, column=0, padx=16, pady=(0, 12), sticky="w")
             return
         for i, dev in enumerate(self._devices, start=2):
@@ -163,7 +167,7 @@ class AccessScreen(ctk.CTkFrame):
             ctk.CTkLabel(name_box, text=dev.hostname, font=fonts.body(), text_color=p.text,
                          anchor="w").pack(side="left")
             if dev.manual:  # configured IP not in current DHCP leases (e.g. added in LuCI)
-                ctk.CTkLabel(name_box, text="  · вне DHCP", font=fonts.small(),
+                ctk.CTkLabel(name_box, text=_("  · вне DHCP"), font=fonts.small(),
                              text_color=p.text_muted).pack(side="left")
             ctk.CTkLabel(head, text=dev.ip, font=fonts.small(), text_color=p.text_muted,
                          anchor="e").grid(row=0, column=1, sticky="e", padx=4)
@@ -173,11 +177,11 @@ class AccessScreen(ctk.CTkFrame):
             col = 0
             filt_lbl = _FILTER_LABEL.get(mode)
             if filt_lbl:
-                self._add_check(checks, col, filt_lbl, flags["filter"], dev.ip, "filter")
+                self._add_check(checks, col, _(filt_lbl), flags["filter"], dev.ip, "filter")
                 col += 1
-            self._add_check(checks, col, "Игровой (TCP)", flags["gaming"], dev.ip, "gaming")
+            self._add_check(checks, col, _("Игровой (TCP)"), flags["gaming"], dev.ip, "gaming")
             col += 1
-            self._add_check(checks, col, "Весь трафик", flags["global"], dev.ip, "global")
+            self._add_check(checks, col, _("Весь трафик"), flags["global"], dev.ip, "global")
         ctk.CTkLabel(self._dev_card, text="", height=4).grid(row=len(self._devices) + 2, column=0)
 
     def _add_check(self, parent: ctk.CTkBaseClass, col: int, text: str, on: bool,
@@ -194,11 +198,12 @@ class AccessScreen(ctk.CTkFrame):
     def _mark_dirty(self) -> None:
         for b in self._apply_btns:
             b.configure(state="normal")
-        self._status.configure(text="Изменено. Нажмите «Применить изменения».",
+        self._status.configure(text=_("Изменено. Нажмите «Применить изменения»."),
                                text_color=self.p.warn)
 
     def _on_global(self, label: str) -> None:
-        mode = _GLOBAL_TO_KEY.get(label)
+        # Reverse-map the (translated) selected label back to its mode key.
+        mode = {_(v): k for k, v in _GLOBAL_LABELS.items()}.get(label)
         client = self._client
 
         def done(_r: Any) -> None:
@@ -225,26 +230,26 @@ class AccessScreen(ctk.CTkFrame):
                   done, self._err)
 
     def _err(self, e: BaseException) -> None:
-        self._status.configure(text=f"Ошибка: {e}", text_color=self.p.fail)
+        self._status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail)
 
     def _restart(self) -> None:
         for b in self._apply_btns:
-            b.configure(state="disabled", text="Применяю…")
+            b.configure(state="disabled", text=_("Применяю…"))
         client = self._client
         run_async(self, lambda: client.ubus_homeproxy("diag_service_restart", timeout=40),
                   self._after_restart, self._restart_err)
 
     def _restart_err(self, e: BaseException) -> None:
         for b in self._apply_btns:
-            b.configure(state="normal", text="Применить изменения")
-        self._status.configure(text=f"Ошибка: {e}", text_color=self.p.fail)
+            b.configure(state="normal", text=_("Применить изменения"))
+        self._status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail)
 
     def _after_restart(self, res: dict[str, Any]) -> None:
         for b in self._apply_btns:
-            b.configure(text="Применить изменения")
+            b.configure(text=_("Применить изменения"))
         if res.get("result"):
-            self._status.configure(text="Изменения применены.", text_color=self.p.ok)
+            self._status.configure(text=_("Изменения применены."), text_color=self.p.ok)
         else:
             for b in self._apply_btns:
                 b.configure(state="normal")
-            self._status.configure(text="Не удалось применить изменения.", text_color=self.p.fail)
+            self._status.configure(text=_("Не удалось применить изменения."), text_color=self.p.fail)

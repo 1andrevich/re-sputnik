@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Secrets: the app's SSH identity, generated passwords, and OS-keychain storage.
 
 Nothing sensitive is written to plaintext files. The app's SSH keypair and each
@@ -19,6 +20,8 @@ import paramiko
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
+from .i18n import _, N_
+
 SERVICE = "re-companion"
 _KEY_PRIV = "ssh-private-key"
 _KEY_PUB = "ssh-public-key"
@@ -36,7 +39,7 @@ class SecretsError(RuntimeError):
 # backslash, backtick, dollar). The milder specials (!@#%^&*()-_=+[]{};:,.?/ …)
 # are allowed — not everything is forbidden, only this incompatible subset.
 _PW_FORBIDDEN = "'\"\\`$ \t"
-_PW_CHAR_LABEL = {" ": "пробел", "\t": "табуляция"}
+_PW_CHAR_LABEL = {" ": N_("пробел"), "\t": N_("табуляция")}
 
 
 def is_password_input_char(proposed: str) -> bool:
@@ -53,12 +56,12 @@ def password_problem(password: str) -> "str | None":
     if not password:
         return None
     if any(ord(c) < 0x20 or ord(c) > 0x7E for c in password):
-        return ("Пароль содержит символы не из английской раскладки. Переключитесь на "
-                "английскую раскладку и используйте латинские буквы, цифры и спецзнаки.")
-    bad = [_PW_CHAR_LABEL.get(c, c) for c in dict.fromkeys(password) if c in _PW_FORBIDDEN]
+        return _("Пароль содержит символы не из английской раскладки. Переключитесь на "
+                 "английскую раскладку и используйте латинские буквы, цифры и спецзнаки.")
+    bad = [_(_PW_CHAR_LABEL.get(c, c)) for c in dict.fromkeys(password) if c in _PW_FORBIDDEN]
     if bad:
-        return ("Эти символы несовместимы и не разрешены в пароле: " + ", ".join(bad)
-                + ". Уберите их (можно использовать другие спецзнаки: ! @ # % ^ & * - _ = + и т.п.).")
+        return (_("Эти символы несовместимы и не разрешены в пароле: ") + ", ".join(bad)
+                + _(" Уберите их (можно использовать другие спецзнаки: ! @ # % ^ & * - _ = + и т.п.)."))
     return None
 
 
@@ -260,7 +263,9 @@ def forget_hostkey(host: str) -> None:
 
 # ----- disclaimer acceptance -------------------------------------------
 
-DISCLAIMER_VERSION = "1"
+# Bump when the EULA / disclaimer changes materially so users re-accept.
+# v2: disclaimer became a full EULA acceptance gate (license + third-party credits).
+DISCLAIMER_VERSION = "2"
 
 
 def disclaimer_accepted() -> bool:

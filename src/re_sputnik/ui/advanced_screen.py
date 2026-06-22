@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Advanced ("Дополнительно") section — risky router maintenance.
 
 Four cards, every destructive action gated by an explicit second confirmation
@@ -29,6 +30,7 @@ from ..router import RouterClient
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import N_, _
 
 
 class _DangerConfirm(ctk.CTkFrame):
@@ -77,7 +79,7 @@ class _DangerConfirm(ctk.CTkFrame):
                                           fg_color=self.p.fail, hover_color="#DC2626",
                                           text_color="#FFFFFF", width=200, command=self._go)
         self._confirm_btn.grid(row=1, column=0, sticky="w")
-        self._cancel_btn = ctk.CTkButton(self._box, text="Отмена", font=fonts.body(),
+        self._cancel_btn = ctk.CTkButton(self._box, text=_("Отмена"), font=fonts.body(),
                                          fg_color="transparent", hover_color=self.p.surface_hover,
                                          text_color=self.p.text, width=90, command=self.reset)
         self._cancel_btn.grid(row=1, column=1, padx=10, sticky="w")
@@ -88,7 +90,7 @@ class _DangerConfirm(ctk.CTkFrame):
 
     def busy(self) -> None:
         if self._box.winfo_children():
-            self._confirm_btn.configure(state="disabled", text="Выполняю…")
+            self._confirm_btn.configure(state="disabled", text=_("Выполняю…"))
             self._cancel_btn.configure(state="disabled")
 
     def reset(self) -> None:
@@ -119,14 +121,14 @@ class AdvancedScreen(ctk.CTkFrame):
         self._body.grid(row=0, column=0, padx=24, pady=16, sticky="nsew")
         self._body.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(self._body, text="Дополнительно", font=fonts.title(),
+        ctk.CTkLabel(self._body, text=_("Дополнительно"), font=fonts.title(),
                      image=kit.icon("mode_advanced", 26), compound="left",
                      text_color=palette.text).grid(row=0, column=0, pady=(4, 4), sticky="w")
-        ctk.CTkLabel(self._body, text="Опасные операции с роутером. Делайте только при "
-                     "необходимости и сначала скачайте резервную копию.", font=fonts.small(),
+        ctk.CTkLabel(self._body, text=_("Опасные операции с роутером. Делайте только при "
+                     "необходимости и сначала скачайте резервную копию."), font=fonts.small(),
                      text_color=palette.text_muted, wraplength=620, justify="left",
                      anchor="w").grid(row=1, column=0, sticky="w", pady=(0, 10))
-        self._status = ctk.CTkLabel(self._body, text="Считываю настройки…", font=fonts.small(),
+        self._status = ctk.CTkLabel(self._body, text=_("Считываю настройки…"), font=fonts.small(),
                                     text_color=palette.text_muted, anchor="w")
         self._status.grid(row=2, column=0, sticky="w", pady=(0, 8))
 
@@ -162,7 +164,7 @@ class AdvancedScreen(ctk.CTkFrame):
             }
 
         run_async(self, task, self._render,
-                  lambda e: self._status.configure(text=f"Ошибка: {e}", text_color=self.p.fail))
+                  lambda e: self._status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     def _render(self, d: dict[str, Any]) -> None:
         self._status.grid_remove()
@@ -197,9 +199,9 @@ class AdvancedScreen(ctk.CTkFrame):
 
     def _build_name_card(self, row: int) -> None:
         p = self.p
-        c = self._card(row, "Имя роутера")
-        ctk.CTkLabel(c, text="Под этим именем роутер виден в сети и в приложении. Латинские "
-                     "буквы, цифры и дефис, без пробелов.", font=fonts.small(),
+        c = self._card(row, _("Имя роутера"))
+        ctk.CTkLabel(c, text=_("Под этим именем роутер виден в сети и в приложении. Латинские "
+                     "буквы, цифры и дефис, без пробелов."), font=fonts.small(),
                      text_color=p.text_muted, wraplength=560, justify="left",
                      anchor="w").grid(row=1, column=0, padx=16, sticky="w")
         rowf = ctk.CTkFrame(c, fg_color="transparent")
@@ -207,7 +209,7 @@ class AdvancedScreen(ctk.CTkFrame):
         self._name_var = ctk.StringVar(value=self._hostname)
         ctk.CTkEntry(rowf, textvariable=self._name_var, font=fonts.body(), width=220,
                      fg_color=p.surface_hover).grid(row=0, column=0)
-        ctk.CTkButton(rowf, text="Переименовать", font=fonts.body(), fg_color=p.accent,
+        ctk.CTkButton(rowf, text=_("Переименовать"), font=fonts.body(), fg_color=p.accent,
                       hover_color=p.accent_hover, text_color=p.accent_fg, width=150,
                       command=self._rename).grid(row=0, column=1, padx=10)
         self._name_status = ctk.CTkLabel(c, text="", font=fonts.small(), anchor="w",
@@ -217,14 +219,14 @@ class AdvancedScreen(ctk.CTkFrame):
     def _rename(self) -> None:
         name = self._name_var.get().strip()
         if name == self._hostname:
-            self._name_status.configure(text="Имя не изменилось.", text_color=self.p.text_muted)
+            self._name_status.configure(text=_("Имя не изменилось."), text_color=self.p.text_muted)
             return
-        self._name_status.configure(text="Переименовываю…", text_color=self.p.text_muted)
+        self._name_status.configure(text=_("Переименовываю…"), text_color=self.p.text_muted)
         client = self._client
 
         def done(applied: str) -> None:
             self._hostname = applied
-            self._name_status.configure(text=f"Готово — роутер переименован в «{applied}».",
+            self._name_status.configure(text=_("Готово — роутер переименован в «{0}».").format(applied),
                                         text_color=self.p.ok)
 
         def err(e: BaseException) -> None:
@@ -236,17 +238,17 @@ class AdvancedScreen(ctk.CTkFrame):
 
     def _build_backup_card(self, row: int) -> None:
         p = self.p
-        c = self._card(row, "Резервная копия настроек")
-        ctk.CTkLabel(c, text="Полная копия настроек роутера (как в LuCI). Сохраните её перед "
-                     "любыми изменениями на этой странице.", font=fonts.small(),
+        c = self._card(row, _("Резервная копия настроек"))
+        ctk.CTkLabel(c, text=_("Полная копия настроек роутера (как в LuCI). Сохраните её перед "
+                     "любыми изменениями на этой странице."), font=fonts.small(),
                      text_color=p.text_muted, wraplength=560, justify="left",
                      anchor="w").grid(row=1, column=0, padx=16, sticky="w")
         btns = ctk.CTkFrame(c, fg_color="transparent")
         btns.grid(row=2, column=0, padx=16, pady=(8, 10), sticky="w")
-        ctk.CTkButton(btns, text="Скачать резервную копию", font=fonts.body(),
+        ctk.CTkButton(btns, text=_("Скачать резервную копию"), font=fonts.body(),
                       fg_color=p.accent, hover_color=p.accent_hover, text_color=p.accent_fg,
                       width=220, command=self._download_backup).grid(row=0, column=0, sticky="w")
-        ctk.CTkButton(btns, text="Восстановить из файла…", font=fonts.body(),
+        ctk.CTkButton(btns, text=_("Восстановить из файла…"), font=fonts.body(),
                       fg_color="transparent", hover_color=p.surface_hover, text_color=p.text,
                       border_width=1, border_color=p.text_muted, width=200,
                       command=self._pick_restore).grid(row=0, column=1, padx=10, sticky="w")
@@ -258,44 +260,44 @@ class AdvancedScreen(ctk.CTkFrame):
         self._restore_box.grid_columnconfigure(0, weight=1)
 
     def _download_backup(self) -> None:
-        self._backup_status.configure(text="Создаю резервную копию…", text_color=self.p.text_muted)
+        self._backup_status.configure(text=_("Создаю резервную копию…"), text_color=self.p.text_muted)
         client = self._client
 
         def done(data: bytes) -> None:
             stamp = datetime.datetime.now().strftime("%Y-%m-%d")
             path = filedialog.asksaveasfilename(
                 defaultextension=".tar.gz",
-                filetypes=[("Архив резервной копии", "*.tar.gz"), ("Все файлы", "*.*")],
+                filetypes=[(_("Архив резервной копии"), "*.tar.gz"), (_("Все файлы"), "*.*")],
                 initialfile=f"router-backup-{stamp}.tar.gz")
             if not path:
-                self._backup_status.configure(text="Отменено.", text_color=self.p.text_muted)
+                self._backup_status.configure(text=_("Отменено."), text_color=self.p.text_muted)
                 return
             try:
                 with open(path, "wb") as f:
                     f.write(data)
-                self._backup_status.configure(text=f"Сохранено: {path} ({len(data) // 1024} КБ)",
+                self._backup_status.configure(text=_("Сохранено: {0} ({1} КБ)").format(path, len(data) // 1024),
                                               text_color=self.p.ok)
             except OSError as exc:
-                self._backup_status.configure(text=f"Не удалось сохранить: {exc}",
+                self._backup_status.configure(text=_("Не удалось сохранить: {0}").format(exc),
                                               text_color=self.p.fail)
 
         run_async(self, lambda: maintenance.create_backup(client), done,
-                  lambda e: self._backup_status.configure(text=f"Ошибка: {e}", text_color=self.p.fail))
+                  lambda e: self._backup_status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     def _pick_restore(self) -> None:
         path = filedialog.askopenfilename(
-            filetypes=[("Архив резервной копии", "*.tar.gz"), ("Все файлы", "*.*")])
+            filetypes=[(_("Архив резервной копии"), "*.tar.gz"), (_("Все файлы"), "*.*")])
         if not path:
             return
         try:
             with open(path, "rb") as f:
                 data = f.read()
         except OSError as exc:
-            self._backup_status.configure(text=f"Не удалось прочитать файл: {exc}",
+            self._backup_status.configure(text=_("Не удалось прочитать файл: {0}").format(exc),
                                           text_color=self.p.fail)
             return
         if data[:2] != b"\x1f\x8b":
-            self._backup_status.configure(text="Это не похоже на резервную копию (.tar.gz).",
+            self._backup_status.configure(text=_("Это не похоже на резервную копию (.tar.gz)."),
                                           text_color=self.p.fail)
             return
         self._backup_status.configure(text="")
@@ -304,10 +306,8 @@ class AdvancedScreen(ctk.CTkFrame):
         name = path.replace("\\", "/").rsplit("/", 1)[-1]
         dc = _DangerConfirm(
             self._restore_box, self.p,
-            label="Восстановить", confirm_label="Подтвердить восстановление",
-            warning=f"Файл: {name}. Настройки роутера будут заменены содержимым копии, после "
-                    "чего роутер перезагрузится. Текущие настройки будут потеряны. Приложение "
-                    "отключится — возможно, потребуется переподключение по другому адресу.",
+            label=_("Восстановить"), confirm_label=_("Подтвердить восстановление"),
+            warning=_("Файл: {0}. Настройки роутера будут заменены содержимым копии, после чего роутер перезагрузится. Текущие настройки будут потеряны. Приложение отключится — возможно, потребуется переподключение по другому адресу.").format(name),
             command=lambda dc, d=data: self._do_restore(dc, d))
         dc.grid(row=0, column=0, sticky="ew")
 
@@ -315,12 +315,12 @@ class AdvancedScreen(ctk.CTkFrame):
         client = self._client
 
         def done(_r: Any) -> None:
-            dc.set_status("Копия восстановлена. Роутер перезагружается — переподключитесь через "
-                          "минуту (возможно, по адресу из копии).", self.p.ok)
+            dc.set_status(_("Копия восстановлена. Роутер перезагружается — переподключитесь через "
+                          "минуту (возможно, по адресу из копии)."), self.p.ok)
 
         def err(e: BaseException) -> None:
             dc.reset()
-            self._backup_status.configure(text=f"Ошибка: {e}", text_color=self.p.fail)
+            self._backup_status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail)
 
         run_async(self, lambda: maintenance.restore_backup(client, data), done, err)
 
@@ -328,7 +328,7 @@ class AdvancedScreen(ctk.CTkFrame):
 
     # Encryption choices: human label ↔ uci value.
     _ENC_OPTIONS = [
-        ("Открытая (без пароля)", "none"),
+        (N_("Открытая (без пароля)"), "none"),
         ("WPA2", "psk2"),
         ("WPA2 / WPA3", "sae-mixed"),
         ("WPA3", "sae"),
@@ -336,17 +336,17 @@ class AdvancedScreen(ctk.CTkFrame):
 
     def _build_wifi_card(self, row: int) -> None:
         p = self.p
-        c = self._card(row, "Wi-Fi сети")
+        c = self._card(row, _("Wi-Fi сети"))
         radios = self._wifi
         if not radios:
-            ctk.CTkLabel(c, text="На этом устройстве не найден Wi-Fi-чип — настраивать нечего.",
+            ctk.CTkLabel(c, text=_("На этом устройстве не найден Wi-Fi-чип — настраивать нечего."),
                          font=fonts.small(), text_color=p.warn, wraplength=560, justify="left",
                          anchor="w").grid(row=1, column=0, padx=16, pady=(0, 14), sticky="w")
             return
-        ctk.CTkLabel(c, text="Имя сети, пароль, шифрование и канал — отдельно для каждого "
+        ctk.CTkLabel(c, text=_("Имя сети, пароль, шифрование и канал — отдельно для каждого "
                      "диапазона. Изменения применяются сразу; подключённые устройства "
                      "переподключатся. QR-код и данные на «Обзоре» обновятся при следующем "
-                     "открытии.", font=fonts.small(), text_color=p.text_muted, wraplength=560,
+                     "открытии."), font=fonts.small(), text_color=p.text_muted, wraplength=560,
                      justify="left", anchor="w").grid(row=1, column=0, padx=16, sticky="w")
         box = ctk.CTkFrame(c, fg_color="transparent")
         box.grid(row=2, column=0, padx=16, pady=(8, 12), sticky="ew")
@@ -366,8 +366,8 @@ class AdvancedScreen(ctk.CTkFrame):
         head.grid(row=0, column=0, padx=12, pady=(10, 2), sticky="ew")
         up = rw.up and not rw.radio_disabled
         dot_color = p.ok if up else p.fail
-        state_txt = "включено, вещает" if up else (
-            "выключено" if rw.radio_disabled else "не вещает")
+        state_txt = _("включено, вещает") if up else (
+            _("выключено") if rw.radio_disabled else _("не вещает"))
         ctk.CTkLabel(head, text="●", font=fonts.body(), text_color=dot_color).grid(
             row=0, column=0, padx=(0, 6))
         ctk.CTkLabel(head, text=f"{net_engine.band_label(rw.band)} · {rw.radio}",
@@ -377,8 +377,8 @@ class AdvancedScreen(ctk.CTkFrame):
 
         # A radio used as the Wi-Fi uplink (STA) can't also be an AP — show read-only.
         if rw.is_sta:
-            ctk.CTkLabel(blk, text="Этот диапазон занят подключением роутера к интернету по "
-                         "Wi-Fi, поэтому раздавать сеть на нём нельзя.", font=fonts.small(),
+            ctk.CTkLabel(blk, text=_("Этот диапазон занят подключением роутера к интернету по "
+                         "Wi-Fi, поэтому раздавать сеть на нём нельзя."), font=fonts.small(),
                          text_color=p.text_muted, wraplength=520, justify="left",
                          anchor="w").grid(row=1, column=0, padx=12, pady=(2, 10), sticky="w")
             return
@@ -387,9 +387,9 @@ class AdvancedScreen(ctk.CTkFrame):
         # we have no trustworthy basis to configure this radio, so don't offer
         # editing. Mark it orange instead of guessing a channel list.
         if not rw.channels:
-            ctk.CTkLabel(blk, text="⚠ Не удалось получить список каналов от этого радио "
+            ctk.CTkLabel(blk, text=_("⚠ Не удалось получить список каналов от этого радио "
                          "(возможно, оно выключено или недоступно). Настройка этого диапазона "
-                         "сейчас недоступна — включите радио и обновите страницу.",
+                         "сейчас недоступна — включите радио и обновите страницу."),
                          font=fonts.small(), text_color=p.warn, wraplength=520, justify="left",
                          anchor="w").grid(row=1, column=0, padx=12, pady=(2, 10), sticky="w")
             return
@@ -412,12 +412,12 @@ class AdvancedScreen(ctk.CTkFrame):
         chan_var = ctk.StringVar(value=cur_chan)
 
         r = 0
-        ctk.CTkLabel(body, text="Имя сети (SSID)", font=fonts.small(),
+        ctk.CTkLabel(body, text=_("Имя сети (SSID)"), font=fonts.small(),
                      text_color=p.text).grid(row=r, column=0, sticky="w", pady=(4, 0))
         ctk.CTkEntry(body, textvariable=ssid_var, font=fonts.body(), fg_color=p.surface).grid(
             row=r, column=1, sticky="ew", pady=(4, 0), padx=(10, 0))
         r += 1
-        ctk.CTkLabel(body, text="Пароль", font=fonts.small(),
+        ctk.CTkLabel(body, text=_("Пароль"), font=fonts.small(),
                      text_color=p.text).grid(row=r, column=0, sticky="w", pady=(6, 0))
         pwrow = ctk.CTkFrame(body, fg_color="transparent")
         pwrow.grid(row=r, column=1, sticky="ew", pady=(6, 0), padx=(10, 0))
@@ -430,15 +430,15 @@ class AdvancedScreen(ctk.CTkFrame):
                       command=lambda e=key_entry: e.configure(
                           show="" if e.cget("show") else "•")).grid(row=0, column=1, padx=(6, 0))
         r += 1
-        ctk.CTkLabel(body, text="Шифрование", font=fonts.small(),
+        ctk.CTkLabel(body, text=_("Шифрование"), font=fonts.small(),
                      text_color=p.text).grid(row=r, column=0, sticky="w", pady=(6, 0))
         ctk.CTkOptionMenu(body, variable=enc_menu_var,
-                          values=[lbl for lbl, _ in self._ENC_OPTIONS], font=fonts.small(),
+                          values=[_(lbl) for lbl, _v in self._ENC_OPTIONS], font=fonts.small(),
                           fg_color=p.surface, button_color=p.accent,
                           button_hover_color=p.accent_hover).grid(
             row=r, column=1, sticky="w", pady=(6, 0), padx=(10, 0))
         r += 1
-        ctk.CTkLabel(body, text="Канал", font=fonts.small(),
+        ctk.CTkLabel(body, text=_("Канал"), font=fonts.small(),
                      text_color=p.text).grid(row=r, column=0, sticky="w", pady=(6, 0))
         ctk.CTkOptionMenu(body, variable=chan_var, values=chan_opts, font=fonts.small(),
                           width=110, fg_color=p.surface, button_color=p.accent,
@@ -452,9 +452,9 @@ class AdvancedScreen(ctk.CTkFrame):
         if rw.widths:
             width_opts = [lbl for lbl, _ in rw.widths]
             digits = "".join(ch for ch in rw.htmode if ch.isdigit())
-            cur_w = f"{digits} МГц" if digits and f"{digits} МГц" in width_map else width_opts[-1]
+            cur_w = _("{0} МГц").format(digits) if digits and _("{0} МГц").format(digits) in width_map else width_opts[-1]
             width_var = ctk.StringVar(value=cur_w)
-            ctk.CTkLabel(body, text="Ширина канала", font=fonts.small(),
+            ctk.CTkLabel(body, text=_("Ширина канала"), font=fonts.small(),
                          text_color=p.text).grid(row=r, column=0, sticky="w", pady=(6, 0))
             ctk.CTkOptionMenu(body, variable=width_var, values=width_opts, font=fonts.small(),
                               width=110, fg_color=p.surface, button_color=p.accent,
@@ -463,7 +463,7 @@ class AdvancedScreen(ctk.CTkFrame):
             r += 1
         apply_row = ctk.CTkFrame(body, fg_color="transparent")
         apply_row.grid(row=r, column=0, columnspan=2, sticky="ew", pady=(10, 0))
-        apply_btn = ctk.CTkButton(apply_row, text="Применить", font=fonts.body(),
+        apply_btn = ctk.CTkButton(apply_row, text=_("Применить"), font=fonts.body(),
                                   fg_color=p.accent, hover_color=p.accent_hover,
                                   text_color=p.accent_fg, width=140,
                                   command=lambda rn=rw.radio: self._apply_radio(rn))
@@ -482,8 +482,8 @@ class AdvancedScreen(ctk.CTkFrame):
         norm = net_engine.normalize_encryption(enc)
         for lbl, val in self._ENC_OPTIONS:
             if val == norm:
-                return lbl
-        return self._ENC_OPTIONS[1][0]  # WPA2 fallback
+                return _(lbl)
+        return _(self._ENC_OPTIONS[1][0])  # WPA2 fallback
 
     def _apply_radio(self, radio: str) -> None:
         w = self._wifi_widgets.get(radio)
@@ -491,30 +491,30 @@ class AdvancedScreen(ctk.CTkFrame):
             return
         ssid = w["ssid"].get().strip()
         key = w["key"].get()
-        enc = dict(self._ENC_OPTIONS).get(w["enc"].get(), "psk2")
+        enc = {_(lbl): val for lbl, val in self._ENC_OPTIONS}.get(w["enc"].get(), "psk2")
         channel = w["chan"].get()
         htmode = w["width_map"].get(w["width"].get(), "") if w.get("width") else ""
         if not ssid:
-            w["status"].configure(text="Введите имя сети.", text_color=self.p.fail)
+            w["status"].configure(text=_("Введите имя сети."), text_color=self.p.fail)
             return
         if enc != "none" and len(key) < 8:
-            w["status"].configure(text="Пароль не короче 8 символов.", text_color=self.p.fail)
+            w["status"].configure(text=_("Пароль не короче 8 символов."), text_color=self.p.fail)
             return
-        w["btn"].configure(state="disabled", text="Применяю…")
-        w["status"].configure(text="Настраиваю Wi-Fi…", text_color=self.p.text_muted)
+        w["btn"].configure(state="disabled", text=_("Применяю…"))
+        w["status"].configure(text=_("Настраиваю Wi-Fi…"), text_color=self.p.text_muted)
         client = self._client
 
         def done(came_up: bool) -> None:
-            w["btn"].configure(state="normal", text="Применить")
+            w["btn"].configure(state="normal", text=_("Применить"))
             if came_up:
-                w["status"].configure(text="Готово — сеть обновлена.", text_color=self.p.ok)
+                w["status"].configure(text=_("Готово — сеть обновлена."), text_color=self.p.ok)
             else:
                 w["status"].configure(
-                    text="Применено, но диапазон не поднялся — возможно, канал не разрешён "
-                    "в этом регионе. Попробуйте другой канал.", text_color=self.p.warn)
+                    text=_("Применено, но диапазон не поднялся — возможно, канал не разрешён "
+                    "в этом регионе. Попробуйте другой канал."), text_color=self.p.warn)
 
         def err(e: BaseException) -> None:
-            w["btn"].configure(state="normal", text="Применить")
+            w["btn"].configure(state="normal", text=_("Применить"))
             w["status"].configure(text=f"{e}", text_color=self.p.fail)
 
         run_async(self, lambda: net_engine.set_radio_wifi(
@@ -526,13 +526,13 @@ class AdvancedScreen(ctk.CTkFrame):
     def _build_lan_card(self, row: int) -> None:
         p = self.p
         s = self._lan
-        c = self._card(row, "Сеть LAN и DHCP")
+        c = self._card(row, _("Сеть LAN и DHCP"))
         # OpenWrt SNAPSHOT: network config format is unstable — don't touch it.
         if self._net_mode == lan_engine.NET_SNAPSHOT:
             ctk.CTkLabel(
-                c, text="На сборке OpenWrt SNAPSHOT формат сетевых настроек может отличаться, "
+                c, text=_("На сборке OpenWrt SNAPSHOT формат сетевых настроек может отличаться, "
                 "поэтому менять адрес роутера и DHCP отсюда небезопасно. Настройте сеть "
-                "самостоятельно — через веб-интерфейс роутера (браузер) или консоль.",
+                "самостоятельно — через веб-интерфейс роутера (браузер) или консоль."),
                 font=fonts.small(), text_color=p.warn, wraplength=560, justify="left",
                 anchor="w").grid(row=1, column=0, padx=16, pady=(0, 14), sticky="w")
             return
@@ -551,30 +551,30 @@ class AdvancedScreen(ctk.CTkFrame):
             var = ctk.StringVar(value=lan_engine.cidr_of(s.ipaddr, s.netmask))
             self._lan_vars["cidr"] = var
             self._lan_field(
-                grid, "IP-адрес роутера с маской (CIDR)",
-                "Адрес роутера вместе с размером подсети через «/», например 192.168.1.1/24. "
-                "По этому адресу открываются настройки; его же вы вводите в приложении.",
+                grid, _("IP-адрес роутера с маской (CIDR)"),
+                _("Адрес роутера вместе с размером подсети через «/», например 192.168.1.1/24. "
+                "По этому адресу открываются настройки; его же вы вводите в приложении."),
                 entry_var=var)
         else:
             ip_var = ctk.StringVar(value=s.ipaddr)
             self._lan_vars["ipaddr"] = ip_var
             self._lan_field(
-                grid, "IP-адрес роутера",
-                "Адрес, по которому открываются настройки роутера; его же вы вводите в "
-                "приложении. Обычно 192.168.1.1.", entry_var=ip_var)
+                grid, _("IP-адрес роутера"),
+                _("Адрес, по которому открываются настройки роутера; его же вы вводите в "
+                "приложении. Обычно 192.168.1.1."), entry_var=ip_var)
             mask_var = ctk.StringVar(value=s.netmask)
             self._lan_vars["netmask"] = mask_var
             self._lan_field(
-                grid, "Маска подсети",
-                "Размер локальной сети. Если не уверены — оставьте 255.255.255.0.",
+                grid, _("Маска подсети"),
+                _("Размер локальной сети. Если не уверены — оставьте 255.255.255.0."),
                 entry_var=mask_var)
 
         for key, label, val, hint in (
-            ("dhcp_start", "DHCP: начало диапазона", str(s.dhcp_start),
-             "С какого адреса роутер начинает раздавать IP. 100 означает 192.168.1.100. Адреса "
-             "до него (1–99) остаются свободными — их удобно отдавать под постоянные IP устройств."),
-            ("dhcp_limit", "DHCP: сколько адресов раздавать", str(s.dhcp_limit),
-             "Максимум устройств, которым роутер выдаст адрес автоматически (размер диапазона)."),
+            ("dhcp_start", _("DHCP: начало диапазона"), str(s.dhcp_start),
+             _("С какого адреса роутер начинает раздавать IP. 100 означает 192.168.1.100. Адреса "
+             "до него (1–99) остаются свободными — их удобно отдавать под постоянные IP устройств.")),
+            ("dhcp_limit", _("DHCP: сколько адресов раздавать"), str(s.dhcp_limit),
+             _("Максимум устройств, которым роутер выдаст адрес автоматически (размер диапазона).")),
         ):
             var = ctk.StringVar(value=val)
             self._lan_vars[key] = var
@@ -584,7 +584,7 @@ class AdvancedScreen(ctk.CTkFrame):
         hh, mm = lan_engine.leasetime_to_hm(s.leasetime)
         self._lease_h = ctk.StringVar(value=f"{hh:02d}")
         self._lease_m = ctk.StringVar(value=f"{mm:02d}")
-        ctk.CTkLabel(grid, text="Время аренды адреса (ЧЧ:ММ)", font=fonts.small(),
+        ctk.CTkLabel(grid, text=_("Время аренды адреса (ЧЧ:ММ)"), font=fonts.small(),
                      text_color=p.text, anchor="w").grid(
             row=self._lan_row, column=0, sticky="w", pady=(6, 0))
         self._lan_row += 1
@@ -596,8 +596,8 @@ class AdvancedScreen(ctk.CTkFrame):
         ctk.CTkLabel(hmrow, text=":", font=fonts.heading(), text_color=p.text).grid(row=0, column=1, padx=6)
         ctk.CTkEntry(hmrow, textvariable=self._lease_m, font=fonts.body(), width=56, justify="center",
                      fg_color=p.surface_hover, validate="key", validatecommand=digits2).grid(row=0, column=2)
-        ctk.CTkLabel(grid, text="Через какое время устройство заново запрашивает свой адрес. "
-                     "Например 12:00 — каждые 12 часов. Слишком малое значение нагружает сеть.",
+        ctk.CTkLabel(grid, text=_("Через какое время устройство заново запрашивает свой адрес. "
+                     "Например 12:00 — каждые 12 часов. Слишком малое значение нагружает сеть."),
                      font=fonts.small(), text_color=p.text_muted, anchor="w", wraplength=540,
                      justify="left").grid(row=self._lan_row, column=0, sticky="w", pady=(1, 2))
         self._lan_row += 1
@@ -606,10 +606,10 @@ class AdvancedScreen(ctk.CTkFrame):
         apply_box.grid(row=2, column=0, padx=16, pady=(2, 12), sticky="ew")
         apply_box.grid_columnconfigure(0, weight=1)
         self._lan_confirm = _DangerConfirm(
-            apply_box, p, label="Применить изменения", confirm_label="Подтвердить",
-            warning="Изменение адреса роутера, маски или DHCP отключит ВСЕ устройства, включая "
+            apply_box, p, label=_("Применить изменения"), confirm_label=_("Подтвердить"),
+            warning=_("Изменение адреса роутера, маски или DHCP отключит ВСЕ устройства, включая "
                     "это. Может потребоваться полный сброс роутера. Делайте только при крайней "
-                    "необходимости — приложение отключится и переподключится по новому адресу.",
+                    "необходимости — приложение отключится и переподключится по новому адресу."),
             command=self._do_lan_apply, read_values=self._validate_lan)
         self._lan_confirm.grid(row=0, column=0, sticky="ew")
 
@@ -643,7 +643,7 @@ class AdvancedScreen(ctk.CTkFrame):
             return err
         pair = self._lan_ip_mask()
         if pair is None:
-            return "Неверный адрес. Укажите IP с маской через «/», например 192.168.1.1/24."
+            return _("Неверный адрес. Укажите IP с маской через «/», например 192.168.1.1/24.")
         ip, mask = pair
         v = self._lan_vars
         return lan_engine.validate_lan_settings(
@@ -653,7 +653,7 @@ class AdvancedScreen(ctk.CTkFrame):
         pair = self._lan_ip_mask()
         if pair is None:  # guarded by _validate_lan, but stay safe
             dc.reset()
-            self._lan_confirm.set_status("Неверный адрес.", self.p.fail)
+            self._lan_confirm.set_status(_("Неверный адрес."), self.p.fail)
             return
         ip, mask = pair
         v = self._lan_vars
@@ -665,12 +665,11 @@ class AdvancedScreen(ctk.CTkFrame):
         client = self._client
 
         def done(_r: Any) -> None:
-            dc.set_status(f"Применяется. Роутер переедет на {new.ipaddr} — приложение отключится, "
-                          "переподключитесь по новому адресу.", self.p.ok)
+            dc.set_status(_("Применяется. Роутер переедет на {0} — приложение отключится, переподключитесь по новому адресу.").format(new.ipaddr), self.p.ok)
 
         def err(e: BaseException) -> None:
             dc.reset()
-            self._lan_confirm.set_status(f"Ошибка: {e}", self.p.fail)
+            self._lan_confirm.set_status(_("Ошибка: {0}").format(e), self.p.fail)
 
         run_async(self, lambda: lan_engine.apply_lan_settings(client, new, cidr_mode=cidr_mode),
                   done, err)
@@ -679,9 +678,9 @@ class AdvancedScreen(ctk.CTkFrame):
 
     def _build_static_card(self, row: int) -> None:
         p = self.p
-        c = self._card(row, "Постоянный IP-адрес для устройства")
-        ctk.CTkLabel(c, text="Закрепите за устройством его текущий адрес — роутер всегда будет "
-                     "выдавать ему один и тот же IP.", font=fonts.small(), text_color=p.text_muted,
+        c = self._card(row, _("Постоянный IP-адрес для устройства"))
+        ctk.CTkLabel(c, text=_("Закрепите за устройством его текущий адрес — роутер всегда будет "
+                     "выдавать ему один и тот же IP."), font=fonts.small(), text_color=p.text_muted,
                      wraplength=560, justify="left", anchor="w").grid(row=1, column=0, padx=16, sticky="w")
         pinned = {l.mac.strip().lower() for l in self._leases}
         free = [d for d in self._devices if d.mac and d.mac.strip().lower() not in pinned]
@@ -696,18 +695,18 @@ class AdvancedScreen(ctk.CTkFrame):
                                                width=240, fg_color=p.surface_hover, button_color=p.accent,
                                                button_hover_color=p.accent_hover)
             self._dev_menu.grid(row=0, column=0, sticky="w")
-            ctk.CTkButton(pick, text="Закрепить адрес", font=fonts.body(), fg_color=p.accent,
+            ctk.CTkButton(pick, text=_("Закрепить адрес"), font=fonts.body(), fg_color=p.accent,
                           hover_color=p.accent_hover, text_color=p.accent_fg, width=160,
                           command=self._pin_device).grid(row=0, column=1, padx=10, sticky="w")
         else:
-            ctk.CTkLabel(pick, text="Все известные устройства уже закреплены или нет устройств с MAC.",
+            ctk.CTkLabel(pick, text=_("Все известные устройства уже закреплены или нет устройств с MAC."),
                          font=fonts.small(), text_color=p.text_muted).grid(row=0, column=0, sticky="w")
         # existing reservations
         if self._leases:
             box = ctk.CTkFrame(c, fg_color="transparent")
             box.grid(row=4, column=0, padx=16, pady=(6, 12), sticky="ew")
             box.grid_columnconfigure(0, weight=1)
-            ctk.CTkLabel(box, text="Закреплённые:", font=fonts.small(), text_color=p.text_muted,
+            ctk.CTkLabel(box, text=_("Закреплённые:"), font=fonts.small(), text_color=p.text_muted,
                          anchor="w").grid(row=0, column=0, sticky="w", pady=(0, 2))
             for i, l in enumerate(self._leases, start=1):
                 line = ctk.CTkFrame(box, fg_color="transparent")
@@ -715,7 +714,7 @@ class AdvancedScreen(ctk.CTkFrame):
                 line.grid_columnconfigure(0, weight=1)
                 ctk.CTkLabel(line, text=f"{l.name or l.mac} → {l.ip}", font=fonts.small(),
                              text_color=p.text, anchor="w").grid(row=0, column=0, sticky="w")
-                ctk.CTkButton(line, text="Убрать", font=fonts.small(), width=70, height=24,
+                ctk.CTkButton(line, text=_("Убрать"), font=fonts.small(), width=70, height=24,
                               fg_color="transparent", hover_color=p.surface_hover,
                               text_color=p.text_muted, border_width=1, border_color=p.text_muted,
                               command=lambda mac=l.mac: self._unpin_device(mac)).grid(row=0, column=1)
@@ -726,28 +725,28 @@ class AdvancedScreen(ctk.CTkFrame):
         dev = self._dev_labels.get(self._dev_menu.get())
         if dev is None:
             return
-        self._static_status.configure(text="Закрепляю адрес…", text_color=self.p.text_muted)
+        self._static_status.configure(text=_("Закрепляю адрес…"), text_color=self.p.text_muted)
         client = self._client
         run_async(self, lambda: lan_engine.add_static_lease(
             client, name=dev.hostname, mac=dev.mac, ip=dev.ip),
             lambda _r: self.refresh(),
-            lambda e: self._static_status.configure(text=f"Ошибка: {e}", text_color=self.p.fail))
+            lambda e: self._static_status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     def _unpin_device(self, mac: str) -> None:
         client = self._client
         run_async(self, lambda: lan_engine.remove_static_lease(client, mac),
                   lambda _r: self.refresh(),
-                  lambda e: self._static_status.configure(text=f"Ошибка: {e}", text_color=self.p.fail))
+                  lambda e: self._static_status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     # ----- UPnP ---------------------------------------------------------
 
     def _build_upnp_card(self, row: int) -> None:
         p = self.p
         st = self._upnp
-        c = self._card(row, "UPnP / переадресация портов")
-        ctk.CTkLabel(c, text="Позволяет программам и играм самим открывать нужные порты на "
+        c = self._card(row, _("UPnP / переадресация портов"))
+        ctk.CTkLabel(c, text=_("Позволяет программам и играм самим открывать нужные порты на "
                      "роутере (онлайн-игры, торренты, видеозвонки). Удобно, но снижает контроль "
-                     "над тем, какие порты открыты.", font=fonts.small(), text_color=p.text_muted,
+                     "над тем, какие порты открыты."), font=fonts.small(), text_color=p.text_muted,
                      wraplength=560, justify="left", anchor="w").grid(
             row=1, column=0, padx=16, sticky="w")
         # status dot
@@ -756,12 +755,12 @@ class AdvancedScreen(ctk.CTkFrame):
         running = st.enabled and st.running
         ctk.CTkLabel(head, text="●", font=fonts.body(),
                      text_color=p.ok if running else p.fail).grid(row=0, column=0, padx=(0, 6))
-        ctk.CTkLabel(head, text=("Служба включена и работает" if running else
-                                 ("Включена, но не запущена" if st.enabled else "Отключена")),
+        ctk.CTkLabel(head, text=(_("Служба включена и работает") if running else
+                                 (_("Включена, но не запущена") if st.enabled else _("Отключена"))),
                      font=fonts.small(),
                      text_color=p.ok if running else p.text_muted).grid(row=0, column=1, sticky="w")
         self._upnp_var = ctk.StringVar(value="1" if st.enabled else "0")
-        ctk.CTkSwitch(c, text="Включить UPnP", font=fonts.body(), variable=self._upnp_var,
+        ctk.CTkSwitch(c, text=_("Включить UPnP"), font=fonts.body(), variable=self._upnp_var,
                       onvalue="1", offvalue="0", progress_color=p.accent,
                       command=self._toggle_upnp).grid(row=3, column=0, padx=16, pady=(4, 4),
                                                       sticky="w")
@@ -772,7 +771,7 @@ class AdvancedScreen(ctk.CTkFrame):
         box = ctk.CTkFrame(c, fg_color="transparent")
         box.grid(row=5, column=0, padx=16, pady=(6, 12), sticky="ew")
         box.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(box, text="Активные переадресации:", font=fonts.small(),
+        ctk.CTkLabel(box, text=_("Активные переадресации:"), font=fonts.small(),
                      text_color=p.text_muted, anchor="w").grid(row=0, column=0, sticky="w")
         if st.redirects:
             for i, r in enumerate(st.redirects, start=1):
@@ -782,16 +781,16 @@ class AdvancedScreen(ctk.CTkFrame):
                 ctk.CTkLabel(box, text=txt, font=fonts.small(), text_color=p.text, anchor="w").grid(
                     row=i, column=0, sticky="w", pady=1)
         else:
-            ctk.CTkLabel(box, text="нет активных переадресаций", font=fonts.small(),
+            ctk.CTkLabel(box, text=_("нет активных переадресаций"), font=fonts.small(),
                          text_color=p.text_muted, anchor="w").grid(row=1, column=0, sticky="w")
 
     def _toggle_upnp(self) -> None:
         on = self._upnp_var.get() == "1"
-        self._upnp_status.configure(text="Применяю…", text_color=self.p.text_muted)
+        self._upnp_status.configure(text=_("Применяю…"), text_color=self.p.text_muted)
         client = self._client
         run_async(self, lambda: upnp_engine.set_enabled(client, on),
                   lambda _r: self.refresh(),
-                  lambda e: self._upnp_status.configure(text=f"Ошибка: {e}",
+                  lambda e: self._upnp_status.configure(text=_("Ошибка: {0}").format(e),
                                                         text_color=self.p.fail))
 
     # ----- SQM ----------------------------------------------------------
@@ -799,12 +798,12 @@ class AdvancedScreen(ctk.CTkFrame):
     def _build_sqm_card(self, row: int) -> None:
         p = self.p
         s = self._sqm
-        c = self._card(row, "SQM — сглаживание буфера (bufferbloat)")
-        ctk.CTkLabel(c, text="Убирает «залипания» интернета, когда кто-то качает или грузит "
+        c = self._card(row, _("SQM — сглаживание буфера (bufferbloat)"))
+        ctk.CTkLabel(c, text=_("Убирает «залипания» интернета, когда кто-то качает или грузит "
                      "канал (видеозвонки, игры перестают тормозить). Ограничивает скорость чуть "
                      "ниже реальной, чтобы роутер управлял очередью пакетов. Требователен к "
                      "производительности роутера: на тарифах с высокой скоростью (500+ Мбит/с) "
-                     "может занижать скорость из-за нехватки мощности.", font=fonts.small(),
+                     "может занижать скорость из-за нехватки мощности."), font=fonts.small(),
                      text_color=p.text_muted, wraplength=560, justify="left", anchor="w").grid(
             row=1, column=0, padx=16, sticky="w")
         grid = ctk.CTkFrame(c, fg_color="transparent")
@@ -824,31 +823,31 @@ class AdvancedScreen(ctk.CTkFrame):
             ifaces = [s.interface or "eth1"]
         cur_if = s.interface if s.interface in ifaces else ifaces[0]
         self._sqm_if = ctk.StringVar(value=cur_if)
-        self._sqm_field(grid, "WAN-интерфейс (что ограничиваем)",
-                        "Устройство, через которое роутер выходит в интернет. Обычно определяется "
-                        "автоматически.", widget=ctk.CTkOptionMenu(
+        self._sqm_field(grid, _("WAN-интерфейс (что ограничиваем)"),
+                        _("Устройство, через которое роутер выходит в интернет. Обычно определяется "
+                        "автоматически."), widget=ctk.CTkOptionMenu(
                             grid, variable=self._sqm_if, values=ifaces, font=fonts.small(),
                             width=160, fg_color=p.surface_hover, button_color=p.accent,
                             button_hover_color=p.accent_hover))
 
         self._sqm_down = ctk.StringVar(value=str(s.download or ""))
-        self._sqm_field(grid, "Скорость приёма, кбит/с",
-                        "Поставьте ~90–95% от тарифной скорости загрузки, либо на 1–2 Мбит/с меньше "
-                        "реально измеренной. Например, при тарифе 100 Мбит/с — около 90000–95000.",
+        self._sqm_field(grid, _("Скорость приёма, кбит/с"),
+                        _("Поставьте ~90–95% от тарифной скорости загрузки, либо на 1–2 Мбит/с меньше "
+                        "реально измеренной. Например, при тарифе 100 Мбит/с — около 90000–95000."),
                         widget=ctk.CTkEntry(
                             grid, textvariable=self._sqm_down, font=fonts.body(), width=160,
                             fg_color=p.surface_hover, validate="key", validatecommand=digits))
         self._sqm_up = ctk.StringVar(value=str(s.upload or ""))
-        self._sqm_field(grid, "Скорость отдачи, кбит/с",
-                        "Так же: ~90–95% от тарифной скорости отдачи (upload) или на 1–2 Мбит/с "
-                        "меньше измеренной.", widget=ctk.CTkEntry(
+        self._sqm_field(grid, _("Скорость отдачи, кбит/с"),
+                        _("Так же: ~90–95% от тарифной скорости отдачи (upload) или на 1–2 Мбит/с "
+                        "меньше измеренной."), widget=ctk.CTkEntry(
                             grid, textvariable=self._sqm_up, font=fonts.body(), width=160,
                             fg_color=p.surface_hover, validate="key", validatecommand=digits))
 
         self._sqm_qdisc = ctk.StringVar(value=s.qdisc if s.qdisc in sqm_engine.QDISCS else "cake")
-        self._sqm_field(grid, "Дисциплина очереди",
-                        "cake — современная, рекомендуется (сама управляет приоритетами). "
-                        "fq_codel — проще и легче, для слабых роутеров.", widget=ctk.CTkOptionMenu(
+        self._sqm_field(grid, _("Дисциплина очереди"),
+                        _("cake — современная, рекомендуется (сама управляет приоритетами). "
+                        "fq_codel — проще и легче, для слабых роутеров."), widget=ctk.CTkOptionMenu(
                             grid, variable=self._sqm_qdisc, values=sqm_engine.QDISCS,
                             font=fonts.small(), width=160, fg_color=p.surface_hover,
                             button_color=p.accent, button_hover_color=p.accent_hover))
@@ -857,34 +856,34 @@ class AdvancedScreen(ctk.CTkFrame):
         cur_script_lbl = next((lbl for val, lbl in sqm_engine.SCRIPTS if val == s.script),
                               sqm_engine.SCRIPTS[0][1])
         self._sqm_script = ctk.StringVar(value=cur_script_lbl)
-        self._sqm_field(grid, "Шаблон настройки очереди",
-                        "Простой подходит почти всем. «С приоритизацией» отдаёт приоритет звонкам "
-                        "и играм перед загрузками, но чуть тяжелее.", widget=ctk.CTkOptionMenu(
+        self._sqm_field(grid, _("Шаблон настройки очереди"),
+                        _("Простой подходит почти всем. «С приоритизацией» отдаёт приоритет звонкам "
+                        "и играм перед загрузками, но чуть тяжелее."), widget=ctk.CTkOptionMenu(
                             grid, variable=self._sqm_script,
                             values=[lbl for _v, lbl in sqm_engine.SCRIPTS], font=fonts.small(),
                             width=280, fg_color=p.surface_hover, button_color=p.accent,
                             button_hover_color=p.accent_hover))
 
         self._sqm_overhead = ctk.StringVar(value=str(s.overhead))
-        self._sqm_field(grid, "Накладные расходы на пакет, байт",
-                        "Запас на служебные данные канала. 44 подходит для большинства подключений "
+        self._sqm_field(grid, _("Накладные расходы на пакет, байт"),
+                        _("Запас на служебные данные канала. 44 подходит для большинства подключений "
                         "(Ethernet/оптика/кабель). Для DSL может быть иначе — если не уверены, "
-                        "оставьте 44.", widget=ctk.CTkEntry(
+                        "оставьте 44."), widget=ctk.CTkEntry(
                             grid, textvariable=self._sqm_overhead, font=fonts.body(), width=80,
                             fg_color=p.surface_hover, validate="key", validatecommand=digits3))
 
         self._sqm_enabled = ctk.StringVar(value="1" if s.enabled else "0")
-        ctk.CTkSwitch(c, text="Включить SQM", font=fonts.body(), variable=self._sqm_enabled,
+        ctk.CTkSwitch(c, text=_("Включить SQM"), font=fonts.body(), variable=self._sqm_enabled,
                       onvalue="1", offvalue="0", progress_color=p.accent).grid(
             row=3, column=0, padx=16, pady=(4, 4), sticky="w")
         applyrow = ctk.CTkFrame(c, fg_color="transparent")
         applyrow.grid(row=4, column=0, padx=16, pady=(2, 12), sticky="w")
         self._sqm_measure_btn = ctk.CTkButton(
-            applyrow, text="Измерить", font=fonts.body(), fg_color=p.surface_hover,
+            applyrow, text=_("Измерить"), font=fonts.body(), fg_color=p.surface_hover,
             hover_color=p.border, text_color=p.text, border_width=1, border_color=p.text_muted,
             width=120, command=self._measure_sqm)
         self._sqm_measure_btn.grid(row=0, column=0, sticky="w")
-        self._sqm_btn = ctk.CTkButton(applyrow, text="Применить", font=fonts.body(),
+        self._sqm_btn = ctk.CTkButton(applyrow, text=_("Применить"), font=fonts.body(),
                                       fg_color=p.accent, hover_color=p.accent_hover,
                                       text_color=p.accent_fg, width=140, command=self._apply_sqm)
         self._sqm_btn.grid(row=0, column=1, padx=(10, 0), sticky="w")
@@ -906,24 +905,23 @@ class AdvancedScreen(ctk.CTkFrame):
         self._sqm_row += 1
 
     def _measure_sqm(self) -> None:
-        self._sqm_measure_btn.configure(state="disabled", text="Измеряю…")
+        self._sqm_measure_btn.configure(state="disabled", text=_("Измеряю…"))
         self._sqm_status.configure(
-            text="Измеряю скорость загрузки (несколько секунд, скачается часть тестового "
-            "файла)…", text_color=self.p.text_muted)
+            text=_("Измеряю скорость загрузки (несколько секунд, скачается часть тестового "
+            "файла)…"), text_color=self.p.text_muted)
         client = self._client
 
         def done(res: tuple) -> None:
             down, up = res
-            self._sqm_measure_btn.configure(state="normal", text="Измерить")
+            self._sqm_measure_btn.configure(state="normal", text=_("Измерить"))
             self._sqm_down.set(str(down))
             self._sqm_up.set(str(up))
             self._sqm_status.configure(
-                text=f"Измерено: приём ≈ {down} кбит/с (−2% к замеру). Отдачу прикинул как "
-                f"{up} кбит/с (половина приёма) — уточните под свой тариф и нажмите «Применить».",
+                text=_("Измерено: приём ≈ {0} кбит/с (−2% к замеру). Отдачу прикинул как {1} кбит/с (половина приёма) — уточните под свой тариф и нажмите «Применить».").format(down, up),
                 text_color=self.p.ok)
 
         def err(e: BaseException) -> None:
-            self._sqm_measure_btn.configure(state="normal", text="Измерить")
+            self._sqm_measure_btn.configure(state="normal", text=_("Измерить"))
             self._sqm_status.configure(text=f"{e}", text_color=self.p.fail)
 
         run_async(self, lambda: sqm_engine.measure_speeds(client), done, err)
@@ -942,17 +940,17 @@ class AdvancedScreen(ctk.CTkFrame):
             # ('none' — the stock value — makes SQM ignore overhead entirely).
             linklayer="ethernet",
             overhead=int(self._sqm_overhead.get() or 44))
-        self._sqm_btn.configure(state="disabled", text="Применяю…")
-        self._sqm_status.configure(text="Настраиваю очередь…", text_color=self.p.text_muted)
+        self._sqm_btn.configure(state="disabled", text=_("Применяю…"))
+        self._sqm_status.configure(text=_("Настраиваю очередь…"), text_color=self.p.text_muted)
         client = self._client
 
         def done(_r: object) -> None:
-            self._sqm_btn.configure(state="normal", text="Применить")
-            self._sqm_status.configure(text="Готово — настройки SQM применены.",
+            self._sqm_btn.configure(state="normal", text=_("Применить"))
+            self._sqm_status.configure(text=_("Готово — настройки SQM применены."),
                                        text_color=self.p.ok)
 
         def err(e: BaseException) -> None:
-            self._sqm_btn.configure(state="normal", text="Применить")
+            self._sqm_btn.configure(state="normal", text=_("Применить"))
             self._sqm_status.configure(text=f"{e}", text_color=self.p.fail)
 
         run_async(self, lambda: sqm_engine.apply_settings(client, new), done, err)
@@ -961,30 +959,30 @@ class AdvancedScreen(ctk.CTkFrame):
 
     def _build_reset_card(self, row: int) -> None:
         p = self.p
-        c = self._card(row, "Сброс к заводским настройкам")
-        ctk.CTkLabel(c, text="Полностью стирает все настройки роутера и возвращает его к "
+        c = self._card(row, _("Сброс к заводским настройкам"))
+        ctk.CTkLabel(c, text=_("Полностью стирает все настройки роутера и возвращает его к "
                      "состоянию «из коробки» (обычно адрес 192.168.1.1, без пароля). "
-                     "HomeProxy, ключи, Wi-Fi — всё будет удалено.", font=fonts.small(),
+                     "HomeProxy, ключи, Wi-Fi — всё будет удалено."), font=fonts.small(),
                      text_color=p.text_muted, wraplength=560, justify="left",
                      anchor="w").grid(row=1, column=0, padx=16, sticky="w")
         box = ctk.CTkFrame(c, fg_color="transparent")
         box.grid(row=2, column=0, padx=16, pady=(8, 12), sticky="ew")
         box.grid_columnconfigure(0, weight=1)
         _DangerConfirm(
-            box, p, label="Сбросить устройство", confirm_label="Подтвердить сброс",
-            warning="Все настройки будут безвозвратно удалены, роутер перезагрузится в заводском "
+            box, p, label=_("Сбросить устройство"), confirm_label=_("Подтвердить сброс"),
+            warning=_("Все настройки будут безвозвратно удалены, роутер перезагрузится в заводском "
                     "состоянии. Приложение потеряет связь. Убедитесь, что у вас есть резервная "
-                    "копия.", command=self._do_reset).grid(row=0, column=0, sticky="ew")
+                    "копия."), command=self._do_reset).grid(row=0, column=0, sticky="ew")
 
     def _do_reset(self, dc: _DangerConfirm) -> None:
         client = self._client
 
         def done(_r: Any) -> None:
-            dc.set_status("Сброс запущен. Роутер перезагрузится в заводском состоянии — "
-                          "подключитесь заново как к новому устройству.", self.p.ok)
+            dc.set_status(_("Сброс запущен. Роутер перезагрузится в заводском состоянии — "
+                          "подключитесь заново как к новому устройству."), self.p.ok)
 
         def err(e: BaseException) -> None:
             dc.reset()
-            dc.set_status(f"Ошибка: {e}", self.p.fail)
+            dc.set_status(_("Ошибка: {0}").format(e), self.p.fail)
 
         run_async(self, lambda: maintenance.factory_reset(client), done, err)

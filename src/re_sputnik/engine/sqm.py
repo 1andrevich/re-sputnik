@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """SQM (sqm-scripts) — Smart Queue Management / bufferbloat control.
 
 Reads and writes the first ``sqm`` queue section: WAN interface, down/up rate
@@ -13,6 +14,7 @@ from dataclasses import dataclass
 
 from ..router import RouterClient
 from . import network as net
+from ..i18n import _
 
 _REF = "sqm.@queue[0]"  # uci anonymous ref to the first queue section
 
@@ -95,7 +97,7 @@ def measure_speeds(client: RouterClient) -> tuple[int, int]:
             b, s, e = res.stdout.strip().split()
             nbytes, elapsed = int(b), float(e) - float(s)
         except ValueError:
-            last = (res.stderr or "").strip() or "нет ответа"
+            last = (res.stderr or "").strip() or _("нет ответа")
             continue
         if nbytes > 1_000_000 and elapsed > 1.0:
             kbit = (nbytes * 8) / 1000.0 / elapsed
@@ -104,8 +106,8 @@ def measure_speeds(client: RouterClient) -> tuple[int, int]:
             down = max(int(kbit) - MEASURE_MARGIN_KBIT, 256)
             return down, int(down * UPLOAD_FRACTION)
         last = f"мало данных ({nbytes} Б за {elapsed:.1f} с)"
-    raise RuntimeError("Не удалось измерить скорость — тест-серверы недоступны "
-                       "(или у роутера нет прямого выхода в интернет). Введите значения вручную."
+    raise RuntimeError(_("Не удалось измерить скорость — тест-серверы недоступны "
+                       "(или у роутера нет прямого выхода в интернет). Введите значения вручную.")
                        + (f" [{last}]" if last else ""))
 
 
@@ -168,9 +170,9 @@ def get_settings(client: RouterClient) -> SqmSettings:
 def apply_settings(client: RouterClient, s: SqmSettings) -> None:
     """Write the queue section and (re)start / stop the SQM service."""
     if not s.interface:
-        raise ValueError("Не выбран WAN-интерфейс.")
+        raise ValueError(_("Не выбран WAN-интерфейс."))
     if s.enabled and (s.download <= 0 or s.upload <= 0):
-        raise ValueError("Укажите скорости приёма и отдачи (кбит/с) больше нуля.")
+        raise ValueError(_("Укажите скорости приёма и отдачи (кбит/с) больше нуля."))
     cmds: list[str] = []
     if not s.exists:
         cmds.append("uci add sqm queue >/dev/null")

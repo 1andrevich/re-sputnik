@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Diagnostics screen — the app's "eyes" on a router, on live RPC data.
 
 Gathers the luci.homeproxy diagnostics methods over SSH and renders them as
@@ -22,6 +23,7 @@ from ..router import RouterClient
 from . import kit
 from .theme import Palette, fonts
 from .worker import post_to, run_async
+from ..i18n import N_, _
 
 OnBack = Callable[[], None]
 
@@ -29,7 +31,7 @@ OnBack = Callable[[], None]
 _SITES = [
     ("youtube", "YouTube"),
     ("google", "Google"),
-    ("yandex", "Яндекс"),
+    ("yandex", N_("Яндекс")),
     ("speedtest", "Speedtest"),
     ("baidu", "Baidu"),
 ]
@@ -67,8 +69,8 @@ def _gather(client: RouterClient, progress: Optional[Progress] = None) -> dict[s
             progress(done / _TOTAL_STEPS, label)
 
     data: dict[str, Any] = {}
-    step("ядро"); data["core"] = safe("diag_core_check")
-    step("конфиг"); data["config"] = safe("diag_config_check")
+    step(_("ядро")); data["core"] = safe("diag_core_check")
+    step(_("конфиг")); data["config"] = safe("diag_config_check")
     # If the core is down because the config won't parse, identify the offending
     # server by name (reuses the core/config dicts just fetched — no extra RPC).
     data["core_failure"] = None
@@ -79,8 +81,8 @@ def _gather(client: RouterClient, progress: Optional[Progress] = None) -> dict[s
                 client, core=data["core"], config=data["config"])
         except Exception:  # noqa: BLE001 — diagnosis is best-effort
             data["core_failure"] = None
-    step("активный сервер"); data["active_node"] = safe("clash_active_node")
-    step("серверы")
+    step(_("активный сервер")); data["active_node"] = safe("clash_active_node")
+    step(_("серверы"))
     try:
         data["nodes"] = nodes_engine.list_nodes(client)
     except Exception:  # noqa: BLE001 — names just won't resolve, not fatal
@@ -88,7 +90,7 @@ def _gather(client: RouterClient, progress: Optional[Progress] = None) -> dict[s
     step("IP"); data["ip"] = safe("clash_ip_info")
     step("DNS"); data["dns"] = safe("diag_dns_ru")
     step("nftables"); data["nft"] = safe("diag_nftables")
-    step("отчёт"); data["report"] = safe("diag_report").get("report", "")
+    step(_("отчёт")); data["report"] = safe("diag_report").get("report", "")
     # clash_ip_info relies on the Clash API "ipinfo" field, which sing-box-extended
     # doesn't populate → empty IP card. If the proxy IP is missing, fetch it
     # ourselves (directly + through the mixed proxy), which works on any core.
@@ -104,7 +106,7 @@ def _gather(client: RouterClient, progress: Optional[Progress] = None) -> dict[s
 
     conn: dict[str, Optional[bool]] = {}
     for key, label in _SITES:
-        step(f"связь: {label}")
+        step(_("связь: {0}").format(_(label)))
         res = safe("connection_check", {"site": key})
         conn[key] = bool(res.get("result")) if "result" in res else None
     data["conn"] = conn
@@ -141,12 +143,12 @@ class DiagnosticsScreen(ctk.CTkFrame):
         bar = ctk.CTkFrame(self, fg_color="transparent")
         bar.grid(row=0, column=0, padx=24, pady=(20, 4), sticky="ew")
         bar.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(bar, text="Диагностика", font=fonts.title(), text_color=p.text,
+        ctk.CTkLabel(bar, text=_("Диагностика"), font=fonts.title(), text_color=p.text,
                      image=kit.icon(kit._ICON_FOR["diagnostics"], 26), compound="left").grid(
             row=0, column=0, sticky="w"
         )
         self._refresh_btn = ctk.CTkButton(
-            bar, text=f"{kit.REFRESH_GLYPH} Обновить страницу", font=fonts.body(), width=180,
+            bar, text=_("{0} Обновить страницу").format(kit.REFRESH_GLYPH), font=fonts.body(), width=180,
             fg_color=p.surface, hover_color=p.surface_hover, command=self.refresh,
         )
         self._refresh_btn.grid(row=0, column=1, padx=(8, 0))
@@ -165,7 +167,7 @@ class DiagnosticsScreen(ctk.CTkFrame):
 
     def refresh(self) -> None:
         self._refresh_btn.configure(state="disabled", text="…")
-        self._status.configure(text="Собираю диагностику…", text_color=self.p.text_muted)
+        self._status.configure(text=_("Собираю диагностику…"), text_color=self.p.text_muted)
         self._progress.set(0)
         self._progress.grid()
         client = self._client
@@ -177,19 +179,19 @@ class DiagnosticsScreen(ctk.CTkFrame):
 
     def _set_progress(self, frac: float, label: str) -> None:
         self._progress.set(frac)
-        self._status.configure(text=f"Собираю диагностику… {label}", text_color=self.p.text_muted)
+        self._status.configure(text=_("Собираю диагностику… {0}").format(label), text_color=self.p.text_muted)
 
     def _on_error(self, exc: BaseException) -> None:
         self._progress.grid_remove()
-        self._refresh_btn.configure(state="normal", text=f"{kit.REFRESH_GLYPH} Обновить страницу")
-        self._status.configure(text=f"Ошибка: {exc}", text_color=self.p.fail)
+        self._refresh_btn.configure(state="normal", text=_("{0} Обновить страницу").format(kit.REFRESH_GLYPH))
+        self._status.configure(text=_("Ошибка: {0}").format(exc), text_color=self.p.fail)
 
     # ----- rendering ----------------------------------------------------
 
     def _render(self, d: dict[str, Any]) -> None:
         p = self.p
         self._progress.grid_remove()
-        self._refresh_btn.configure(state="normal", text=f"{kit.REFRESH_GLYPH} Обновить страницу")
+        self._refresh_btn.configure(state="normal", text=_("{0} Обновить страницу").format(kit.REFRESH_GLYPH))
         self._status.configure(text="", text_color=p.text_muted)
         for w in self._body.winfo_children():
             w.destroy()
@@ -206,7 +208,7 @@ class DiagnosticsScreen(ctk.CTkFrame):
 
         if self._on_back is not None:
             ctk.CTkButton(
-                self._body, text="← Назад", font=fonts.body(), fg_color="transparent",
+                self._body, text=_("← Назад"), font=fonts.body(), fg_color="transparent",
                 hover_color=p.surface_hover, width=90, command=self._on_back,
             ).grid(row=row, column=0, pady=(12, 8), sticky="w")
 
@@ -221,13 +223,13 @@ class DiagnosticsScreen(ctk.CTkFrame):
         card.grid(row=row, column=0, pady=(0, 12), sticky="ew")
         card.grid_columnconfigure(0, weight=1)
         head, steps = core_health.failure_message(failure)
-        ctk.CTkLabel(card, text="⚠ Ядро не запускается", font=fonts.heading(),
+        ctk.CTkLabel(card, text=_("⚠ Ядро не запускается"), font=fonts.heading(),
                      text_color=self.p.warn).grid(row=0, column=0, padx=16, pady=(12, 4), sticky="w")
         ctk.CTkLabel(card, text=head + "\n\n• " + "\n• ".join(steps), font=fonts.small(),
                      text_color=self.p.text, anchor="w", justify="left", wraplength=560).grid(
             row=1, column=0, padx=16, pady=(0, 8), sticky="w")
         if failure.raw:
-            ctk.CTkLabel(card, text="Сообщение ядра: " + failure.raw, font=fonts.small(),
+            ctk.CTkLabel(card, text=_("Сообщение ядра: ") + failure.raw, font=fonts.small(),
                          text_color=self.p.text_muted, anchor="w", justify="left",
                          wraplength=560).grid(row=2, column=0, padx=16, pady=(0, 12), sticky="w")
         return row + 1
@@ -266,8 +268,8 @@ class DiagnosticsScreen(ctk.CTkFrame):
         nft = d.get("nft", {})
 
         checks: list[tuple[str, Optional[bool], str]] = [
-            ("Ядро", bool(core.get("running")), self._clean_version(core.get("version", ""))),
-            ("Конфиг", bool(config.get("valid")),
+            (_("Ядро"), bool(core.get("running")), self._clean_version(core.get("version", ""))),
+            (_("Конфиг"), bool(config.get("valid")),
              f"outbounds: {config.get('stats', {}).get('outbounds', '?')}"),
             ("Clash API", "error" not in node and bool(node.get("node")), ""),
             ("nftables", bool(nft.get("nft_present")), ""),
@@ -278,7 +280,7 @@ class DiagnosticsScreen(ctk.CTkFrame):
             checks.append(("Zapret", bool(core.get("zapret_running")), ""))
         # DNS now has its own card with per-test results (see _render_dns).
 
-        card = self._card("Состояние", row)
+        card = self._card(_("Состояние"), row)
         grid = ctk.CTkFrame(card, fg_color="transparent")
         grid.grid(row=1, column=0, padx=12, pady=(0, 12), sticky="ew")
         for i, (label, ok, hint) in enumerate(checks):
@@ -320,9 +322,9 @@ class DiagnosticsScreen(ctk.CTkFrame):
 
     def _render_active_node(self, d: dict[str, Any], row: int) -> int:
         node = d.get("active_node", {})
-        card = self._card("Активный сервер", row)
+        card = self._card(_("Активный сервер"), row)
         if "error" in node or not node.get("node"):
-            ctk.CTkLabel(card, text=node.get("error", "нет активного сервера"), font=fonts.body(),
+            ctk.CTkLabel(card, text=node.get("error", _("нет активного сервера")), font=fonts.body(),
                          text_color=self.p.text_muted, anchor="w").grid(
                 row=1, column=0, padx=16, pady=(0, 12), sticky="w")
             return row + 1
@@ -335,24 +337,24 @@ class DiagnosticsScreen(ctk.CTkFrame):
         color: Optional[str] = None
         if delay == _NODE_TIMEOUT_MS:
             # CONFIRMED timeout: the core positively reported 65535 ms → red.
-            delay_s, color = f"{delay} ms (таймаут)", self.p.fail
+            delay_s, color = _("{0} ms (таймаут)").format(delay), self.p.fail
         elif not delay:
             # No data, or 0 ms (a non-confirmation some cores return on failure) —
             # UNCONFIRMED, so gray, never red. We don't claim a timeout we didn't get.
-            delay_s, color = "нет данных", self.p.text_muted
+            delay_s, color = _("нет данных"), self.p.text_muted
         elif slow:
             delay_s, color = f"{delay} ms", self.p.warn            # high latency → orange
         else:
             delay_s, color = f"{delay} ms", self.p.ok              # responding → green
-        grp = (f"   ·   группа: {node.get('group')} ({node.get('group_type')})"
+        grp = (_("   ·   группа: {0} ({1})").format(node.get('group'), node.get('group_type'))
                if node.get("group") else "")
         name = self._resolve_node_name(node.get("node"), d.get("nodes", []))
         text = f"{name}   ·   {node.get('type') or '—'}   ·   {delay_s}{grp}"
         self._dot_row(card, None, text, color=color).grid(
             row=1, column=0, padx=16, pady=(0, 4 if slow else 12), sticky="w")
         if slow:
-            ctk.CTkLabel(card, text="⚠ Высокая задержка — сервер медленный или нерабочий (возможны "
-                         "проблемы с DNS). Если повторяется — уберите этот сервер из списка.",
+            ctk.CTkLabel(card, text=_("⚠ Высокая задержка — сервер медленный или нерабочий (возможны "
+                         "проблемы с DNS). Если повторяется — уберите этот сервер из списка."),
                          font=fonts.small(), text_color=self.p.warn, anchor="w",
                          wraplength=560, justify="left").grid(
                 row=2, column=0, padx=16, pady=(0, 12), sticky="w")
@@ -375,8 +377,8 @@ class DiagnosticsScreen(ctk.CTkFrame):
             ctk.CTkLabel(inner, text=ip["error"], font=fonts.body(), text_color=self.p.text_muted,
                          anchor="w", wraplength=560).grid(row=0, column=0, columnspan=2, sticky="w")
         else:
-            self._kv(inner, 0, 0, "IP провайдера", fmt(ip.get("direct")))
-            self._kv(inner, 0, 1, "Через прокси", fmt(ip.get("proxy")))
+            self._kv(inner, 0, 0, _("IP провайдера"), fmt(ip.get("direct")))
+            self._kv(inner, 0, 1, _("Через прокси"), fmt(ip.get("proxy")))
         return row + 1
 
     def _render_dns(self, d: dict[str, Any], row: int) -> int:
@@ -394,8 +396,8 @@ class DiagnosticsScreen(ctk.CTkFrame):
         inner = ctk.CTkFrame(card, fg_color="transparent")
         inner.grid(row=1, column=0, padx=16, pady=(0, 12), sticky="ew")
         inner.grid_columnconfigure(0, weight=1)
-        self._dns_row(inner, 0, "Россия — mail.ru", dns.get("russia_ok"), dns.get("russia_server"))
-        self._dns_row(inner, 1, "Защищённый — andrevi.ch", dns.get("secure_ok"),
+        self._dns_row(inner, 0, _("Россия — mail.ru"), dns.get("russia_ok"), dns.get("russia_server"))
+        self._dns_row(inner, 1, _("Защищённый — andrevi.ch"), dns.get("secure_ok"),
                       dns.get("secure_server"))
         return row + 1
 
@@ -415,30 +417,30 @@ class DiagnosticsScreen(ctk.CTkFrame):
 
     def _render_connectivity(self, d: dict[str, Any], row: int) -> int:
         conn = d.get("conn", {})
-        card = self._card("Проверка связи", row)
+        card = self._card(_("Проверка связи"), row)
         grid = ctk.CTkFrame(card, fg_color="transparent")
         grid.grid(row=1, column=0, padx=12, pady=(0, 12), sticky="ew")
         for i, (key, label) in enumerate(_SITES):
-            self._dot_row(grid, conn.get(key), label).grid(row=0, column=i, padx=8, sticky="w")
+            self._dot_row(grid, conn.get(key), _(label)).grid(row=0, column=i, padx=8, sticky="w")
         return row + 1
 
     def _render_report(self, d: dict[str, Any], row: int) -> int:
-        card = self._card("Полный отчёт (без паролей и ключей)", row)
-        ctk.CTkLabel(card, text="Можно безопасно скопировать или сохранить и отправить на "
-                     "проверку — пароли и ключи из отчёта автоматически удалены.",
+        card = self._card(_("Полный отчёт (без паролей и ключей)"), row)
+        ctk.CTkLabel(card, text=_("Можно безопасно скопировать или сохранить и отправить на "
+                     "проверку — пароли и ключи из отчёта автоматически удалены."),
                      font=fonts.small(), text_color=self.p.text_muted, wraplength=560,
                      justify="left", anchor="w").grid(row=1, column=0, padx=16, pady=(0, 6), sticky="w")
         box = ctk.CTkTextbox(card, font=ctk.CTkFont(family="Consolas", size=12),
                              fg_color=self.p.bg, text_color=self.p.text_muted, height=220, wrap="none")
         box.grid(row=2, column=0, padx=16, pady=(0, 8), sticky="ew")
-        box.insert("1.0", self._report_text or "(пусто)")
+        box.insert("1.0", self._report_text or _("(пусто)"))
         box.configure(state="disabled")
         btns = ctk.CTkFrame(card, fg_color="transparent")
         btns.grid(row=3, column=0, padx=16, pady=(0, 12), sticky="w")
-        ctk.CTkButton(btns, text="📋 Копировать", font=fonts.small(), width=120,
+        ctk.CTkButton(btns, text=_("📋 Копировать"), font=fonts.small(), width=120,
                       fg_color="transparent", hover_color=self.p.surface_hover,
                       command=self._copy_report).grid(row=0, column=0)
-        ctk.CTkButton(btns, text="💾 Сохранить", font=fonts.small(), width=120,
+        ctk.CTkButton(btns, text=_("💾 Сохранить"), font=fonts.small(), width=120,
                       fg_color="transparent", hover_color=self.p.surface_hover,
                       command=self._save_report).grid(row=0, column=1, padx=(8, 0))
         return row + 1
@@ -448,15 +450,15 @@ class DiagnosticsScreen(ctk.CTkFrame):
     def _copy_report(self) -> None:
         self.clipboard_clear()
         self.clipboard_append(self._report_text)
-        self._status.configure(text="Отчёт скопирован.", text_color=self.p.text_muted)
+        self._status.configure(text=_("Отчёт скопирован."), text_color=self.p.text_muted)
 
     def _save_report(self) -> None:
         if not self._report_text:
-            self._status.configure(text="Нет отчёта для сохранения.", text_color=self.p.warn)
+            self._status.configure(text=_("Нет отчёта для сохранения."), text_color=self.p.warn)
             return
         path = filedialog.asksaveasfilename(
             defaultextension=".txt",
-            filetypes=[("Текстовый файл", "*.txt"), ("Все файлы", "*.*")],
+            filetypes=[(_("Текстовый файл"), "*.txt"), (_("Все файлы"), "*.*")],
             initialfile="re-homeproxy-diagnostics.txt",
         )
         if not path:
@@ -464,6 +466,6 @@ class DiagnosticsScreen(ctk.CTkFrame):
         try:
             with open(path, "w", encoding="utf-8") as f:
                 f.write(self._report_text)
-            self._status.configure(text=f"Сохранено: {path}", text_color=self.p.ok)
+            self._status.configure(text=_("Сохранено: {0}").format(path), text_color=self.p.ok)
         except OSError as exc:
-            self._status.configure(text=f"Не удалось сохранить: {exc}", text_color=self.p.fail)
+            self._status.configure(text=_("Не удалось сохранить: {0}").format(exc), text_color=self.p.fail)

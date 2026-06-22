@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Rasterize the line-icon SVGs (design handoff) to PNG for the app.
 
 customtkinter can't load SVG, so we render each master SVG once at high

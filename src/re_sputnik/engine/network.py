@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Router internet/uplink setup — initial network configuration (not homeproxy).
 
 This is the "make the router reach the internet" piece, needed before any
@@ -16,6 +17,7 @@ import shlex
 from dataclasses import dataclass, field
 
 from ..router import RouterClient
+from ..i18n import _
 
 
 @dataclass(slots=True)
@@ -69,7 +71,7 @@ def band_label(band: str) -> str:
 def format_bands(bands: list[str]) -> str:
     """"Диапазоны 2,4G, 5G, 6G" for a list of bands (empty string if none)."""
     labels = [band_label(b) for b in bands if b and b != "?"]
-    return ("Диапазоны " + ", ".join(labels)) if labels else ""
+    return (_("Диапазоны ") + ", ".join(labels)) if labels else ""
 
 
 def check_internet(client: RouterClient) -> bool:
@@ -300,18 +302,18 @@ def validate_new_lan_ip(new_ip: str, wan_subnet: str) -> "str | None":
     try:
         ip = ipaddress.ip_address(new_ip.strip())
     except ValueError:
-        return "Неверный IP-адрес."
+        return _("Неверный IP-адрес.")
     if ip.version != 4:
-        return "Нужен адрес IPv4."
+        return _("Нужен адрес IPv4.")
     if not ip.is_private:
-        return "Используйте частный адрес (192.168.x.x, 10.x.x.x или 172.16–31.x.x)."
+        return _("Используйте частный адрес (192.168.x.x, 10.x.x.x или 172.16–31.x.x).")
     if int(str(ip).split(".")[-1]) in (0, 255):
-        return "Это адрес сети/широковещания — выберите хост .1–.254."
+        return _("Это адрес сети/широковещания — выберите хост .1–.254.")
     try:
         wan_net = ipaddress.ip_network(wan_subnet, strict=False)
         new_net = ipaddress.ip_network(f"{ip}/24", strict=False)
         if new_net.overlaps(wan_net):
-            return "Подсеть пересекается с сетью провайдера — конфликт останется. Выберите другую."
+            return _("Подсеть пересекается с сетью провайдера — конфликт останется. Выберите другую.")
     except ValueError:
         pass
     return None
@@ -735,13 +737,13 @@ def set_radio_wifi(client: RouterClient, radio: str, *, ssid: str, key: str,
     reload (best-effort; ``True`` if the status probe is empty on older builds)."""
     ssid = ssid.strip()
     if not ssid:
-        raise ValueError("Введите имя сети (SSID).")
+        raise ValueError(_("Введите имя сети (SSID)."))
     enc = normalize_encryption(encryption)
     if enc != "none":
         if not key:
-            raise ValueError("Для защищённой сети нужен пароль.")
+            raise ValueError(_("Для защищённой сети нужен пароль."))
         if len(key) < 8:
-            raise ValueError("Пароль должен быть не короче 8 символов.")
+            raise ValueError(_("Пароль должен быть не короче 8 символов."))
     iface = _ap_iface_for_radio(client, radio) or f"default_{radio}"
     cmd = (
         f"uci set wireless.{iface}=wifi-iface; "
@@ -845,13 +847,24 @@ def configure_ap(client: RouterClient, *, ssid: str, key: str, country: str = "R
         configured.append((r.name, r.band))
     client.run("uci commit wireless; wifi reload")
 
-    # Give hostapd a moment, then check which radios actually came up. If the
-    # status probe yields nothing (older builds), assume success — we only report
-    # a band as failed when we POSITIVELY see its radio down.
+    # Poll which radios actually came up. hostapd bring-up isn't instant and varies
+    # a LOT by radio: an embedded 2.4 GHz radio (HE20 on IPQ807x) or one doing ACS
+    # can take well over 6 s — a single fixed wait then falsely reported it "failed"
+    # while it was still coming up. So poll up to ~25 s, breaking as soon as every
+    # configured radio is up. A genuinely stuck band (e.g. 6 GHz on an outdated
+    # wireless-regdb) never comes up and is still caught at the deadline. If the
+    # status probe yields nothing (older builds), assume success.
     import time
 
-    time.sleep(6)
-    up = _radios_up(client)
+    names = {name for name, _ in configured}
+    up: dict[str, bool] = {}
+    deadline = time.monotonic() + 25
+    while True:
+        time.sleep(3)
+        up = _radios_up(client)
+        if not up or all(up.get(n) for n in names) or time.monotonic() >= deadline:
+            break
+
     enabled: list[str] = []
     failed: list[str] = []
     for name, band in configured:

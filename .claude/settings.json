@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s *)",
+      "Bash(curl -sS *)",
+      "Bash(curl -sSL *)",
+      "Bash(curl -fsSL *)",
+      "Bash(command -v *)"
+    ]
+  }
+}

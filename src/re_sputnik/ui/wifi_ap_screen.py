@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Пошаговая настройка — phase «Точка доступа».
 
 Sets up the router's own Wi-Fi (the home network devices connect to): one SSID +
@@ -16,6 +17,7 @@ from ..router import RouterClient
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import _
 
 OnDone = Callable[[], None]
 
@@ -33,10 +35,10 @@ class WifiApScreen(ctk.CTkFrame):
         self._scroll = self._sc.content
         b = self._scroll
 
-        ctk.CTkLabel(b, text="Точка доступа", font=fonts.title(), text_color=palette.text).grid(
+        ctk.CTkLabel(b, text=_("Точка доступа"), font=fonts.title(), text_color=palette.text).grid(
             row=0, column=0, pady=(28, 2), padx=32, sticky="w")
-        ctk.CTkLabel(b, text="Создайте Wi-Fi-сеть роутера, к которой будут подключаться ваши "
-                     "устройства. Можно пропустить, если используете только провод.",
+        ctk.CTkLabel(b, text=_("Создайте Wi-Fi-сеть роутера, к которой будут подключаться ваши "
+                     "устройства. Можно пропустить, если используете только провод."),
                      font=fonts.body(), text_color=palette.text_muted, wraplength=560,
                      justify="left").grid(row=1, column=0, pady=(0, 8), padx=32, sticky="w")
 
@@ -50,35 +52,35 @@ class WifiApScreen(ctk.CTkFrame):
         card = ctk.CTkFrame(b, fg_color=palette.surface, corner_radius=12)
         card.grid(row=3, column=0, padx=32, sticky="ew")
         card.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(card, text="Имя сети (SSID)", font=fonts.small(),
+        ctk.CTkLabel(card, text=_("Имя сети (SSID)"), font=fonts.small(),
                      text_color=palette.text_muted).grid(row=0, column=0, padx=16, pady=(12, 0),
                                                          sticky="w")
-        self._ssid = ctk.CTkEntry(card, font=fonts.body(), placeholder_text="Моя сеть")
+        self._ssid = ctk.CTkEntry(card, font=fonts.body(), placeholder_text=_("Моя сеть"))
         self._ssid.grid(row=1, column=0, padx=16, pady=4, sticky="ew")
-        ctk.CTkLabel(card, text="Пароль (не менее 8 символов)", font=fonts.small(),
+        ctk.CTkLabel(card, text=_("Пароль (не менее 8 символов)"), font=fonts.small(),
                      text_color=palette.text_muted).grid(row=2, column=0, padx=16, pady=(6, 0),
                                                          sticky="w")
         pwrow = ctk.CTkFrame(card, fg_color="transparent")
         pwrow.grid(row=3, column=0, padx=16, pady=4, sticky="ew")
         pwrow.grid_columnconfigure(0, weight=1)
-        self._key = ctk.CTkEntry(pwrow, font=fonts.body(), show="•", placeholder_text="Пароль Wi-Fi")
+        self._key = ctk.CTkEntry(pwrow, font=fonts.body(), show="•", placeholder_text=_("Пароль Wi-Fi"))
         self._key.grid(row=0, column=0, sticky="ew")
         self._pw_visible = False
         self._eye = ctk.CTkButton(pwrow, text="👁", font=fonts.body(), width=40,
                                   fg_color=palette.surface_hover, hover_color=palette.border,
                                   command=self._toggle_pw)
         self._eye.grid(row=0, column=1, padx=(6, 0))
-        ctk.CTkButton(pwrow, text="Сгенерировать", font=fonts.small(), width=120,
+        ctk.CTkButton(pwrow, text=_("Сгенерировать"), font=fonts.small(), width=120,
                       fg_color=palette.surface_hover, hover_color=palette.border,
                       command=self._gen_pw).grid(row=0, column=2, padx=(6, 0))
         # 6 GHz is handled automatically (every supported band is enabled; if a
         # band — usually 6 GHz — doesn't come up, we report it in the result).
-        self._create = ctk.CTkButton(card, text="Создать сеть", font=fonts.heading(), height=40,
+        self._create = ctk.CTkButton(card, text=_("Создать сеть"), font=fonts.heading(), height=40,
                                      fg_color=palette.accent, text_color=palette.accent_fg, hover_color=palette.accent_hover,
                                      command=self._do_create)
         self._create.grid(row=5, column=0, padx=16, pady=(8, 12), sticky="ew")
 
-        self._next = ctk.CTkButton(b, text="Далее →", font=fonts.heading(), height=42,
+        self._next = ctk.CTkButton(b, text=_("Далее →"), font=fonts.heading(), height=42,
                                    fg_color=palette.ok, hover_color=palette.accent_hover,
                                    command=on_done)
         self._next.grid(row=4, column=0, padx=32, pady=(14, 4), sticky="ew")
@@ -86,10 +88,10 @@ class WifiApScreen(ctk.CTkFrame):
 
         skiprow = ctk.CTkFrame(b, fg_color="transparent")
         skiprow.grid(row=5, column=0, padx=32, pady=(4, 8), sticky="w")
-        ctk.CTkButton(skiprow, text="Пропустить", font=fonts.body(), fg_color="transparent",
+        ctk.CTkButton(skiprow, text=_("Пропустить"), font=fonts.body(), fg_color="transparent",
                       hover_color=palette.surface_hover, command=on_done).grid(row=0, column=0)
         if on_back is not None:
-            ctk.CTkButton(skiprow, text="← Назад", font=fonts.body(), fg_color="transparent",
+            ctk.CTkButton(skiprow, text=_("← Назад"), font=fonts.body(), fg_color="transparent",
                           hover_color=palette.surface_hover, width=90, command=on_back).grid(
                 row=0, column=1, padx=(8, 0))
 
@@ -117,8 +119,8 @@ class WifiApScreen(ctk.CTkFrame):
             for w in (self._ssid, self._key, self._eye, self._create):
                 w.configure(state="disabled")
             self._banner.configure(
-                text="⚠ На этом устройстве не найден Wi-Fi-чип — точку доступа создать нельзя. "
-                     "Подключайте устройства по кабелю. Этот шаг можно пропустить.")
+                text=_("⚠ На этом устройстве не найден Wi-Fi-чип — точку доступа создать нельзя. "
+                     "Подключайте устройства по кабелю. Этот шаг можно пропустить."))
             self._banner.grid()
             self._next.grid()
             return
@@ -127,7 +129,7 @@ class WifiApScreen(ctk.CTkFrame):
             self._ssid.insert(0, st.ssid)
             bands_txt = net.format_bands(st.bands)
             self._status.configure(
-                text=f"Текущая сеть: «{st.ssid}»" + (f" — {bands_txt}." if bands_txt else "."),
+                text=_("Текущая сеть: «{0}»").format(st.ssid) + (f" — {bands_txt}." if bands_txt else "."),
                 text_color=self.p.ok)
             self._next.grid()
 
@@ -152,20 +154,20 @@ class WifiApScreen(ctk.CTkFrame):
         ssid = self._ssid.get().strip()
         key = self._key.get()
         if not ssid:
-            self._status.configure(text="Введите имя сети.", text_color=self.p.warn)
+            self._status.configure(text=_("Введите имя сети."), text_color=self.p.warn)
             return
         if key and len(key) < 8:
-            self._status.configure(text="Пароль должен быть не короче 8 символов.",
+            self._status.configure(text=_("Пароль должен быть не короче 8 символов."),
                                    text_color=self.p.warn)
             return
-        self._create.configure(state="disabled", text="Создаю…")
-        self._status.configure(text="Настраиваю Wi-Fi…", text_color=self.p.text_muted)
+        self._create.configure(state="disabled", text=_("Создаю…"))
+        self._status.configure(text=_("Настраиваю Wi-Fi…"), text_color=self.p.text_muted)
         client = self._client
         run_async(self, lambda: net.configure_ap(client, ssid=ssid, key=key),
                   self._created, self._err)
 
     def _created(self, res: "net.ApResult") -> None:
-        self._create.configure(state="normal", text="Создать сеть")
+        self._create.configure(state="normal", text=_("Создать сеть"))
         # Dedupe band labels and treat a band as failed ONLY if it came up on NO
         # radio. Routers with two radios on one band (e.g. two 5 GHz, or a 6 GHz
         # radio that reports "5g") otherwise show the same band as both working and
@@ -175,26 +177,25 @@ class WifiApScreen(ctk.CTkFrame):
         failed = [b for b in dict.fromkeys(res.failed) if b not in ok]
 
         if not ok:
-            self._status.configure(text="Не удалось поднять Wi-Fi — ни один диапазон не "
+            self._status.configure(text=_("Не удалось поднять Wi-Fi — ни один диапазон не "
                                    "запустился. Возможно, радио занято Wi-Fi-подключением к "
                                    "интернету, или прошивка его блокирует. Подключите интернет "
-                                   "кабелем и попробуйте снова.", text_color=self.p.warn)
+                                   "кабелем и попробуйте снова."), text_color=self.p.warn)
             return
 
         ok_labels = ", ".join(net.band_label(b) for b in ok)
-        text = f"Wi-Fi создан и работает (диапазоны {ok_labels})."
+        text = _("Wi-Fi создан и работает (диапазоны {0}).").format(ok_labels)
         color = self.p.ok
         if failed:
             bad_labels = ", ".join(net.band_label(b) for b in failed)
-            text += (f"\nДиапазон {bad_labels} включить не удалось: устройства, которым нужен "
-                     "именно он, эту сеть не увидят — но на остальных диапазонах Wi-Fi работает.")
+            text += (_("\nДиапазон {0} включить не удалось: устройства, которым нужен именно он, эту сеть не увидят — но на остальных диапазонах Wi-Fi работает.").format(bad_labels))
             if any(b in ("6g", "6") for b in failed):
-                text += (" Чаще всего так бывает с 6 ГГц — из-за устаревших настроек разрешённых "
-                         "частот в прошивке роутера.")
+                text += (_(" Чаще всего так бывает с 6 ГГц — из-за устаревших настроек разрешённых "
+                         "частот в прошивке роутера."))
             color = self.p.warn
         self._status.configure(text=text, text_color=color)
         self._next.grid()
 
     def _err(self, e: BaseException) -> None:
-        self._create.configure(state="normal", text="Создать сеть")
-        self._status.configure(text=f"Не удалось: {e}", text_color=self.p.fail)
+        self._create.configure(state="normal", text=_("Создать сеть"))
+        self._status.configure(text=_("Не удалось: {0}").format(e), text_color=self.p.fail)

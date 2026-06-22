@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Quick-Setup phase 2 — install Re:HomeProxy on a clean router (ONLINE).
 
 Unlike Option 3 (offline staging, where the PC fetches everything and pushes it),
@@ -31,6 +32,7 @@ from typing import Callable, Optional
 from ..router import RouterClient, CommandResult
 from ._net import http_get
 from .preinstall import TargetInfo, get_target_info
+from ..i18n import _
 
 HP_REPO = "1andrevich/homeproxy-hiddify"
 PUBKEY_NAME = "homeproxy-hiddify.pub"
@@ -271,7 +273,21 @@ def _wget(client: RouterClient, url: str, dest: str, *, timeout: int = 300) -> b
 # Feed i18n packs that localize the rest of the UI a user actually touches. Two
 # names are tried for the software page (apk = package-manager, opkg/23.05 = opkg);
 # the missing one is simply skipped.
-_LUCI_I18N_COMPONENTS = ("base", "firewall", "package-manager", "opkg")
+def luci_i18n_components(client: RouterClient) -> list[str]:
+    """LuCI i18n component names derived from the router's INSTALLED luci-app/mod
+    set — so EVERY localizable page gets its pack, not a hardcoded subset (which
+    left pages like Attended Sysupgrade in English). ``base`` is always included;
+    ``luci-app-firewall`` -> ``firewall``. A luci-mod-* whose strings live inside
+    luci-i18n-base has no own pack and is harmlessly skipped downstream (the
+    per-pack install/stage is tolerant of a missing pack)."""
+    out = client.run("(apk info 2>/dev/null || opkg list-installed 2>/dev/null) "
+                     "| grep -oE 'luci-(app|mod)-[a-z0-9-]+'").stdout
+    comps = {"base"}
+    for tok in out.split():
+        m = re.match(r"luci-(?:app|mod)-(.+)", tok.strip())
+        if m:
+            comps.add(m.group(1))
+    return sorted(comps)
 
 
 def _install_luci_i18n(client: RouterClient, pm: str, language: str,
@@ -289,13 +305,13 @@ def _install_luci_i18n(client: RouterClient, pm: str, language: str,
     # whole install on a single slow fetch).
     if pm == "apk":
         _run_retry(client, "apk update 2>/dev/null", timeout=180, say=say,
-                   what="обновление репозитория")
+                   what=_("обновление репозитория"))
         add = "apk add"
     else:
         _run_retry(client, "opkg update 2>/dev/null", timeout=180, say=say,
-                   what="обновление репозитория")
+                   what=_("обновление репозитория"))
         add = "opkg install"
-    for comp in _LUCI_I18N_COMPONENTS:
+    for comp in luci_i18n_components(client):
         # Per-package so one missing pack can't abort the rest; failures ignored.
         _run_retry(client, f"{add} luci-i18n-{comp}-{language} 2>/dev/null", timeout=180,
                    say=say, what=f"luci-i18n-{comp}")
@@ -326,8 +342,8 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
 
     ti = get_target_info(client)
     if ti.is_snapshot:
-        res.error = ("На устройстве SNAPSHOT-сборка OpenWrt — kmod из релизного "
-                     "репозитория недоступны. Используйте релизную прошивку.")
+        res.error = (_("На устройстве SNAPSHOT-сборка OpenWrt — kmod из релизного "
+                     "репозитория недоступны. Используйте релизную прошивку."))
         return res
     pm = ti.pkg_manager
 
@@ -336,7 +352,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         say(f"Роутер: {ti.version} · {ti.arch} ({pm}). Определяю пакеты приложения…")
         assets = resolve_app_assets(ti, language)
 
-        say("Устанавливаю приложение Re:HomeProxy…")
+        say(_("Устанавливаю приложение Re:HomeProxy…"))
         trusted = False
         if pm == "apk" and assets.pubkey_url:
             # Install the publisher key from the app's own release so apk trusts
@@ -347,7 +363,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                 f"cp /tmp/hp.pub /etc/apk/keys/ 2>/dev/null && echo OK; rm -f /tmp/hp.pub"
             ).stdout.strip().endswith("OK")
         if not _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}"):
-            res.error = "не удалось скачать пакет приложения на роутер"
+            res.error = _("не удалось скачать пакет приложения на роутер")
             return res
         # A local-file install doesn't need a repo refresh — skipping `apk update`
         # avoids a flaky feed index aborting the app install.
@@ -365,7 +381,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         if not inst.ok:
             res.error = f"установка приложения не удалась: {inst.stdout.strip()[-200:]}"
             return res
-        res.steps.append("Приложение установлено")
+        res.steps.append(_("Приложение установлено"))
 
         if assets.i18n_url:
             say(f"Устанавливаю языковой пакет HomeProxy ({language})…")
@@ -384,7 +400,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             res.steps.append(f"Языковые пакеты LuCI ({language})")
 
         # --- B. register rpcd ------------------------------------------
-        say("Перезапускаю rpcd…")
+        say(_("Перезапускаю rpcd…"))
         client.run("/etc/init.d/rpcd restart 2>/dev/null; sleep 2; true", timeout=30)
 
         # --- C. core ----------------------------------------------------
@@ -395,24 +411,24 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             return res
         if prep.get("note"):
             say(prep["note"])
-        say("Скачиваю ядро на роутер…")
+        say(_("Скачиваю ядро на роутер…"))
         dl = _core_mgmt(client, "download_pkg", prep["dl_url"], prep["tmp_path"],
-                        attempts=3, say=say, what="скачивание ядра")
+                        attempts=3, say=say, what=_("скачивание ядра"))
         if not dl.get("result"):
             res.error = f"скачивание ядра: {dl.get('error', 'не удалось')}"
             return res
-        say("Устанавливаю ядро…")
+        say(_("Устанавливаю ядро…"))
         ins = _core_mgmt(client, "install_pkg", core, prep["tmp_path"], prep["pkg_manager"],
-                         attempts=3, say=say, what="установка ядра")
+                         attempts=3, say=say, what=_("установка ядра"))
         if not ins.get("result"):
             res.error = f"установка ядра: {ins.get('error', 'не удалось')}"
             return res
         res.steps.append(f"Ядро {core} ({prep.get('variant', 'standard')})")
 
         # --- D. kernel modules -----------------------------------------
-        say("Устанавливаю модули ядра (kmod-nft-tproxy, kmod-tun)…")
+        say(_("Устанавливаю модули ядра (kmod-nft-tproxy, kmod-tun)…"))
         km = _core_mgmt(client, "install_kmods", pm, timeout=120,
-                        attempts=3, say=say, what="установка модулей ядра")
+                        attempts=3, say=say, what=_("установка модулей ядра"))
         if not km.get("result"):
             # Enrich the raw failure with a firmware-capability diagnosis: is the
             # kmod genuinely unavailable for this kernel (incompatible firmware),
@@ -422,19 +438,19 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             base = f"установка kmod: {km.get('error', 'не удалось')}"
             res.error = f"{base} — {detail}" if detail else base
             return res
-        res.steps.append("Модули ядра")
+        res.steps.append(_("Модули ядра"))
 
         # --- E. ByeDPI (+ curl, online deps auto-resolved) -------------
         if with_byedpi:
-            say("Устанавливаю curl (нужен тестеру ByeDPI)…")
+            say(_("Устанавливаю curl (нужен тестеру ByeDPI)…"))
             add = "apk add" if pm == "apk" else "opkg install"
             client.run_stream(f"{add} curl 2>&1; true", on_line=say_line, timeout=120)
-            say("Устанавливаю ByeDPI…")
+            say(_("Устанавливаю ByeDPI…"))
             bp = client.ubus_homeproxy("byedpi_prepare_install", timeout=60)
             if bp.get("error") or not bp.get("dl_url"):
                 say(f"ByeDPI: не удалось подготовить ({bp.get('error', 'нет ссылки')}).")
             elif not _wget(client, bp["dl_url"], bp["tmp_path"]):
-                say("ByeDPI: не удалось скачать пакет.")
+                say(_("ByeDPI: не удалось скачать пакет."))
             else:
                 bi = client.ubus_homeproxy(
                     "byedpi_install_pkg",
@@ -442,16 +458,16 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                 if bi.get("result"):
                     res.steps.append("ByeDPI")
                 else:
-                    say("ByeDPI: установка не удалась.")
+                    say(_("ByeDPI: установка не удалась."))
 
         # --- E2. Zapret (zapret2/nfqws2 — pulls kmod-nft-queue via depends) --
         if with_zapret:
-            say("Устанавливаю Zapret…")
+            say(_("Устанавливаю Zapret…"))
             zp = client.ubus_homeproxy("zapret_prepare_install", timeout=60)
             if zp.get("error") or not zp.get("dl_url"):
                 say(f"Zapret: не удалось подготовить ({zp.get('error', 'нет ссылки')}).")
             elif not _wget(client, zp["dl_url"], zp["tmp_path"]):
-                say("Zapret: не удалось скачать пакет.")
+                say(_("Zapret: не удалось скачать пакет."))
             else:
                 zi = client.ubus_homeproxy(
                     "zapret_install_pkg",
@@ -459,21 +475,21 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                 if zi.get("result"):
                     res.steps.append("Zapret")
                 else:
-                    say("Zapret: установка не удалась.")
+                    say(_("Zapret: установка не удалась."))
 
         # --- F. select core + start ------------------------------------
-        say("Выбираю ядро и запускаю сервис…")
+        say(_("Выбираю ядро и запускаю сервис…"))
         client.run(f"uci set homeproxy.config.preferred_core='{core}'; "
                    "uci commit homeproxy 2>/dev/null; true")
         client.run("/etc/init.d/homeproxy enable 2>/dev/null; true")
         if start_service:
             client.run("/etc/init.d/homeproxy start 2>/dev/null; true", timeout=60)
-            res.steps.append("Сервис запущен")
+            res.steps.append(_("Сервис запущен"))
         else:
-            res.steps.append("Сервис включён (старт после добавления серверов)")
+            res.steps.append(_("Сервис включён (старт после добавления серверов)"))
 
         res.ok = True
-        say("Готово.")
+        say(_("Готово."))
         return res
     except Exception as exc:  # noqa: BLE001 — surface any failure to the UI
         res.error = f"{exc}"
@@ -502,20 +518,20 @@ def install_core(client: RouterClient, ti: TargetInfo, core: str, *,
         return False, f"подготовка: {prep['error']}"
     if prep.get("note"):
         say(prep["note"])
-    say("Скачиваю ядро на роутер…")
+    say(_("Скачиваю ядро на роутер…"))
     if not _core_mgmt(client, "download_pkg", prep["dl_url"], prep["tmp_path"],
-                      attempts=3, say=say, what="скачивание ядра").get("result"):
-        return False, "скачивание ядра не удалось"
-    say("Устанавливаю ядро…")
+                      attempts=3, say=say, what=_("скачивание ядра")).get("result"):
+        return False, _("скачивание ядра не удалось")
+    say(_("Устанавливаю ядро…"))
     ins = _core_mgmt(client, "install_pkg", core, prep["tmp_path"], prep["pkg_manager"],
-                     attempts=3, say=say, what="установка ядра")
+                     attempts=3, say=say, what=_("установка ядра"))
     if not ins.get("result"):
         return False, f"установка ядра: {ins.get('error', 'не удалось')}"
     if not kmods_installed(client):
-        say("Устанавливаю модули ядра (kmod-nft-tproxy, kmod-tun)…")
+        say(_("Устанавливаю модули ядра (kmod-nft-tproxy, kmod-tun)…"))
         if not _core_mgmt(client, "install_kmods", ti.pkg_manager, timeout=120,
-                          attempts=3, say=say, what="установка модулей ядра").get("result"):
-            return False, "не удалось установить модули ядра"
+                          attempts=3, say=say, what=_("установка модулей ядра")).get("result"):
+            return False, _("не удалось установить модули ядра")
     return True, f"Ядро {core} установлено ({prep.get('variant', 'standard')})"
 
 
@@ -558,7 +574,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
             say(line.rstrip())
 
     pm = ti.pkg_manager
-    say("Определяю последнюю версию приложения…")
+    say(_("Определяю последнюю версию приложения…"))
     assets = resolve_app_assets(ti, language, use_latest=True)
     say(f"Устанавливаю приложение Re:HomeProxy {assets.version}…")
     trusted = False
@@ -568,7 +584,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
             f"cp /tmp/hp.pub /etc/apk/keys/ 2>/dev/null && echo OK; rm -f /tmp/hp.pub"
         ).stdout.strip().endswith("OK")
     if not _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}"):
-        return False, "не удалось скачать пакет приложения"
+        return False, _("не удалось скачать пакет приложения")
     if pm == "apk":
         flag = "" if trusted else "--allow-untrusted "
         inst = client.run_stream(f"apk add {flag}/tmp/{APP_PKG}{ti.ext} 2>&1",
@@ -586,6 +602,6 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
             add = f"apk add {flag}" if pm == "apk" else "opkg install "
             client.run_stream(f"{add}/tmp/i18n{ti.ext} 2>&1; rm -f /tmp/i18n{ti.ext}",
                               on_line=say_line, timeout=120)
-    say("Перезапускаю rpcd…")
+    say(_("Перезапускаю rpcd…"))
     client.run("/etc/init.d/rpcd restart 2>/dev/null; sleep 2; true", timeout=30)
     return True, f"Приложение обновлено до {assets.version}"

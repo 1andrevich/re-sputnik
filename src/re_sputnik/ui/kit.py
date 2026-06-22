@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Re:Sputnik UI kit — shared chrome + components for the Quick Setup redesign.
 
 One source of truth for the wizard's look: a branded titlebar band, a 9-step
@@ -20,6 +21,7 @@ from typing import Callable, Optional
 import customtkinter as ctk
 
 from .theme import Palette, fonts
+from ..i18n import _
 
 # Refresh/reload glyph. macOS renders the 🔄 emoji at a nice text-matched size,
 # but Windows falls back to a tiny symbol-font glyph — so there use a plain
@@ -110,7 +112,7 @@ class StepStrip(ctk.CTkFrame):
         head = ctk.CTkFrame(self, fg_color="transparent")
         head.grid(row=0, column=0, sticky="ew", padx=18, pady=(9, 6))
         head.grid_columnconfigure(0, weight=1)
-        self._label = ctk.CTkLabel(head, text="Быстрая настройка", font=fonts.small(),
+        self._label = ctk.CTkLabel(head, text=_("Быстрая настройка"), font=fonts.small(),
                                    text_color=p.text_mid)
         self._label.grid(row=0, column=0, sticky="w")
         self._counter = ctk.CTkLabel(head, text="", font=fonts.small(), text_color=p.text_dim)
@@ -130,7 +132,7 @@ class StepStrip(ctk.CTkFrame):
     def set_step(self, step: int, label: Optional[str] = None) -> None:
         if label:
             self._label.configure(text=label)
-        self._counter.configure(text=f"Шаг {step} из {self.total}")
+        self._counter.configure(text=_("Шаг {0} из {1}").format(step, self.total))
         for i, s in enumerate(self._segs):
             s.configure(fg_color=self.p.accent if i < step else self.p.seg_future)
 

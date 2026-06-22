@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Construct every screen against a hidden Tk root to catch build-time errors
 (bad kwargs, missing methods) that import / py_compile can't see.
 

@@ -1,0 +1,4422 @@
+# Persian translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-06-22 18:59+0400\n"
+"PO-Revision-Date: 2026-06-22 00:26+0400\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fa\n"
+"Language-Team: fa <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: src/re_sputnik/app.py:39
+msgid ""
+"⚠️ Важно, прочитайте перед началом.\n"
+"\n"
+"Настройку выполняет программа Re:Sputnik, которая может содержать ошибки."
+" Всё программное обеспечение и конфигурации предоставляются «как есть», "
+"без каких-либо гарантий. Авторы Re:Sputnik, Re:HomeProxy и всего "
+"предоставляемого ПО не несут ответственности за любой возможный ущерб, "
+"потерю данных, проблемы со связью, блокировки или иные последствия.\n"
+"\n"
+"Вы действуете на свой страх и риск и сами отвечаете за соблюдение законов"
+" вашей страны в отношении использования VPN/прокси.\n"
+"\n"
+"Продолжая, вы принимаете эти условия."
+msgstr ""
+"⚠️ مهم، لطفاً پیش از شروع بخوانید.\n"
+"\n"
+"Re:Sputnik برنامه‌ای است که ممکن است دارای اشکال باشد. تمام نرم‌افزارها و"
+" تنظیمات «همان‌گونه که هست» ارائه می‌شوند، بدون هیچ ضمانتی. نویسندگان "
+"Re:Sputnik، Re:HomeProxy و تمام نرم‌افزارهای ارائه‌شده هیچ مسئولیتی در "
+"برابر خسارت احتمالی، از دست رفتن داده‌ها، مشکلات ارتباطی، مسدودسازی‌ها یا"
+" سایر پیامدها ندارند.\n"
+"\n"
+"شما با مسئولیت خود اقدام می‌کنید و خود مسئول رعایت قوانین کشور خود در "
+"مورد استفاده از VPN/پروکسی هستید.\n"
+"\n"
+"با ادامه دادن، این شرایط را می‌پذیرید."
+
+#: src/re_sputnik/app.py:286 src/re_sputnik/app.py:365
+msgid "Лицензионное соглашение"
+msgstr "توافق‌نامه مجوز"
+
+#: src/re_sputnik/app.py:288
+msgid "Пожалуйста, прочитайте лицензионное соглашение."
+msgstr "لطفاً توافق‌نامه مجوز را بخوانید."
+
+#: src/re_sputnik/app.py:300
+msgid "Далее"
+msgstr "بعدی"
+
+#: src/re_sputnik/app.py:305
+msgid "Я прочитал(а) и принимаю условия Лицензионного соглашения"
+msgstr "متن توافق‌نامه مجوز را خوانده‌ام و شرایط آن را می‌پذیرم"
+
+#: src/re_sputnik/app.py:309
+msgid "Выход"
+msgstr "خروج"
+
+#: src/re_sputnik/app.py:339
+msgid "Перед началом"
+msgstr "پیش از شروع"
+
+#: src/re_sputnik/app.py:354
+msgid ""
+"Re:Sputnik — закрытое бесплатное ПО. Сторонние проекты, которые оно "
+"использует, и их лицензии перечислены в уведомлении о компонентах."
+msgstr ""
+"Re:Sputnik نرم‌افزار رایگان با کد منبع بسته است. پروژه‌های شخص ثالثی که "
+"استفاده می‌کند و مجوزهای آن‌ها در اعلان اجزاء فهرست شده‌اند."
+
+#: src/re_sputnik/app.py:362
+msgid "Полный текст соглашения"
+msgstr "متن کامل توافق‌نامه"
+
+#: src/re_sputnik/app.py:368 src/re_sputnik/app.py:437
+msgid "Сторонние компоненты и лицензии"
+msgstr "اجزای شخص ثالث و مجوزها"
+
+#: src/re_sputnik/app.py:376 src/re_sputnik/app.py:414
+#: src/re_sputnik/app.py:467
+msgid "Закрыть"
+msgstr "بستن"
+
+#: src/re_sputnik/app.py:382
+msgid "Принимаю и продолжаю"
+msgstr "می‌پذیرم و ادامه می‌دهم"
+
+#: src/re_sputnik/app.py:387
+msgid "Я понимаю и принимаю условия использования"
+msgstr "این شرایط استفاده را می‌فهمم و می‌پذیرم"
+
+#: src/re_sputnik/app.py:393
+msgid "Назад"
+msgstr "بازگشت"
+
+#: src/re_sputnik/app.py:446
+msgid "Документы"
+msgstr "اسناد"
+
+#: src/re_sputnik/app.py:523
+msgid "Настройка Re:HomeProxy на роутере OpenWRT"
+msgstr "راه‌اندازی Re:HomeProxy روی روتر OpenWRT"
+
+#: src/re_sputnik/app.py:535
+msgid "Пошаговая настройка"
+msgstr "راه‌اندازی گام‌به‌گام"
+
+#: src/re_sputnik/app.py:536
+msgid "Приложение ведёт за руку: интернет, установка, серверы, проверка"
+msgstr "برنامه شما را راهنمایی می‌کند: اینترنت، نصب، سرورها، بررسی"
+
+#: src/re_sputnik/app.py:544
+msgid "Расширенный"
+msgstr "پیشرفته"
+
+#: src/re_sputnik/app.py:545
+msgid "Свободная навигация по разделам: Серверы, Правила, Диагностика…"
+msgstr "پیمایش آزاد بین بخش‌ها: سرورها، قوانین، عیب‌یابی…"
+
+#: src/re_sputnik/app.py:553 src/re_sputnik/ui/preinstall_screen.py:46
+msgid "Предустановить пакеты"
+msgstr "پیش‌نصب بسته‌ها"
+
+#: src/re_sputnik/app.py:554
+msgid "Скачать на ПК и залить на роутер для установки без интернета"
+msgstr "دانلود روی رایانه و انتقال به روتر برای نصب بدون اینترنت"
+
+#: src/re_sputnik/app.py:560
+msgid ""
+"Роутер уже настроен? Любой режим подхватит текущую конфигурацию, а не "
+"начнёт с нуля."
+msgstr ""
+"روتر از قبل تنظیم شده؟ هر حالتی تنظیمات فعلی را ادامه می‌دهد، نه شروع از "
+"صفر."
+
+#: src/re_sputnik/app.py:568
+msgid "Дисклеймер"
+msgstr "اعلان رفع مسئولیت"
+
+#: src/re_sputnik/app.py:577
+msgid "Перевод на этот язык машинный — будем рады исправлениям."
+msgstr "ترجمه این زبان ماشینی است — اصلاحات شما خوش‌آیند است."
+
+#: src/re_sputnik/secrets.py:42
+msgid "пробел"
+msgstr "فاصله"
+
+#: src/re_sputnik/secrets.py:42
+msgid "табуляция"
+msgstr "تب"
+
+#: src/re_sputnik/secrets.py:59
+msgid ""
+"Пароль содержит символы не из английской раскладки. Переключитесь на "
+"английскую раскладку и используйте латинские буквы, цифры и спецзнаки."
+msgstr ""
+"گذرواژه شامل نویسه‌هایی است که از چیدمان صفحه‌کلید انگلیسی نیستند. به "
+"چیدمان انگلیسی بروید و از حروف لاتین، اعداد و نویسه‌های ویژه استفاده "
+"کنید."
+
+#: src/re_sputnik/secrets.py:63
+msgid "Эти символы несовместимы и не разрешены в пароле: "
+msgstr "این نویسه‌ها ناسازگارند و در گذرواژه مجاز نیستند: "
+
+#: src/re_sputnik/secrets.py:64
+msgid ""
+" Уберите их (можно использовать другие спецзнаки: ! @ # % ^ & * - _ = + и"
+" т.п.)."
+msgstr ""
+" آن‌ها را حذف کنید (می‌توانید از نویسه‌های ویژه دیگر استفاده کنید: ! @ # "
+"% ^ & * - _ = + و غیره)."
+
+#: src/re_sputnik/engine/byedpi.py:147 src/re_sputnik/engine/zapret.py:120
+msgid "Проверяю требования…"
+msgstr "در حال بررسی پیش‌نیازها…"
+
+#: src/re_sputnik/engine/byedpi.py:150 src/re_sputnik/engine/zapret.py:123
+msgid "Не удалось подготовить установку (нет ссылки)."
+msgstr "آماده‌سازی نصب ممکن نشد (لینکی موجود نیست)."
+
+#: src/re_sputnik/engine/byedpi.py:153
+msgid "Устанавливаю curl (нужен тестеру)…"
+msgstr "در حال نصب curl (برای ابزار تست لازم است)…"
+
+#: src/re_sputnik/engine/byedpi.py:157 src/re_sputnik/engine/zapret.py:125
+msgid "Скачиваю пакет…"
+msgstr "در حال دانلود بسته…"
+
+#: src/re_sputnik/engine/byedpi.py:159
+msgid "Не удалось скачать пакет ByeDPI."
+msgstr "دانلود بسته ByeDPI ناموفق بود."
+
+#: src/re_sputnik/engine/byedpi.py:161 src/re_sputnik/engine/zapret.py:129
+#: src/re_sputnik/ui/antidpi_screen.py:421
+#: src/re_sputnik/ui/finalize_screen.py:211
+#: src/re_sputnik/ui/finalize_screen.py:270
+#: src/re_sputnik/ui/security_screen.py:344
+#: src/re_sputnik/ui/software_screen.py:179
+msgid "Устанавливаю…"
+msgstr "در حال نصب…"
+
+#: src/re_sputnik/engine/byedpi.py:166
+msgid "Установка ByeDPI не удалась."
+msgstr "نصب ByeDPI ناموفق بود."
+
+#: src/re_sputnik/engine/byedpi.py:167
+msgid "ByeDPI установлен."
+msgstr "ByeDPI نصب شد."
+
+#: src/re_sputnik/engine/core_health.py:36
+msgid "сервер использует Reality, но в ссылке нет uTLS-отпечатка"
+msgstr "سرور از Reality استفاده می‌کند، اما لینک اثر انگشت uTLS ندارد"
+
+#: src/re_sputnik/engine/core_health.py:37
+msgid "у сервера не настроен TLS"
+msgstr "سرور TLS تنظیم‌شده ندارد"
+
+#: src/re_sputnik/engine/core_health.py:38
+msgid "неподдерживаемый метод шифрования"
+msgstr "روش رمزنگاری پشتیبانی نمی‌شود"
+
+#: src/re_sputnik/engine/core_health.py:39
+msgid "неподдерживаемый шифр"
+msgstr "الگوریتم رمزنگاری پشتیبانی نمی‌شود"
+
+#: src/re_sputnik/engine/core_health.py:40
+msgid "неверный UUID в ссылке"
+msgstr "UUID نامعتبر در لینک"
+
+#: src/re_sputnik/engine/core_health.py:41
+msgid "не удалось разобрать параметры сервера"
+msgstr "تجزیهٔ پارامترهای سرور ممکن نشد"
+
+#: src/re_sputnik/engine/core_health.py:137
+#, python-brace-format
+msgid ""
+"Ядро не запускается из-за сервера «{0}»: {1}. Это не поломка ядра — оно "
+"не может загрузить конфигурацию из-за одного сервера."
+msgstr ""
+"هسته به دلیل سرور «{0}» اجرا نمی‌شود: {1}. این خرابی هسته نیست — هسته فقط"
+" به دلیل یک سرور نمی‌تواند تنظیمات را بار کند."
+
+#: src/re_sputnik/engine/core_health.py:141
+#, python-brace-format
+msgid ""
+"Уберите сервер «{0}» из пула URLTest (или выберите другой основной "
+"сервер)."
+msgstr ""
+"سرور «{0}» را از مجموعهٔ URLTest حذف کنید (یا سرور اصلی دیگری انتخاب "
+"کنید)."
+
+#: src/re_sputnik/engine/core_health.py:142
+msgid "Перезапустите сервис — ядро запустится с остальными серверами."
+msgstr ""
+"سرویس را مجدداً راه‌اندازی کنید — هسته با سرورهای باقی‌مانده اجرا خواهد "
+"شد."
+
+#: src/re_sputnik/engine/core_health.py:145
+#, python-brace-format
+msgid "Ядро не запускается из-за ошибки в конфигурации: {0}. Это не поломка ядра."
+msgstr "هسته به دلیل خطای تنظیمات اجرا نمی‌شود: {0}. این خرابی هسته نیست."
+
+#: src/re_sputnik/engine/core_health.py:148
+msgid ""
+"Уберите недавно добавленный / проблемный сервер из пула или выберите "
+"другой основной."
+msgstr ""
+"سرور تازه‌اضافه‌شده/مشکل‌دار را از مجموعه حذف کنید یا سرور اصلی دیگری "
+"انتخاب کنید."
+
+#: src/re_sputnik/engine/core_health.py:149
+msgid "Перезапустите сервис."
+msgstr "سرویس را مجدداً راه‌اندازی کنید."
+
+#: src/re_sputnik/engine/core_health.py:152
+msgid "Ядро не запускается из-за ошибки в конфигурации (это не поломка ядра)."
+msgstr "هسته به دلیل خطای تنظیمات اجرا نمی‌شود (این خرابی هسته نیست)."
+
+#: src/re_sputnik/engine/core_health.py:153
+msgid ""
+"Проверьте список серверов и выберите другой основной сервер, затем "
+"перезапустите."
+msgstr ""
+"فهرست سرورها را بررسی کنید، سرور اصلی دیگری انتخاب کنید، سپس مجدداً "
+"راه‌اندازی کنید."
+
+#: src/re_sputnik/engine/finalize.py:97
+msgid "UPnP / NAT-PMP — автопроброс портов"
+msgstr "UPnP / NAT-PMP — انتقال خودکار پورت"
+
+#: src/re_sputnik/engine/finalize.py:98
+msgid ""
+"Позволяет приставкам, играм, торрент-клиентам и видеозвонкам самим "
+"открывать нужные порты — без ручной настройки проброса. Удобно, но любое "
+"приложение в сети сможет открыть порт наружу, поэтому включайте, если это"
+" действительно нужно."
+msgstr ""
+"به کنسول‌ها، بازی‌ها، کلاینت‌های تورنت و تماس‌های تصویری اجازه می‌دهد "
+"خودشان پورت‌های لازم را باز کنند — بدون تنظیم دستی انتقال پورت. راحت است،"
+" اما هر برنامه‌ای در شبکه می‌تواند پورتی را به بیرون باز کند، پس فقط در "
+"صورت نیاز واقعی فعال کنید."
+
+#: src/re_sputnik/engine/finalize.py:101
+msgid "SQM — умная очередь (борьба с лагами)"
+msgstr "SQM — صف هوشمند (کاهش تأخیر)"
+
+#: src/re_sputnik/engine/finalize.py:102
+msgid ""
+"Не даёт каналу «захлёбываться», когда кто-то качает или раздаёт большой "
+"трафик: пинг остаётся низким. Заметно улучшает игры и видеозвонки во "
+"время загрузок (устраняет буфер-блоат)."
+msgstr ""
+"وقتی کسی حجم زیادی دانلود یا آپلود می‌کند، از «گرفتگی» اینترنت جلوگیری "
+"می‌کند: تأخیر پایین می‌ماند. تماس‌های تصویری و بازی‌ها در زمان دانلود "
+"به‌وضوح بهتر می‌شوند (رفع bufferbloat)."
+
+#: src/re_sputnik/engine/firmware.py:76
+msgid "Прошивка без поддержки nftables"
+msgstr "فرم‌ور بدون پشتیبانی nftables"
+
+#: src/re_sputnik/engine/firmware.py:77
+msgid ""
+"В прошивке нет nftables (команды nft). HomeProxy использует nft-tproxy и "
+"не сможет работать на этой сборке (например, некоторые кастомные сборки "
+"собраны без firewall4/nftables)."
+msgstr ""
+"در این فرم‌ور nftables (دستورات nft) وجود ندارد. HomeProxy از nft-tproxy "
+"استفاده می‌کند و روی این ساخت کار نخواهد کرد (مثلاً برخی ساخت‌های سفارشی "
+"بدون firewall4/nftables ساخته شده‌اند)."
+
+#: src/re_sputnik/engine/firmware.py:80
+msgid "Нужна прошивка OpenWrt с firewall4 (nftables)."
+msgstr "فرم‌ور OpenWrt با firewall4 (nftables) لازم است."
+
+#: src/re_sputnik/engine/firmware.py:86
+msgid "nftables не отвечает"
+msgstr "nftables پاسخ نمی‌دهد"
+
+#: src/re_sputnik/engine/firmware.py:87
+msgid ""
+"Команда nft есть, но «nft list ruleset» завершилась с ошибкой — возможно,"
+" активен firewall на iptables, а не firewall4."
+msgstr ""
+"دستور nft وجود دارد، اما «nft list ruleset» با خطا مواجه شد — احتمالاً "
+"دیوار آتش روی iptables فعال است، نه firewall4."
+
+#: src/re_sputnik/engine/firmware.py:89
+msgid "Убедитесь, что используется firewall4 (nftables)."
+msgstr "مطمئن شوید از firewall4 (nftables) استفاده می‌شود."
+
+#: src/re_sputnik/engine/firmware.py:97
+msgid "Похоже, firewall не на nftables"
+msgstr "به نظر می‌رسد دیوار آتش از nftables استفاده نمی‌کند"
+
+#: src/re_sputnik/engine/firmware.py:98
+msgid ""
+"nftables есть, но firewall4 (fw4) не найден — возможно, прошивка "
+"использует firewall на iptables. HomeProxy рассчитан на firewall4 и nft-"
+"tproxy."
+msgstr ""
+"nftables وجود دارد، اما firewall4 (fw4) یافت نشد — ممکن است فرم‌ور از "
+"دیوار آتش iptables استفاده کند. HomeProxy به firewall4 و nft-tproxy نیاز "
+"دارد."
+
+#: src/re_sputnik/engine/firmware.py:100
+msgid "Используйте прошивку OpenWrt с firewall4 (nftables)."
+msgstr "از فرم‌ور OpenWrt با firewall4 (nftables) استفاده کنید."
+
+#: src/re_sputnik/engine/firmware.py:111
+msgid "FriendlyWrt: br-netfilter ломает nft-tproxy"
+msgstr "FriendlyWrt: br-netfilter باعث خرابی nft-tproxy می‌شود"
+
+#: src/re_sputnik/engine/firmware.py:112
+msgid ""
+"Модуль br_netfilter направляет трафик моста через iptables, из-за чего "
+"nft-tproxy не перехватывает соединения и прокси не работает."
+msgstr ""
+"ماژول br_netfilter ترافیک پل را از طریق iptables هدایت می‌کند، که موجب "
+"می‌شود nft-tproxy اتصالات را رهگیری نکند و پروکسی کار نکند."
+
+#: src/re_sputnik/engine/firmware.py:114
+msgid ""
+"Отключите bridge-nf-call-iptables (sysctl) или выгрузите модуль "
+"br_netfilter."
+msgstr ""
+"bridge-nf-call-iptables (sysctl) را غیرفعال کنید یا ماژول br_netfilter را"
+" خارج کنید."
+
+#: src/re_sputnik/engine/firmware.py:128
+msgid "GL.iNet: конфликт правил маркировки трафика"
+msgstr "GL.iNet: تضاد قوانین نشانه‌گذاری ترافیک"
+
+#: src/re_sputnik/engine/firmware.py:129
+msgid ""
+"Встроенная служба vpn-client GL.iNet создаёт собственные правила "
+"маркировки в nftables, из-за чего трафик не доходит до sing-box"
+msgstr ""
+"سرویس داخلی vpn-client در GL.iNet قوانین نشانه‌گذاری خود را در nftables "
+"ایجاد می‌کند که باعث می‌شود ترافیک به sing-box نرسد"
+
+#: src/re_sputnik/engine/firmware.py:131
+msgid " (служба vpn-client сейчас включена)."
+msgstr " (سرویس vpn-client اکنون فعال است)."
+
+#: src/re_sputnik/engine/firmware.py:132
+msgid "Отключите GL.iNet VPN (vpn-client) перед использованием HomeProxy."
+msgstr ""
+"پیش از استفاده از HomeProxy، VPN داخلی GL.iNet (vpn-client) را غیرفعال "
+"کنید."
+
+#: src/re_sputnik/engine/firmware.py:145
+msgid "перехват трафика (nft-tproxy)"
+msgstr "رهگیری ترافیک (nft-tproxy)"
+
+#: src/re_sputnik/engine/firmware.py:146
+msgid "режим TUN"
+msgstr "حالت TUN"
+
+#: src/re_sputnik/engine/firmware.py:198
+#, python-brace-format
+msgid "{0}: пакет {1} недоступен для ядра этой прошивки — прошивка несовместима"
+msgstr "{0}: بسته {1} برای هسته این فرم‌ور موجود نیست — فرم‌ور ناسازگار است"
+
+#: src/re_sputnik/engine/firmware.py:200
+#, python-brace-format
+msgid "{0}: пакет {1} не установился"
+msgstr "{0}: نصب بسته {1} ناموفق بود"
+
+#: src/re_sputnik/engine/firstrun.py:80
+msgid "пароль не сохранился на роутере (passwd не применил его)"
+msgstr "گذرواژه روی روتر ذخیره نشد (passwd آن را اعمال نکرد)"
+
+#: src/re_sputnik/engine/firstrun.py:108
+msgid "Устанавливаю SSH-ключ приложения…"
+msgstr "در حال نصب کلید SSH برنامه…"
+
+#: src/re_sputnik/engine/firstrun.py:116
+msgid "Проверяю вход по ключу…"
+msgstr "در حال بررسی ورود با کلید…"
+
+#: src/re_sputnik/engine/firstrun.py:118
+msgid "ключ установлен, но вход по нему не подтвердился — пароль не меняю"
+msgstr "کلید نصب شد، اما تأیید ورود با آن ممکن نشد — گذرواژه تغییر نمی‌کند"
+
+#: src/re_sputnik/engine/firstrun.py:121
+msgid "Вход по ключу работает."
+msgstr "ورود با کلید کار می‌کند."
+
+#: src/re_sputnik/engine/firstrun.py:128
+msgid ""
+"Постоянный ключ не устанавливается (по выбору). Для будущих подключений "
+"потребуется пароль."
+msgstr ""
+"کلید دائمی نصب نمی‌شود (طبق انتخاب شما). برای اتصالات بعدی گذرواژه لازم "
+"خواهد بود."
+
+#: src/re_sputnik/engine/firstrun.py:135
+msgid "У роутера уже задан пароль — оставляю без изменений."
+msgstr "روتر از قبل گذرواژه دارد — بدون تغییر باقی می‌ماند."
+
+#: src/re_sputnik/engine/firstrun.py:138
+msgid "Устанавливаю root-пароль…"
+msgstr "در حال تنظیم گذرواژهٔ root…"
+
+#: src/re_sputnik/engine/firstrun.py:150
+msgid "Пароль сохранён в хранилище Windows."
+msgstr "گذرواژه در مخزن اعتبارنامهٔ Windows ذخیره شد."
+
+#: src/re_sputnik/engine/firstrun.py:155
+msgid "Первичная настройка завершена."
+msgstr "راه‌اندازی اولیه کامل شد."
+
+#: src/re_sputnik/engine/install_app.py:294
+#: src/re_sputnik/engine/install_app.py:298
+msgid "обновление репозитория"
+msgstr "به‌روزرسانی مخزن نرم‌افزار"
+
+#: src/re_sputnik/engine/install_app.py:331
+msgid ""
+"На устройстве SNAPSHOT-сборка OpenWrt — kmod из релизного репозитория "
+"недоступны. Используйте релизную прошивку."
+msgstr ""
+"روی این دستگاه نسخهٔ SNAPSHOT از OpenWrt نصب است — kmod از مخزن انتشار "
+"رسمی موجود نیست. از فرم‌ور انتشار رسمی استفاده کنید."
+
+#: src/re_sputnik/engine/install_app.py:341
+msgid "Устанавливаю приложение Re:HomeProxy…"
+msgstr "در حال نصب برنامهٔ Re:HomeProxy…"
+
+#: src/re_sputnik/engine/install_app.py:352
+msgid "не удалось скачать пакет приложения на роутер"
+msgstr "دانلود بسته برنامه به روتر ممکن نشد"
+
+#: src/re_sputnik/engine/install_app.py:370
+msgid "Приложение установлено"
+msgstr "برنامه نصب شد"
+
+#: src/re_sputnik/engine/install_app.py:389
+#: src/re_sputnik/engine/install_app.py:591
+#: src/re_sputnik/engine/preinstall.py:336
+msgid "Перезапускаю rpcd…"
+msgstr "در حال راه‌اندازی مجدد rpcd…"
+
+#: src/re_sputnik/engine/install_app.py:400
+#: src/re_sputnik/engine/install_app.py:507
+msgid "Скачиваю ядро на роутер…"
+msgstr "در حال دانلود هسته به روتر…"
+
+#: src/re_sputnik/engine/install_app.py:402
+#: src/re_sputnik/engine/install_app.py:509
+msgid "скачивание ядра"
+msgstr "دانلود هسته"
+
+#: src/re_sputnik/engine/install_app.py:406
+#: src/re_sputnik/engine/install_app.py:511
+msgid "Устанавливаю ядро…"
+msgstr "در حال نصب هسته…"
+
+#: src/re_sputnik/engine/install_app.py:408
+#: src/re_sputnik/engine/install_app.py:513
+msgid "установка ядра"
+msgstr "نصب هسته"
+
+#: src/re_sputnik/engine/install_app.py:415
+#: src/re_sputnik/engine/install_app.py:517
+msgid "Устанавливаю модули ядра (kmod-nft-tproxy, kmod-tun)…"
+msgstr "در حال نصب ماژول‌های هسته (kmod-nft-tproxy، kmod-tun)…"
+
+#: src/re_sputnik/engine/install_app.py:417
+#: src/re_sputnik/engine/install_app.py:519
+msgid "установка модулей ядра"
+msgstr "نصب ماژول‌های هسته"
+
+#: src/re_sputnik/engine/install_app.py:427
+msgid "Модули ядра"
+msgstr "ماژول‌های هسته"
+
+#: src/re_sputnik/engine/install_app.py:431
+msgid "Устанавливаю curl (нужен тестеру ByeDPI)…"
+msgstr "در حال نصب curl (برای ابزار تست ByeDPI لازم است)…"
+
+#: src/re_sputnik/engine/install_app.py:434
+msgid "Устанавливаю ByeDPI…"
+msgstr "در حال نصب ByeDPI…"
+
+#: src/re_sputnik/engine/install_app.py:439
+msgid "ByeDPI: не удалось скачать пакет."
+msgstr "ByeDPI: دانلود بسته ناموفق بود."
+
+#: src/re_sputnik/engine/install_app.py:447
+msgid "ByeDPI: установка не удалась."
+msgstr "ByeDPI: نصب ناموفق بود."
+
+#: src/re_sputnik/engine/install_app.py:451
+msgid "Устанавливаю Zapret…"
+msgstr "در حال نصب Zapret…"
+
+#: src/re_sputnik/engine/install_app.py:456
+msgid "Zapret: не удалось скачать пакет."
+msgstr "Zapret: دانلود بسته ناموفق بود."
+
+#: src/re_sputnik/engine/install_app.py:464
+msgid "Zapret: установка не удалась."
+msgstr "Zapret: نصب ناموفق بود."
+
+#: src/re_sputnik/engine/install_app.py:467
+msgid "Выбираю ядро и запускаю сервис…"
+msgstr "در حال انتخاب هسته و راه‌اندازی سرویس…"
+
+#: src/re_sputnik/engine/install_app.py:473
+msgid "Сервис запущен"
+msgstr "سرویس اجرا شد"
+
+#: src/re_sputnik/engine/install_app.py:475
+msgid "Сервис включён (старт после добавления серверов)"
+msgstr "سرویس فعال شد (پس از افزودن سرور اجرا می‌شود)"
+
+#: src/re_sputnik/engine/install_app.py:478
+#: src/re_sputnik/engine/preinstall.py:348
+msgid "Готово."
+msgstr "تمام شد."
+
+#: src/re_sputnik/engine/install_app.py:510
+msgid "скачивание ядра не удалось"
+msgstr "دانلود هسته ناموفق بود"
+
+#: src/re_sputnik/engine/install_app.py:520
+msgid "не удалось установить модули ядра"
+msgstr "نصب ماژول‌های هسته ناموفق بود"
+
+#: src/re_sputnik/engine/install_app.py:563
+msgid "Определяю последнюю версию приложения…"
+msgstr "در حال یافتن آخرین نسخهٔ برنامه…"
+
+#: src/re_sputnik/engine/install_app.py:573
+msgid "не удалось скачать пакет приложения"
+msgstr "دانلود بسته برنامه ممکن نشد"
+
+#: src/re_sputnik/engine/lan.py:181
+msgid "Время аренды: введите ЧЧ:ММ, например 12:00."
+msgstr "زمان اجاره: ساعت:دقیقه را وارد کنید، مثلاً ۱۲:۰۰."
+
+#: src/re_sputnik/engine/lan.py:184
+msgid "Минуты должны быть от 00 до 59."
+msgstr "دقیقه باید بین ۰۰ و ۵۹ باشد."
+
+#: src/re_sputnik/engine/lan.py:187
+msgid "Слишком маленькое время аренды — минимум 00:02."
+msgstr "زمان اجاره بسیار کوتاه است — حداقل ۰۰:۰۲."
+
+#: src/re_sputnik/engine/lan.py:189
+msgid "Слишком большое время аренды — максимум 720:00 (30 суток)."
+msgstr "زمان اجاره بسیار زیاد است — حداکثر ۷۲۰:۰۰ (۳۰ روز)."
+
+#: src/re_sputnik/engine/lan.py:199
+msgid "Неверный IP-адрес роутера."
+msgstr "آدرس IP روتر نامعتبر است."
+
+#: src/re_sputnik/engine/lan.py:201 src/re_sputnik/engine/network.py:307
+msgid "Нужен адрес IPv4."
+msgstr "آدرس IPv4 لازم است."
+
+#: src/re_sputnik/engine/lan.py:203 src/re_sputnik/engine/network.py:309
+msgid "Используйте частный адрес (192.168.x.x, 10.x.x.x или 172.16–31.x.x)."
+msgstr "از آدرس خصوصی استفاده کنید (192.168.x.x، 10.x.x.x یا 172.16–31.x.x)."
+
+#: src/re_sputnik/engine/lan.py:207
+msgid "Неверная маска подсети."
+msgstr "ماسک زیرشبکه نامعتبر است."
+
+#: src/re_sputnik/engine/lan.py:209
+msgid "Слишком маленькая подсеть — выберите маску не уже /30."
+msgstr "زیرشبکه بسیار کوچک است — ماسکی نه باریک‌تر از /30 انتخاب کنید."
+
+#: src/re_sputnik/engine/lan.py:211
+msgid "Адрес роутера не может быть адресом сети/широковещания."
+msgstr "آدرس روتر نمی‌تواند آدرس شبکه/پخش‌همگانی باشد."
+
+#: src/re_sputnik/engine/lan.py:212
+msgid "Начало диапазона DHCP"
+msgstr "آغاز محدودهٔ DHCP"
+
+#: src/re_sputnik/engine/lan.py:212
+msgid "Размер диапазона DHCP"
+msgstr "اندازهٔ محدودهٔ DHCP"
+
+#: src/re_sputnik/engine/lan.py:217
+msgid "Диапазон DHCP не помещается в подсеть — уменьшите начало или размер."
+msgstr "محدودهٔ DHCP در زیرشبکه جا نمی‌شود — آغاز یا اندازه را کاهش دهید."
+
+#: src/re_sputnik/engine/lan.py:219
+msgid "Время аренды: например 30m, 12h, 1d или infinite."
+msgstr "زمان اجاره: مثلاً 30m، 12h، 1d یا infinite."
+
+#: src/re_sputnik/engine/lan.py:286
+msgid "Нужны MAC и IP устройства."
+msgstr "MAC و IP دستگاه لازم است."
+
+#: src/re_sputnik/engine/lan.py:311
+msgid "Закрепление для этого устройства не найдено."
+msgstr "اتصال ثابتی برای این دستگاه یافت نشد."
+
+#: src/re_sputnik/engine/maintenance.py:52
+msgid "(пустой ответ)"
+msgstr "(پاسخ خالی)"
+
+#: src/re_sputnik/engine/maintenance.py:53
+msgid "резервная копия не создалась на роутере. Ответ sysupgrade:\n"
+msgstr "نسخهٔ پشتیبان روی روتر ایجاد نشد. پاسخ sysupgrade:\n"
+
+#: src/re_sputnik/engine/maintenance.py:65
+#: src/re_sputnik/ui/advanced_screen.py:300
+msgid "Это не похоже на резервную копию (.tar.gz)."
+msgstr "این شبیه فایل پشتیبان (.tar.gz) نیست."
+
+#: src/re_sputnik/engine/maintenance.py:71
+msgid "Загруженный файл не читается как архив резервной копии."
+msgstr "فایل بارگذاری‌شده به‌عنوان آرشیو پشتیبان قابل خوانده شدن نیست."
+
+#: src/re_sputnik/engine/maintenance.py:78
+#, python-brace-format
+msgid "Не удалось распаковать копию: {0}"
+msgstr "استخراج پشتیبان ممکن نشد: {0}"
+
+#: src/re_sputnik/engine/maintenance.py:91
+msgid "На устройстве нет команды firstboot — сброс недоступен."
+msgstr ""
+"روی این دستگاه دستور firstboot موجود نیست — بازنشانی کارخانه‌ای "
+"امکان‌پذیر نیست."
+
+#: src/re_sputnik/engine/network.py:74
+msgid "Диапазоны "
+msgstr "محدوده‌ها "
+
+#: src/re_sputnik/engine/network.py:305
+msgid "Неверный IP-адрес."
+msgstr "آدرس IP نامعتبر است."
+
+#: src/re_sputnik/engine/network.py:311
+msgid "Это адрес сети/широковещания — выберите хост .1–.254."
+msgstr "این آدرس شبکه/پخش‌همگانی است — میزبانی بین .1–.254 انتخاب کنید."
+
+#: src/re_sputnik/engine/network.py:316
+msgid ""
+"Подсеть пересекается с сетью провайдера — конфликт останется. Выберите "
+"другую."
+msgstr ""
+"زیرشبکه با شبکهٔ اپراتور تداخل دارد — تضاد باقی خواهد ماند. زیرشبکهٔ "
+"دیگری انتخاب کنید."
+
+#: src/re_sputnik/engine/network.py:740
+msgid "Введите имя сети (SSID)."
+msgstr "نام شبکه (SSID) را وارد کنید."
+
+#: src/re_sputnik/engine/network.py:744
+msgid "Для защищённой сети нужен пароль."
+msgstr "برای شبکهٔ محافظت‌شده گذرواژه لازم است."
+
+#: src/re_sputnik/engine/network.py:746 src/re_sputnik/ui/wifi_ap_screen.py:160
+msgid "Пароль должен быть не короче 8 символов."
+msgstr "گذرواژه باید حداقل ۸ نویسه باشد."
+
+#: src/re_sputnik/engine/orchestrator.py:60
+msgid "Подключение"
+msgstr "اتصال"
+
+#: src/re_sputnik/engine/orchestrator.py:61
+msgid "Первичная настройка"
+msgstr "راه‌اندازی اولیه"
+
+#: src/re_sputnik/engine/orchestrator.py:62
+#: src/re_sputnik/ui/software_screen.py:42
+#: src/re_sputnik/ui/software_screen.py:46
+msgid "Установка ПО"
+msgstr "نصب نرم‌افزار"
+
+#: src/re_sputnik/engine/orchestrator.py:65
+#: src/re_sputnik/ui/verify_screen.py:77 src/re_sputnik/ui/verify_screen.py:81
+msgid "Проверка"
+msgstr "بررسی"
+
+#: src/re_sputnik/engine/orchestrator.py:101
+msgid "чистый роутер — полная настройка"
+msgstr "روتر تازه — راه‌اندازی کامل لازم است"
+
+#: src/re_sputnik/engine/orchestrator.py:102
+msgid "ПО есть, нужна настройка серверов"
+msgstr "نرم‌افزار نصب است، تنظیم سرورها لازم است"
+
+#: src/re_sputnik/engine/orchestrator.py:103
+msgid "уже настроен — режим управления"
+msgstr "از قبل تنظیم شده — حالت مدیریت"
+
+#: src/re_sputnik/engine/orchestrator.py:105
+#: src/re_sputnik/ui/core_screen.py:283
+#, python-brace-format
+msgid "Состояние: {0}"
+msgstr "وضعیت: {0}"
+
+#: src/re_sputnik/engine/overview.py:108
+msgid "Имя: латинские буквы, цифры и дефис, без пробелов (1–63 символа)."
+msgstr "نام: حروف لاتین، اعداد و خط فاصله، بدون فاصله (۱–۶۳ نویسه)."
+
+#: src/re_sputnik/engine/overview.py:126
+#, python-brace-format
+msgid "{0}д"
+msgstr "{0}روز"
+
+#: src/re_sputnik/engine/overview.py:128
+#, python-brace-format
+msgid "{0}ч"
+msgstr "{0}ساعت"
+
+#: src/re_sputnik/engine/overview.py:130
+#, python-brace-format
+msgid "{0}м"
+msgstr "{0}دقیقه"
+
+#: src/re_sputnik/engine/preinstall.py:140
+msgid "не найден каталог ядра в kmods/"
+msgstr "پوشهٔ هسته در kmods/ یافت نشد"
+
+#: src/re_sputnik/engine/preinstall.py:280
+msgid "SNAPSHOT: нужные kmod уже установлены — ставлю только ядро."
+msgstr "SNAPSHOT: kmod‌های لازم از قبل نصب‌اند — فقط هسته نصب می‌شود."
+
+#: src/re_sputnik/engine/preinstall.py:282
+msgid ""
+"На устройстве SNAPSHOT — автоматическая установка kmod невозможна (модули"
+" привязаны к сборке). Используйте релизную прошивку."
+msgstr ""
+"روی این دستگاه نسخهٔ SNAPSHOT است — نصب خودکار kmod ممکن نیست (ماژول‌ها "
+"به ساخت وابسته‌اند). از فرم‌ور انتشار رسمی استفاده کنید."
+
+#: src/re_sputnik/engine/preinstall.py:286
+msgid "не удалось определить arch/board роутера"
+msgstr "تشخیص arch/board روتر ممکن نشد"
+
+#: src/re_sputnik/engine/preinstall.py:291
+msgid "Определяю ссылки на пакеты…"
+msgstr "در حال یافتن لینک‌های دانلود بسته…"
+
+#: src/re_sputnik/engine/preinstall.py:313
+msgid "Файлы переданы (установка пропущена)."
+msgstr "فایل‌ها منتقل شدند (نصب نادیده گرفته شد)."
+
+#: src/re_sputnik/engine/preinstall.py:321
+msgid "Устанавливаю пакеты…"
+msgstr "در حال نصب بسته‌ها…"
+
+#: src/re_sputnik/engine/rules.py:24
+msgid "Re:filter — блок-лист РФ (60000+ доменов + 25000+ IP)"
+msgstr "Re:filter — فهرست مسدودی روسیه (بیش از ۶۰۰۰۰ دامنه + ۲۵۰۰۰ IP)"
+
+#: src/re_sputnik/engine/rules.py:25
+msgid "Russia Inside — must-have РФ (1000+ доменов)"
+msgstr "Russia Inside — فهرست ضروری روسیه (بیش از ۱۰۰۰ دامنه)"
+
+#: src/re_sputnik/engine/rules.py:33
+msgid "Аниме-стриминг"
+msgstr "پخش زنده انیمه"
+
+#: src/re_sputnik/engine/rules.py:35
+msgid "Мировые новости"
+msgstr "اخبار جهان"
+
+#: src/re_sputnik/engine/rules.py:36
+msgid "Контент 18+"
+msgstr "محتوای بزرگسالان (۱۸+)"
+
+#: src/re_sputnik/engine/rules.py:39
+msgid "GeoBlock-сервисы"
+msgstr "سرویس‌های GeoBlock"
+
+#: src/re_sputnik/engine/rules.py:42
+msgid "OVH (Франция)"
+msgstr "OVH (فرانسه)"
+
+#: src/re_sputnik/engine/rules.py:43
+msgid "Hetzner (Германия)"
+msgstr "Hetzner (آلمان)"
+
+#: src/re_sputnik/engine/rules.py:51
+msgid "Основной пул серверов"
+msgstr "مجموعهٔ اصلی سرورها"
+
+#: src/re_sputnik/engine/rules.py:52
+msgid "Отдельный URLTest (авто)"
+msgstr "URLTest جدا (خودکار)"
+
+#: src/re_sputnik/engine/sqm.py:100
+msgid "нет ответа"
+msgstr "پاسخی دریافت نشد"
+
+#: src/re_sputnik/engine/sqm.py:109
+msgid ""
+"Не удалось измерить скорость — тест-серверы недоступны (или у роутера нет"
+" прямого выхода в интернет). Введите значения вручную."
+msgstr ""
+"اندازه‌گیری سرعت ممکن نشد — سرورهای تست در دسترس نیستند (یا روتر دسترسی "
+"مستقیم به اینترنت ندارد). مقادیر را به‌صورت دستی وارد کنید."
+
+#: src/re_sputnik/engine/sqm.py:173
+msgid "Не выбран WAN-интерфейс."
+msgstr "رابط WAN انتخاب نشده است."
+
+#: src/re_sputnik/engine/sqm.py:175
+msgid "Укажите скорости приёма и отдачи (кбит/с) больше нуля."
+msgstr "سرعت دریافت و ارسال (kbit/s) بزرگ‌تر از صفر را وارد کنید."
+
+#: src/re_sputnik/engine/zapret.py:99
+msgid "Не удалось разобрать результат теста."
+msgstr "تجزیهٔ نتیجهٔ تست ممکن نشد."
+
+#: src/re_sputnik/engine/zapret.py:127
+msgid "Не удалось скачать пакет Zapret."
+msgstr "دانلود بسته Zapret ممکن نشد."
+
+#: src/re_sputnik/engine/zapret.py:134
+msgid "Установка Zapret не удалась."
+msgstr "نصب Zapret ناموفق بود."
+
+#: src/re_sputnik/engine/zapret.py:135
+msgid "Zapret установлен."
+msgstr "Zapret نصب شد."
+
+#: src/re_sputnik/ui/about_screen.py:63
+msgid "Лицензии третьих сторон"
+msgstr "مجوزهای شخص ثالث"
+
+#: src/re_sputnik/ui/about_screen.py:68
+msgid "Полные тексты лицензий"
+msgstr "متن کامل مجوزها"
+
+#: src/re_sputnik/ui/access_screen.py:28
+msgid "Отключён"
+msgstr "غیرفعال"
+
+#: src/re_sputnik/ui/access_screen.py:29
+msgid "Только выбранные"
+msgstr "فقط انتخاب‌شده‌ها"
+
+#: src/re_sputnik/ui/access_screen.py:30
+msgid "Все, кроме выбранных"
+msgstr "همه به‌جز انتخاب‌شده‌ها"
+
+#: src/re_sputnik/ui/access_screen.py:34
+msgid ""
+"Режим контроля доступа отключён. Вы можете выбрать для устройства режимы "
+"«Игровой» и «Весь трафик». Подробнее о режимах ниже."
+msgstr ""
+"حالت کنترل دسترسی غیرفعال است. می‌توانید برای دستگاه حالت‌های «بازی» و "
+"«همهٔ ترافیک» را انتخاب کنید. جزئیات حالت‌ها در پایین."
+
+#: src/re_sputnik/ui/access_screen.py:36
+msgid ""
+"Заблокированные ресурсы идут через VPN по правилам — только на отмеченных"
+" «Через VPN» устройствах. Остальные идут полностью напрямую."
+msgstr ""
+"منابع مسدودشده طبق قوانین از طریق VPN می‌روند — فقط روی دستگاه‌های "
+"علامت‌خورده با «از طریق VPN». بقیه کاملاً مستقیم می‌روند."
+
+#: src/re_sputnik/ui/access_screen.py:38
+msgid ""
+"Заблокированные ресурсы идут через VPN по правилам на всех устройствах, "
+"кроме отмеченных «Напрямую» — те идут полностью мимо VPN."
+msgstr ""
+"منابع مسدودشده طبق قوانین روی همهٔ دستگاه‌ها از طریق VPN می‌روند، به‌جز "
+"آن‌هایی که با «مستقیم» علامت خورده‌اند — آن‌ها کاملاً از VPN عبور "
+"می‌کنند."
+
+#: src/re_sputnik/ui/access_screen.py:43
+msgid "Через VPN"
+msgstr "از طریق VPN"
+
+#: src/re_sputnik/ui/access_screen.py:43
+msgid "Напрямую"
+msgstr "مستقیم"
+
+#: src/re_sputnik/ui/access_screen.py:45
+msgid ""
+"«Игровой» — через VPN идёт только TCP (сайты, почта), а игровой и "
+"голосовой трафик идёт напрямую. Включите, если есть проблемы с "
+"подключением к игровым серверам."
+msgstr ""
+"حالت «بازی» — فقط TCP (سایت‌ها، ایمیل) از VPN می‌گذرد، و ترافیک بازی و "
+"صدا مستقیم می‌رود. اگر در اتصال به سرورهای بازی مشکل دارید آن را فعال "
+"کنید."
+
+#: src/re_sputnik/ui/access_screen.py:47
+msgid "«Весь трафик» — всё устройство идёт через VPN, в обход правил."
+msgstr "«همهٔ ترافیک» — کل دستگاه از VPN عبور می‌کند، بدون توجه به قوانین."
+
+#: src/re_sputnik/ui/access_screen.py:48
+msgid "Режим «Отключён»: список «Через VPN / Напрямую» не действует."
+msgstr "حالت «غیرفعال»: فهرست «از طریق VPN / مستقیم» اثری ندارد."
+
+#: src/re_sputnik/ui/access_screen.py:63 src/re_sputnik/ui/settings_shell.py:27
+msgid "Контроль доступа"
+msgstr "کنترل دسترسی"
+
+#: src/re_sputnik/ui/access_screen.py:66
+msgid "Считываю устройства…"
+msgstr "در حال خواندن دستگاه‌ها…"
+
+#: src/re_sputnik/ui/access_screen.py:79 src/re_sputnik/ui/access_screen.py:91
+#: src/re_sputnik/ui/access_screen.py:244
+#: src/re_sputnik/ui/access_screen.py:249
+#: src/re_sputnik/ui/advanced_screen.py:609
+#: src/re_sputnik/ui/antidpi_screen.py:144
+#: src/re_sputnik/ui/antidpi_screen.py:193
+#: src/re_sputnik/ui/antidpi_screen.py:198
+#: src/re_sputnik/ui/antidpi_screen.py:355
+#: src/re_sputnik/ui/antidpi_screen.py:518
+#: src/re_sputnik/ui/antidpi_screen.py:523 src/re_sputnik/ui/core_screen.py:155
+#: src/re_sputnik/ui/core_screen.py:344
+#: src/re_sputnik/ui/overview_screen.py:641
+#: src/re_sputnik/ui/overview_screen.py:752
+#: src/re_sputnik/ui/overview_screen.py:760
+#: src/re_sputnik/ui/rules_screen.py:116 src/re_sputnik/ui/rules_screen.py:147
+#: src/re_sputnik/ui/rules_screen.py:417
+msgid "Применить изменения"
+msgstr "اعمال تغییرات"
+
+#: src/re_sputnik/ui/access_screen.py:84
+msgid ""
+"Выбор режима и настройки устройств вступают в силу только после нажатия "
+"«Применить изменения»."
+msgstr ""
+"انتخاب حالت و تنظیمات دستگاه‌ها فقط پس از کلیک روی «اعمال تغییرات» اعمال "
+"می‌شود."
+
+#: src/re_sputnik/ui/access_screen.py:111
+#: src/re_sputnik/ui/access_screen.py:233
+#: src/re_sputnik/ui/access_screen.py:245
+#: src/re_sputnik/ui/advanced_screen.py:167
+#: src/re_sputnik/ui/advanced_screen.py:285
+#: src/re_sputnik/ui/advanced_screen.py:323
+#: src/re_sputnik/ui/advanced_screen.py:672
+#: src/re_sputnik/ui/advanced_screen.py:733
+#: src/re_sputnik/ui/advanced_screen.py:739
+#: src/re_sputnik/ui/advanced_screen.py:793
+#: src/re_sputnik/ui/advanced_screen.py:986
+#: src/re_sputnik/ui/antidpi_screen.py:94
+#: src/re_sputnik/ui/antidpi_screen.py:283
+#: src/re_sputnik/ui/antidpi_screen.py:442
+#: src/re_sputnik/ui/connect_screen.py:446
+#: src/re_sputnik/ui/diagnostics_screen.py:187
+#: src/re_sputnik/ui/finalize_screen.py:184
+#: src/re_sputnik/ui/firstrun_screen.py:250
+#: src/re_sputnik/ui/nodes_screen.py:110 src/re_sputnik/ui/nodes_screen.py:199
+#: src/re_sputnik/ui/nodes_screen.py:305
+#: src/re_sputnik/ui/overview_screen.py:180
+#: src/re_sputnik/ui/overview_screen.py:426
+#: src/re_sputnik/ui/overview_screen.py:761
+#: src/re_sputnik/ui/preinstall_screen.py:213
+#: src/re_sputnik/ui/quick_nodes_screen.py:218
+#: src/re_sputnik/ui/quick_nodes_screen.py:269
+#: src/re_sputnik/ui/rules_screen.py:172 src/re_sputnik/ui/rules_screen.py:284
+#: src/re_sputnik/ui/rules_screen.py:365 src/re_sputnik/ui/rules_screen.py:371
+#: src/re_sputnik/ui/rules_screen.py:396 src/re_sputnik/ui/rules_screen.py:407
+#: src/re_sputnik/ui/rules_screen.py:414
+#: src/re_sputnik/ui/security_screen.py:93
+#: src/re_sputnik/ui/security_screen.py:374
+#: src/re_sputnik/ui/software_screen.py:201
+#, python-brace-format
+msgid "Ошибка: {0}"
+msgstr "خطا: {0}"
+
+#: src/re_sputnik/ui/access_screen.py:125
+msgid "Режим контроля"
+msgstr "حالت کنترل"
+
+#: src/re_sputnik/ui/access_screen.py:144
+#, python-brace-format
+msgid "Устройства ({0})"
+msgstr "دستگاه‌ها ({0})"
+
+#: src/re_sputnik/ui/access_screen.py:153
+msgid "Нет устройств в DHCP-лизах."
+msgstr "هیچ دستگاهی در اجاره‌های DHCP نیست."
+
+#: src/re_sputnik/ui/access_screen.py:170
+msgid "  · вне DHCP"
+msgstr "  · خارج از DHCP"
+
+#: src/re_sputnik/ui/access_screen.py:182
+msgid "Игровой (TCP)"
+msgstr "بازی (TCP)"
+
+#: src/re_sputnik/ui/access_screen.py:184
+msgid "Весь трафик"
+msgstr "همهٔ ترافیک"
+
+#: src/re_sputnik/ui/access_screen.py:201 src/re_sputnik/ui/rules_screen.py:378
+msgid "Изменено. Нажмите «Применить изменения»."
+msgstr "تغییر یافت. «اعمال تغییرات» را کلیک کنید."
+
+#: src/re_sputnik/ui/access_screen.py:237
+#: src/re_sputnik/ui/advanced_screen.py:503
+#: src/re_sputnik/ui/advanced_screen.py:789
+#: src/re_sputnik/ui/advanced_screen.py:943
+#: src/re_sputnik/ui/antidpi_screen.py:188
+#: src/re_sputnik/ui/antidpi_screen.py:513 src/re_sputnik/ui/core_screen.py:337
+#: src/re_sputnik/ui/finalize_screen.py:237
+#: src/re_sputnik/ui/firstrun_screen.py:237
+#: src/re_sputnik/ui/overview_screen.py:737
+#: src/re_sputnik/ui/quick_nodes_screen.py:355
+#: src/re_sputnik/ui/rules_screen.py:143 src/re_sputnik/ui/rules_screen.py:410
+msgid "Применяю…"
+msgstr "در حال اعمال…"
+
+#: src/re_sputnik/ui/access_screen.py:251
+#: src/re_sputnik/ui/antidpi_screen.py:194
+#: src/re_sputnik/ui/antidpi_screen.py:519 src/re_sputnik/ui/core_screen.py:347
+#: src/re_sputnik/ui/overview_screen.py:754
+#: src/re_sputnik/ui/rules_screen.py:420
+msgid "Изменения применены."
+msgstr "تغییرات اعمال شد."
+
+#: src/re_sputnik/ui/access_screen.py:255 src/re_sputnik/ui/core_screen.py:351
+#: src/re_sputnik/ui/overview_screen.py:757
+#: src/re_sputnik/ui/rules_screen.py:423
+msgid "Не удалось применить изменения."
+msgstr "اعمال تغییرات ممکن نشد."
+
+#: src/re_sputnik/ui/advanced_screen.py:82
+#: src/re_sputnik/ui/connect_screen.py:473
+msgid "Отмена"
+msgstr "لغو"
+
+#: src/re_sputnik/ui/advanced_screen.py:93
+msgid "Выполняю…"
+msgstr "در حال اجرا…"
+
+#: src/re_sputnik/ui/advanced_screen.py:124
+#: src/re_sputnik/ui/settings_shell.py:32
+msgid "Дополнительно"
+msgstr "بیشتر"
+
+#: src/re_sputnik/ui/advanced_screen.py:127
+msgid ""
+"Опасные операции с роутером. Делайте только при необходимости и сначала "
+"скачайте резервную копию."
+msgstr ""
+"عملیات‌های خطرناک روی روتر. فقط در صورت لزوم انجام دهید و ابتدا یک نسخهٔ "
+"پشتیبان دانلود کنید."
+
+#: src/re_sputnik/ui/advanced_screen.py:131
+msgid "Считываю настройки…"
+msgstr "در حال خواندن تنظیمات…"
+
+#: src/re_sputnik/ui/advanced_screen.py:202
+#: src/re_sputnik/ui/finalize_screen.py:51
+msgid "Имя роутера"
+msgstr "نام روتر"
+
+#: src/re_sputnik/ui/advanced_screen.py:203
+msgid ""
+"Под этим именем роутер виден в сети и в приложении. Латинские буквы, "
+"цифры и дефис, без пробелов."
+msgstr ""
+"روتر با این نام در شبکه و در برنامه نمایش داده می‌شود. حروف لاتین، اعداد "
+"و خط فاصله، بدون فاصله."
+
+#: src/re_sputnik/ui/advanced_screen.py:212
+#: src/re_sputnik/ui/finalize_screen.py:65
+#: src/re_sputnik/ui/finalize_screen.py:243
+#: src/re_sputnik/ui/finalize_screen.py:248
+msgid "Переименовать"
+msgstr "تغییر نام"
+
+#: src/re_sputnik/ui/advanced_screen.py:222
+msgid "Имя не изменилось."
+msgstr "نام تغییر نکرد."
+
+#: src/re_sputnik/ui/advanced_screen.py:224
+msgid "Переименовываю…"
+msgstr "در حال تغییر نام…"
+
+#: src/re_sputnik/ui/advanced_screen.py:229
+#: src/re_sputnik/ui/finalize_screen.py:244
+#, python-brace-format
+msgid "Готово — роутер переименован в «{0}»."
+msgstr "انجام شد — روتر به نام «{0}» تغییر یافت."
+
+#: src/re_sputnik/ui/advanced_screen.py:241
+msgid "Резервная копия настроек"
+msgstr "نسخهٔ پشتیبان تنظیمات"
+
+#: src/re_sputnik/ui/advanced_screen.py:242
+msgid ""
+"Полная копия настроек роутера (как в LuCI). Сохраните её перед любыми "
+"изменениями на этой странице."
+msgstr ""
+"یک نسخهٔ کامل از تنظیمات روتر (مانند LuCI). پیش از هر تغییری در این صفحه "
+"آن را ذخیره کنید."
+
+#: src/re_sputnik/ui/advanced_screen.py:248
+msgid "Скачать резервную копию"
+msgstr "دانلود نسخهٔ پشتیبان"
+
+#: src/re_sputnik/ui/advanced_screen.py:251
+msgid "Восстановить из файла…"
+msgstr "بازگردانی از فایل…"
+
+#: src/re_sputnik/ui/advanced_screen.py:263
+msgid "Создаю резервную копию…"
+msgstr "در حال ایجاد نسخهٔ پشتیبان…"
+
+#: src/re_sputnik/ui/advanced_screen.py:270
+#: src/re_sputnik/ui/advanced_screen.py:289
+msgid "Архив резервной копии"
+msgstr "آرشیو نسخهٔ پشتیبان"
+
+#: src/re_sputnik/ui/advanced_screen.py:270
+#: src/re_sputnik/ui/advanced_screen.py:289
+#: src/re_sputnik/ui/diagnostics_screen.py:461
+#: src/re_sputnik/ui/nodes_screen.py:308
+#: src/re_sputnik/ui/quick_nodes_screen.py:323
+msgid "Все файлы"
+msgstr "همهٔ فایل‌ها"
+
+#: src/re_sputnik/ui/advanced_screen.py:273
+msgid "Отменено."
+msgstr "لغو شد."
+
+#: src/re_sputnik/ui/advanced_screen.py:278
+#, python-brace-format
+msgid "Сохранено: {0} ({1} КБ)"
+msgstr "ذخیره شد: {0} ({1} کیلوبایت)"
+
+#: src/re_sputnik/ui/advanced_screen.py:281
+#: src/re_sputnik/ui/diagnostics_screen.py:471
+#, python-brace-format
+msgid "Не удалось сохранить: {0}"
+msgstr "ذخیره ممکن نشد: {0}"
+
+#: src/re_sputnik/ui/advanced_screen.py:296
+#: src/re_sputnik/ui/nodes_screen.py:314
+#: src/re_sputnik/ui/quick_nodes_screen.py:330
+#, python-brace-format
+msgid "Не удалось прочитать файл: {0}"
+msgstr "خواندن فایل ممکن نشد: {0}"
+
+#: src/re_sputnik/ui/advanced_screen.py:309
+msgid "Восстановить"
+msgstr "بازگردانی"
+
+#: src/re_sputnik/ui/advanced_screen.py:309
+msgid "Подтвердить восстановление"
+msgstr "تأیید بازگردانی"
+
+#: src/re_sputnik/ui/advanced_screen.py:310
+#, python-brace-format
+msgid ""
+"Файл: {0}. Настройки роутера будут заменены содержимым копии, после чего "
+"роутер перезагрузится. Текущие настройки будут потеряны. Приложение "
+"отключится — возможно, потребуется переподключение по другому адресу."
+msgstr ""
+"فایل: {0}. تنظیمات روتر با محتوای نسخهٔ پشتیبان جایگزین می‌شود، سپس روتر "
+"مجدداً راه‌اندازی می‌شود. تنظیمات فعلی از دست خواهد رفت. برنامه ارتباطش "
+"را قطع می‌کند — ممکن است نیاز به اتصال دوباره با آدرسی دیگر باشد."
+
+#: src/re_sputnik/ui/advanced_screen.py:318
+msgid ""
+"Копия восстановлена. Роутер перезагружается — переподключитесь через "
+"минуту (возможно, по адресу из копии)."
+msgstr ""
+"نسخهٔ پشتیبان بازگردانی شد. روتر مجدداً راه‌اندازی می‌شود — پس از یک "
+"دقیقه دوباره وصل شوید (ممکن است با آدرس نسخهٔ پشتیبان)."
+
+#: src/re_sputnik/ui/advanced_screen.py:331
+msgid "Открытая (без пароля)"
+msgstr "باز (بدون گذرواژه)"
+
+#: src/re_sputnik/ui/advanced_screen.py:339
+msgid "Wi-Fi сети"
+msgstr "شبکه‌های Wi-Fi"
+
+#: src/re_sputnik/ui/advanced_screen.py:342
+msgid "На этом устройстве не найден Wi-Fi-чип — настраивать нечего."
+msgstr "روی این دستگاه تراشهٔ Wi-Fi یافت نشد — چیزی برای تنظیم نیست."
+
+#: src/re_sputnik/ui/advanced_screen.py:346
+msgid ""
+"Имя сети, пароль, шифрование и канал — отдельно для каждого диапазона. "
+"Изменения применяются сразу; подключённые устройства переподключатся. "
+"QR-код и данные на «Обзоре» обновятся при следующем открытии."
+msgstr ""
+"نام شبکه، گذرواژه، رمزنگاری و کانال — جداگانه برای هر باند. تغییرات فوراً"
+" اعمال می‌شوند؛ دستگاه‌های متصل دوباره وصل می‌شوند. کد QR و داده‌های "
+"صفحهٔ «نمای کلی» در باز شدن بعدی به‌روزرسانی می‌شوند."
+
+#: src/re_sputnik/ui/advanced_screen.py:369
+msgid "включено, вещает"
+msgstr "فعال، پخش می‌کند"
+
+#: src/re_sputnik/ui/advanced_screen.py:370
+msgid "выключено"
+msgstr "خاموش"
+
+#: src/re_sputnik/ui/advanced_screen.py:370
+msgid "не вещает"
+msgstr "پخش نمی‌کند"
+
+#: src/re_sputnik/ui/advanced_screen.py:380
+msgid ""
+"Этот диапазон занят подключением роутера к интернету по Wi-Fi, поэтому "
+"раздавать сеть на нём нельзя."
+msgstr ""
+"این باند برای اتصال اینترنت روتر از طریق Wi-Fi مشغول است، بنابراین "
+"نمی‌توان روی آن شبکه پخش کرد."
+
+#: src/re_sputnik/ui/advanced_screen.py:390
+msgid ""
+"⚠ Не удалось получить список каналов от этого радио (возможно, оно "
+"выключено или недоступно). Настройка этого диапазона сейчас недоступна — "
+"включите радио и обновите страницу."
+msgstr ""
+"⚠ گرفتن فهرست کانال‌ها از این رادیو ممکن نشد (ممکن است خاموش یا "
+"غیرقابل‌دسترس باشد). تنظیم این باند اکنون ممکن نیست — رادیو را روشن کرده "
+"و صفحه را تازه کنید."
+
+#: src/re_sputnik/ui/advanced_screen.py:415
+#: src/re_sputnik/ui/wifi_ap_screen.py:55
+msgid "Имя сети (SSID)"
+msgstr "نام شبکه (SSID)"
+
+#: src/re_sputnik/ui/advanced_screen.py:420
+#: src/re_sputnik/ui/connect_screen.py:199
+msgid "Пароль"
+msgstr "گذرواژه"
+
+#: src/re_sputnik/ui/advanced_screen.py:433
+msgid "Шифрование"
+msgstr "رمزنگاری"
+
+#: src/re_sputnik/ui/advanced_screen.py:441
+msgid "Канал"
+msgstr "کانال"
+
+#: src/re_sputnik/ui/advanced_screen.py:455
+#, python-brace-format
+msgid "{0} МГц"
+msgstr "{0} مگاهرتز"
+
+#: src/re_sputnik/ui/advanced_screen.py:457
+msgid "Ширина канала"
+msgstr "پهنای کانال"
+
+#: src/re_sputnik/ui/advanced_screen.py:466
+#: src/re_sputnik/ui/advanced_screen.py:508
+#: src/re_sputnik/ui/advanced_screen.py:517
+#: src/re_sputnik/ui/advanced_screen.py:886
+#: src/re_sputnik/ui/advanced_screen.py:948
+#: src/re_sputnik/ui/advanced_screen.py:953
+#: src/re_sputnik/ui/antidpi_screen.py:612
+#: src/re_sputnik/ui/firstrun_screen.py:157
+#: src/re_sputnik/ui/firstrun_screen.py:249
+#: src/re_sputnik/ui/firstrun_screen.py:254
+#: src/re_sputnik/ui/internet_screen.py:230
+msgid "Применить"
+msgstr "اعمال"
+
+#: src/re_sputnik/ui/advanced_screen.py:498
+#: src/re_sputnik/ui/wifi_ap_screen.py:157
+msgid "Введите имя сети."
+msgstr "نام شبکه را وارد کنید."
+
+#: src/re_sputnik/ui/advanced_screen.py:501
+msgid "Пароль не короче 8 символов."
+msgstr "گذرواژه باید حداقل ۸ نویسه باشد."
+
+#: src/re_sputnik/ui/advanced_screen.py:504
+#: src/re_sputnik/ui/wifi_ap_screen.py:164
+msgid "Настраиваю Wi-Fi…"
+msgstr "در حال تنظیم Wi-Fi…"
+
+#: src/re_sputnik/ui/advanced_screen.py:510
+msgid "Готово — сеть обновлена."
+msgstr "انجام شد — شبکه به‌روزرسانی شد."
+
+#: src/re_sputnik/ui/advanced_screen.py:513
+msgid ""
+"Применено, но диапазон не поднялся — возможно, канал не разрешён в этом "
+"регионе. Попробуйте другой канал."
+msgstr ""
+"اعمال شد، اما باند بالا نیامد — ممکن است کانال در این منطقه مجاز نباشد. "
+"کانال دیگری را امتحان کنید."
+
+#: src/re_sputnik/ui/advanced_screen.py:529
+msgid "Сеть LAN и DHCP"
+msgstr "شبکهٔ LAN و DHCP"
+
+#: src/re_sputnik/ui/advanced_screen.py:533
+msgid ""
+"На сборке OpenWrt SNAPSHOT формат сетевых настроек может отличаться, "
+"поэтому менять адрес роутера и DHCP отсюда небезопасно. Настройте сеть "
+"самостоятельно — через веб-интерфейс роутера (браузер) или консоль."
+msgstr ""
+"روی ساخت SNAPSHOT از OpenWrt، فرمت تنظیمات شبکه ممکن است متفاوت باشد، پس "
+"تغییر آدرس روتر و DHCP از اینجا امن نیست. شبکه را خودتان از طریق رابط وب "
+"روتر (مرورگر) یا کنسول تنظیم کنید."
+
+#: src/re_sputnik/ui/advanced_screen.py:554
+msgid "IP-адрес роутера с маской (CIDR)"
+msgstr "آدرس IP روتر همراه با ماسک (CIDR)"
+
+#: src/re_sputnik/ui/advanced_screen.py:555
+msgid ""
+"Адрес роутера вместе с размером подсети через «/», например "
+"192.168.1.1/24. По этому адресу открываются настройки; его же вы вводите "
+"в приложении."
+msgstr ""
+"آدرس روتر همراه با اندازهٔ زیرشبکه پس از «/»، مثلاً 192.168.1.1/24. "
+"تنظیمات با این آدرس باز می‌شود؛ همین آدرس را در برنامه هم وارد می‌کنید."
+
+#: src/re_sputnik/ui/advanced_screen.py:562
+msgid "IP-адрес роутера"
+msgstr "آدرس IP روتر"
+
+#: src/re_sputnik/ui/advanced_screen.py:563
+msgid ""
+"Адрес, по которому открываются настройки роутера; его же вы вводите в "
+"приложении. Обычно 192.168.1.1."
+msgstr ""
+"آدرسی که تنظیمات روتر با آن باز می‌شود؛ همین آدرس را در برنامه هم وارد "
+"می‌کنید. معمولاً 192.168.1.1."
+
+#: src/re_sputnik/ui/advanced_screen.py:568
+msgid "Маска подсети"
+msgstr "ماسک زیرشبکه"
+
+#: src/re_sputnik/ui/advanced_screen.py:569
+msgid "Размер локальной сети. Если не уверены — оставьте 255.255.255.0."
+msgstr "اندازهٔ شبکهٔ محلی. اگر مطمئن نیستید، 255.255.255.0 را نگه دارید."
+
+#: src/re_sputnik/ui/advanced_screen.py:573
+msgid "DHCP: начало диапазона"
+msgstr "DHCP: آغاز محدوده"
+
+#: src/re_sputnik/ui/advanced_screen.py:574
+msgid ""
+"С какого адреса роутер начинает раздавать IP. 100 означает 192.168.1.100."
+" Адреса до него (1–99) остаются свободными — их удобно отдавать под "
+"постоянные IP устройств."
+msgstr ""
+"از چه آدرسی روتر شروع به توزیع IP می‌کند. 100 یعنی 192.168.1.100. "
+"آدرس‌های پیش از آن (1–99) آزاد می‌مانند — برای IP‌های دائمی دستگاه‌ها "
+"مناسب‌اند."
+
+#: src/re_sputnik/ui/advanced_screen.py:576
+msgid "DHCP: сколько адресов раздавать"
+msgstr "DHCP: چند آدرس توزیع شود"
+
+#: src/re_sputnik/ui/advanced_screen.py:577
+msgid ""
+"Максимум устройств, которым роутер выдаст адрес автоматически (размер "
+"диапазона)."
+msgstr ""
+"حداکثر تعداد دستگاه‌هایی که روتر به‌طور خودکار آدرس می‌دهد (اندازهٔ "
+"محدوده)."
+
+#: src/re_sputnik/ui/advanced_screen.py:587
+msgid "Время аренды адреса (ЧЧ:ММ)"
+msgstr "زمان اجارهٔ آدرس (ساعت:دقیقه)"
+
+#: src/re_sputnik/ui/advanced_screen.py:599
+msgid ""
+"Через какое время устройство заново запрашивает свой адрес. Например "
+"12:00 — каждые 12 часов. Слишком малое значение нагружает сеть."
+msgstr ""
+"پس از چه مدت دستگاه دوباره آدرس خود را درخواست می‌کند. مثلاً 12:00 یعنی "
+"هر 12 ساعت. مقدار بسیار کوچک شبکه را بار می‌کند."
+
+#: src/re_sputnik/ui/advanced_screen.py:609
+msgid "Подтвердить"
+msgstr "تأیید"
+
+#: src/re_sputnik/ui/advanced_screen.py:610
+msgid ""
+"Изменение адреса роутера, маски или DHCP отключит ВСЕ устройства, включая"
+" это. Может потребоваться полный сброс роутера. Делайте только при "
+"крайней необходимости — приложение отключится и переподключится по новому"
+" адресу."
+msgstr ""
+"تغییر آدرس روتر، ماسک یا DHCP اتصال همهٔ دستگاه‌ها از جمله این یکی را قطع"
+" می‌کند. ممکن است نیاز به بازنشانی کامل روتر باشد. فقط در صورت لزوم شدید "
+"این کار را انجام دهید — برنامه قطع می‌شود و با آدرس جدید دوباره وصل "
+"می‌شود."
+
+#: src/re_sputnik/ui/advanced_screen.py:646
+msgid "Неверный адрес. Укажите IP с маской через «/», например 192.168.1.1/24."
+msgstr ""
+"آدرس نامعتبر است. یک IP همراه با ماسک پس از «/» وارد کنید، مثلاً "
+"192.168.1.1/24."
+
+#: src/re_sputnik/ui/advanced_screen.py:656
+msgid "Неверный адрес."
+msgstr "آدرس نامعتبر است."
+
+#: src/re_sputnik/ui/advanced_screen.py:668
+#, python-brace-format
+msgid ""
+"Применяется. Роутер переедет на {0} — приложение отключится, "
+"переподключитесь по новому адресу."
+msgstr ""
+"در حال اعمال است. روتر به {0} منتقل می‌شود — برنامه قطع می‌شود، با آدرس "
+"جدید دوباره وصل شوید."
+
+#: src/re_sputnik/ui/advanced_screen.py:681
+msgid "Постоянный IP-адрес для устройства"
+msgstr "آدرس IP دائمی برای دستگاه"
+
+#: src/re_sputnik/ui/advanced_screen.py:682
+msgid ""
+"Закрепите за устройством его текущий адрес — роутер всегда будет выдавать"
+" ему один и тот же IP."
+msgstr "آدرس فعلی دستگاه را ثابت کنید — روتر همیشه همان IP را به آن می‌دهد."
+
+#: src/re_sputnik/ui/advanced_screen.py:698
+msgid "Закрепить адрес"
+msgstr "ثابت کردن آدرس"
+
+#: src/re_sputnik/ui/advanced_screen.py:702
+msgid "Все известные устройства уже закреплены или нет устройств с MAC."
+msgstr ""
+"همهٔ دستگاه‌های شناخته‌شده از قبل ثابت‌شده‌اند یا دستگاهی با MAC وجود "
+"ندارد."
+
+#: src/re_sputnik/ui/advanced_screen.py:709
+msgid "Закреплённые:"
+msgstr "ثابت‌شده‌ها:"
+
+#: src/re_sputnik/ui/advanced_screen.py:717
+msgid "Убрать"
+msgstr "حذف"
+
+#: src/re_sputnik/ui/advanced_screen.py:728
+msgid "Закрепляю адрес…"
+msgstr "در حال ثابت کردن آدرس…"
+
+#: src/re_sputnik/ui/advanced_screen.py:746
+msgid "UPnP / переадресация портов"
+msgstr "UPnP / هدایت پورت"
+
+#: src/re_sputnik/ui/advanced_screen.py:747
+msgid ""
+"Позволяет программам и играм самим открывать нужные порты на роутере "
+"(онлайн-игры, торренты, видеозвонки). Удобно, но снижает контроль над "
+"тем, какие порты открыты."
+msgstr ""
+"به برنامه‌ها و بازی‌ها اجازه می‌دهد خودشان پورت‌های لازم را روی روتر باز "
+"کنند (بازی‌های آنلاین، تورنت، تماس‌های تصویری). راحت است، اما کنترل روی "
+"پورت‌های باز را کاهش می‌دهد."
+
+#: src/re_sputnik/ui/advanced_screen.py:758
+msgid "Служба включена и работает"
+msgstr "سرویس فعال است و کار می‌کند"
+
+#: src/re_sputnik/ui/advanced_screen.py:759
+msgid "Включена, но не запущена"
+msgstr "فعال است، اما در حال اجرا نیست"
+
+#: src/re_sputnik/ui/advanced_screen.py:759
+msgid "Отключена"
+msgstr "غیرفعال"
+
+#: src/re_sputnik/ui/advanced_screen.py:763
+msgid "Включить UPnP"
+msgstr "فعال‌سازی UPnP"
+
+#: src/re_sputnik/ui/advanced_screen.py:774
+msgid "Активные переадресации:"
+msgstr "هدایت‌های فعال:"
+
+#: src/re_sputnik/ui/advanced_screen.py:784
+msgid "нет активных переадресаций"
+msgstr "هیچ هدایت فعالی نیست"
+
+#: src/re_sputnik/ui/advanced_screen.py:801
+msgid "SQM — сглаживание буфера (bufferbloat)"
+msgstr "SQM — هموارسازی بافر (bufferbloat)"
+
+#: src/re_sputnik/ui/advanced_screen.py:802
+msgid ""
+"Убирает «залипания» интернета, когда кто-то качает или грузит канал "
+"(видеозвонки, игры перестают тормозить). Ограничивает скорость чуть ниже "
+"реальной, чтобы роутер управлял очередью пакетов. Требователен к "
+"производительности роутера: на тарифах с высокой скоростью (500+ Мбит/с) "
+"может занижать скорость из-за нехватки мощности."
+msgstr ""
+"وقتی کسی دانلود می‌کند یا کانال را اشغال می‌کند، «گیر کردن» اینترنت را "
+"حذف می‌کند (تماس‌های تصویری و بازی‌ها دیگر کند نمی‌شوند). سرعت را کمی "
+"پایین‌تر از واقعی محدود می‌کند تا روتر صف پکت‌ها را مدیریت کند. به عملکرد"
+" روتر حساس است: در پلن‌های پرسرعت (بالای 500 مگابیت در ثانیه) ممکن است به"
+" دلیل کمبود توان سرعت را کمتر نشان دهد."
+
+#: src/re_sputnik/ui/advanced_screen.py:826
+msgid "WAN-интерфейс (что ограничиваем)"
+msgstr "رابط WAN (آنچه محدود می‌شود)"
+
+#: src/re_sputnik/ui/advanced_screen.py:827
+msgid ""
+"Устройство, через которое роутер выходит в интернет. Обычно определяется "
+"автоматически."
+msgstr ""
+"دستگاهی که روتر از طریق آن به اینترنت می‌رسد. معمولاً به‌طور خودکار تشخیص"
+" داده می‌شود."
+
+#: src/re_sputnik/ui/advanced_screen.py:834
+msgid "Скорость приёма, кбит/с"
+msgstr "سرعت دریافت، کیلوبیت بر ثانیه"
+
+#: src/re_sputnik/ui/advanced_screen.py:835
+msgid ""
+"Поставьте ~90–95% от тарифной скорости загрузки, либо на 1–2 Мбит/с "
+"меньше реально измеренной. Например, при тарифе 100 Мбит/с — около "
+"90000–95000."
+msgstr ""
+"حدود ۹۰ تا ۹۵٪ سرعت دانلود پلن، یا ۱ تا ۲ مگابیت کمتر از مقدار "
+"اندازه‌گیری‌شده تنظیم کنید. مثلاً در پلن 100 مگابیت — حدود 90000–95000."
+
+#: src/re_sputnik/ui/advanced_screen.py:841
+msgid "Скорость отдачи, кбит/с"
+msgstr "سرعت ارسال، کیلوبیت بر ثانیه"
+
+#: src/re_sputnik/ui/advanced_screen.py:842
+msgid ""
+"Так же: ~90–95% от тарифной скорости отдачи (upload) или на 1–2 Мбит/с "
+"меньше измеренной."
+msgstr ""
+"به همان شکل: حدود ۹۰ تا ۹۵٪ سرعت آپلود پلن یا ۱ تا ۲ مگابیت کمتر از مقدار"
+" اندازه‌گیری‌شده."
+
+#: src/re_sputnik/ui/advanced_screen.py:848
+msgid "Дисциплина очереди"
+msgstr "نوع نظم صف"
+
+#: src/re_sputnik/ui/advanced_screen.py:849
+msgid ""
+"cake — современная, рекомендуется (сама управляет приоритетами). fq_codel"
+" — проще и легче, для слабых роутеров."
+msgstr ""
+"cake — مدرن، توصیه می‌شود (خودش اولویت‌ها را مدیریت می‌کند). fq_codel — "
+"ساده‌تر و سبک‌تر، برای روترهای ضعیف‌تر."
+
+#: src/re_sputnik/ui/advanced_screen.py:859
+msgid "Шаблон настройки очереди"
+msgstr "الگوی تنظیم صف"
+
+#: src/re_sputnik/ui/advanced_screen.py:860
+msgid ""
+"Простой подходит почти всем. «С приоритизацией» отдаёт приоритет звонкам "
+"и играм перед загрузками, но чуть тяжелее."
+msgstr ""
+"حالت ساده برای تقریباً همه مناسب است. «با اولویت‌بندی» به تماس‌ها و "
+"بازی‌ها نسبت به دانلودها اولویت می‌دهد، اما کمی سنگین‌تر است."
+
+#: src/re_sputnik/ui/advanced_screen.py:868
+msgid "Накладные расходы на пакет, байт"
+msgstr "سربار هر پکت، بایت"
+
+#: src/re_sputnik/ui/advanced_screen.py:869
+msgid ""
+"Запас на служебные данные канала. 44 подходит для большинства подключений"
+" (Ethernet/оптика/кабель). Для DSL может быть иначе — если не уверены, "
+"оставьте 44."
+msgstr ""
+"ذخیرهٔ احتیاطی برای سربار لینک. 44 برای بیشتر اتصالات مناسب است "
+"(اترنت/فیبر/کابل). برای DSL ممکن است متفاوت باشد — اگر مطمئن نیستید، 44 "
+"را نگه دارید."
+
+#: src/re_sputnik/ui/advanced_screen.py:876
+msgid "Включить SQM"
+msgstr "فعال‌سازی SQM"
+
+#: src/re_sputnik/ui/advanced_screen.py:882
+#: src/re_sputnik/ui/advanced_screen.py:916
+#: src/re_sputnik/ui/advanced_screen.py:924
+msgid "Измерить"
+msgstr "اندازه‌گیری"
+
+#: src/re_sputnik/ui/advanced_screen.py:908
+msgid "Измеряю…"
+msgstr "در حال اندازه‌گیری…"
+
+#: src/re_sputnik/ui/advanced_screen.py:910
+msgid ""
+"Измеряю скорость загрузки (несколько секунд, скачается часть тестового "
+"файла)…"
+msgstr ""
+"در حال اندازه‌گیری سرعت دانلود (چند ثانیه، بخشی از فایل آزمایشی دانلود "
+"می‌شود)…"
+
+#: src/re_sputnik/ui/advanced_screen.py:920
+#, python-brace-format
+msgid ""
+"Измерено: приём ≈ {0} кбит/с (−2% к замеру). Отдачу прикинул как {1} "
+"кбит/с (половина приёма) — уточните под свой тариф и нажмите «Применить»."
+msgstr ""
+"اندازه‌گیری شد: دریافت ≈ {0} کیلوبیت بر ثانیه (۲٪ کمتر از مقدار "
+"اندازه‌گیری‌شده). آپلود به‌صورت {1} کیلوبیت بر ثانیه برآورد شد (نیمی از "
+"دریافت) — برای پلن خود تنظیم کنید و «اعمال» را کلیک کنید."
+
+#: src/re_sputnik/ui/advanced_screen.py:944
+msgid "Настраиваю очередь…"
+msgstr "در حال تنظیم صف…"
+
+#: src/re_sputnik/ui/advanced_screen.py:949
+msgid "Готово — настройки SQM применены."
+msgstr "انجام شد — تنظیمات SQM اعمال شد."
+
+#: src/re_sputnik/ui/advanced_screen.py:962
+msgid "Сброс к заводским настройкам"
+msgstr "بازنشانی به تنظیمات کارخانه‌ای"
+
+#: src/re_sputnik/ui/advanced_screen.py:963
+msgid ""
+"Полностью стирает все настройки роутера и возвращает его к состоянию «из "
+"коробки» (обычно адрес 192.168.1.1, без пароля). HomeProxy, ключи, Wi-Fi "
+"— всё будет удалено."
+msgstr ""
+"تمام تنظیمات روتر را به‌طور کامل پاک می‌کند و آن را به حالت «از کارخانه» "
+"برمی‌گرداند (معمولاً آدرس 192.168.1.1، بدون گذرواژه). HomeProxy، کلیدها، "
+"Wi-Fi — همه چیز حذف خواهد شد."
+
+#: src/re_sputnik/ui/advanced_screen.py:972
+msgid "Сбросить устройство"
+msgstr "بازنشانی دستگاه"
+
+#: src/re_sputnik/ui/advanced_screen.py:972
+msgid "Подтвердить сброс"
+msgstr "تأیید بازنشانی"
+
+#: src/re_sputnik/ui/advanced_screen.py:973
+msgid ""
+"Все настройки будут безвозвратно удалены, роутер перезагрузится в "
+"заводском состоянии. Приложение потеряет связь. Убедитесь, что у вас есть"
+" резервная копия."
+msgstr ""
+"همهٔ تنظیمات به‌طور غیرقابل‌برگشت حذف می‌شود و روتر در حالت کارخانه‌ای "
+"مجدداً راه‌اندازی می‌شود. برنامه ارتباطش را از دست می‌دهد. مطمئن شوید "
+"نسخهٔ پشتیبان دارید."
+
+#: src/re_sputnik/ui/advanced_screen.py:981
+msgid ""
+"Сброс запущен. Роутер перезагрузится в заводском состоянии — подключитесь"
+" заново как к новому устройству."
+msgstr ""
+"بازنشانی آغاز شد. روتر در حالت کارخانه‌ای مجدداً راه‌اندازی می‌شود — "
+"به‌عنوان دستگاهی تازه دوباره وصل شوید."
+
+#: src/re_sputnik/ui/antidpi_screen.py:26
+msgid "отказ"
+msgstr "رد شد"
+
+#: src/re_sputnik/ui/antidpi_screen.py:26
+msgid "таймаут"
+msgstr "زمان تمام شد"
+
+#: src/re_sputnik/ui/antidpi_screen.py:27
+msgid "сбой"
+msgstr "شکست"
+
+#: src/re_sputnik/ui/antidpi_screen.py:47
+msgid ""
+"Обход DPI для сервисов, где не нужен полный VPN. Два инструмента — "
+"попробуйте оба, что сработает, зависит от провайдера."
+msgstr ""
+"دور زدن DPI برای سرویس‌هایی که به VPN کامل نیاز ندارند. دو ابزار — هر دو "
+"را امتحان کنید، اینکه کدام جواب می‌دهد به اپراتور بستگی دارد."
+
+#: src/re_sputnik/ui/antidpi_screen.py:70
+msgid "Считываю ByeDPI…"
+msgstr "در حال خواندن ByeDPI…"
+
+#: src/re_sputnik/ui/antidpi_screen.py:109
+#: src/re_sputnik/ui/antidpi_screen.py:304
+msgid "🟢 установлен и запущен"
+msgstr "🟢 نصب و اجرا شده"
+
+#: src/re_sputnik/ui/antidpi_screen.py:110
+#: src/re_sputnik/ui/antidpi_screen.py:305
+msgid "🟡 установлен, остановлен"
+msgstr "🟡 نصب شده، متوقف"
+
+#: src/re_sputnik/ui/antidpi_screen.py:110
+#: src/re_sputnik/ui/antidpi_screen.py:305 src/re_sputnik/ui/core_screen.py:480
+msgid "🔴 не установлен"
+msgstr "🔴 نصب نشده"
+
+#: src/re_sputnik/ui/antidpi_screen.py:114
+#: src/re_sputnik/ui/antidpi_screen.py:311
+msgid "Версия"
+msgstr "نسخه"
+
+#: src/re_sputnik/ui/antidpi_screen.py:114
+#: src/re_sputnik/ui/antidpi_screen.py:311 src/re_sputnik/ui/core_screen.py:296
+msgid "Архитектура"
+msgstr "معماری"
+
+#: src/re_sputnik/ui/antidpi_screen.py:122
+msgid "Включить ByeDPI"
+msgstr "فعال‌سازی ByeDPI"
+
+#: src/re_sputnik/ui/antidpi_screen.py:125
+#: src/re_sputnik/ui/antidpi_screen.py:330
+msgid "Готовая стратегия:"
+msgstr "استراتژی آماده:"
+
+#: src/re_sputnik/ui/antidpi_screen.py:129
+#: src/re_sputnik/ui/antidpi_screen.py:132
+#: src/re_sputnik/ui/antidpi_screen.py:337
+#: src/re_sputnik/ui/antidpi_screen.py:449
+#: src/re_sputnik/ui/antidpi_screen.py:467
+msgid "— выбрать —"
+msgstr "— انتخاب کنید —"
+
+#: src/re_sputnik/ui/antidpi_screen.py:135
+msgid "Стратегия (аргументы ciadpi):"
+msgstr "استراتژی (پارامترهای ciadpi):"
+
+#: src/re_sputnik/ui/antidpi_screen.py:142
+#: src/re_sputnik/ui/antidpi_screen.py:353
+msgid "Сохранить стратегию"
+msgstr "ذخیرهٔ استراتژی"
+
+#: src/re_sputnik/ui/antidpi_screen.py:151
+msgid "Тест стратегии"
+msgstr "تست استراتژی"
+
+#: src/re_sputnik/ui/antidpi_screen.py:153
+msgid "● = TLS-рукопожатие успешно, ○ = заблокировано"
+msgstr "● = دست‌دهی TLS موفق، ○ = مسدود شده"
+
+#: src/re_sputnik/ui/antidpi_screen.py:155
+#: src/re_sputnik/ui/antidpi_screen.py:210
+#: src/re_sputnik/ui/antidpi_screen.py:215
+msgid "▶ Запустить тест"
+msgstr "▶ اجرای تست"
+
+#: src/re_sputnik/ui/antidpi_screen.py:168
+#: src/re_sputnik/ui/antidpi_screen.py:471
+msgid "Стратегия подставлена — нажмите «Сохранить»."
+msgstr "استراتژی جای‌گذاری شد — «ذخیره» را کلیک کنید."
+
+#: src/re_sputnik/ui/antidpi_screen.py:176
+#: src/re_sputnik/ui/antidpi_screen.py:493
+#: src/re_sputnik/ui/antidpi_screen.py:501
+msgid "Изменено — нажмите «Применить изменения»."
+msgstr "تغییر یافت — «اعمال تغییرات» را کلیک کنید."
+
+#: src/re_sputnik/ui/antidpi_screen.py:184
+#: src/re_sputnik/ui/antidpi_screen.py:509
+msgid "Сохранено — нажмите «Применить изменения»."
+msgstr "ذخیره شد — «اعمال تغییرات» را کلیک کنید."
+
+#: src/re_sputnik/ui/antidpi_screen.py:194
+#: src/re_sputnik/ui/antidpi_screen.py:519
+msgid "Не удалось применить."
+msgstr "اعمال ممکن نشد."
+
+#: src/re_sputnik/ui/antidpi_screen.py:203
+msgid "Тестирую… (до минуты)"
+msgstr "در حال تست… (تا یک دقیقه)"
+
+#: src/re_sputnik/ui/antidpi_screen.py:229
+#: src/re_sputnik/ui/antidpi_screen.py:559
+#, python-brace-format
+msgid "Пройдено: {0} из {1}"
+msgstr "موفق: {0} از {1}"
+
+#: src/re_sputnik/ui/antidpi_screen.py:237
+msgid "··· Рекомендуемые ···"
+msgstr "··· توصیه‌شده ···"
+
+#: src/re_sputnik/ui/antidpi_screen.py:238
+msgid "··· Полный набор ···"
+msgstr "··· مجموعهٔ کامل ···"
+
+#: src/re_sputnik/ui/antidpi_screen.py:253
+msgid ""
+"Также разблокирует видео (QUIC) и звонки, с которыми ByeDPI не "
+"справляется."
+msgstr ""
+"همچنین ویدئو (QUIC) و تماس‌هایی را که ByeDPI نمی‌تواند مدیریت کند باز "
+"می‌کند."
+
+#: src/re_sputnik/ui/antidpi_screen.py:256
+msgid "Считываю Zapret…"
+msgstr "در حال خواندن Zapret…"
+
+#: src/re_sputnik/ui/antidpi_screen.py:307
+msgid "   ⚠ нет модуля NFQUEUE (kmod-nft-queue)"
+msgstr "   ⚠ ماژول NFQUEUE موجود نیست (kmod-nft-queue)"
+
+#: src/re_sputnik/ui/antidpi_screen.py:326
+msgid "Включить Zapret"
+msgstr "فعال‌سازی Zapret"
+
+#: src/re_sputnik/ui/antidpi_screen.py:340
+msgid "Стратегия (опции nfqws2):"
+msgstr "استراتژی (گزینه‌های nfqws2):"
+
+#: src/re_sputnik/ui/antidpi_screen.py:347
+msgid "Звонки Discord через Zapret"
+msgstr "تماس‌های Discord از طریق Zapret"
+
+#: src/re_sputnik/ui/antidpi_screen.py:363
+msgid "Тест стратегий"
+msgstr "تست استراتژی‌ها"
+
+#: src/re_sputnik/ui/antidpi_screen.py:365
+msgid ""
+"● = TLS-рукопожатие успешно, ○ = заблокировано. Ваше соединение во время "
+"теста не затрагивается."
+msgstr ""
+"● = دست‌دهی TLS موفق، ○ = مسدود شده. اتصال شما در طول تست تحت تأثیر قرار "
+"نمی‌گیرد."
+
+#: src/re_sputnik/ui/antidpi_screen.py:372
+#: src/re_sputnik/ui/antidpi_screen.py:539
+#: src/re_sputnik/ui/antidpi_screen.py:544
+msgid "▶ Тест текущей"
+msgstr "▶ تست استراتژی فعلی"
+
+#: src/re_sputnik/ui/antidpi_screen.py:376
+msgid "⚡ Полная проверка"
+msgstr "⚡ بررسی کامل"
+
+#: src/re_sputnik/ui/antidpi_screen.py:379
+msgid "■ Стоп"
+msgstr "■ توقف"
+
+#: src/re_sputnik/ui/antidpi_screen.py:406
+msgid "Менеджер пакетов не найден — установите zapret2 вручную."
+msgstr "مدیر بسته یافت نشد — zapret2 را به‌صورت دستی نصب کنید."
+
+#: src/re_sputnik/ui/antidpi_screen.py:409
+msgid "Zapret (zapret2/nfqws2) не установлен. Установить сейчас?"
+msgstr "Zapret (zapret2/nfqws2) نصب نشده است. اکنون نصب شود؟"
+
+#: src/re_sputnik/ui/antidpi_screen.py:412
+#: src/re_sputnik/ui/antidpi_screen.py:435
+#: src/re_sputnik/ui/antidpi_screen.py:441
+msgid "Установить Zapret"
+msgstr "نصب Zapret"
+
+#: src/re_sputnik/ui/antidpi_screen.py:479
+msgid "Сначала установите Zapret (кнопка выше)."
+msgstr "ابتدا Zapret را نصب کنید (دکمهٔ بالا)."
+
+#: src/re_sputnik/ui/antidpi_screen.py:486
+msgid ""
+"Нет модуля ядра NFQUEUE (kmod-nft-queue). Переустановите Zapret на "
+"странице «Ядро» или установите kmod-nft-queue — иначе включение сломает "
+"firewall."
+msgstr ""
+"ماژول هسته NFQUEUE (kmod-nft-queue) موجود نیست. Zapret را در صفحهٔ «هسته»"
+" دوباره نصب کنید یا kmod-nft-queue را نصب کنید — در غیر این صورت "
+"فعال‌سازی دیوار آتش را خراب می‌کند."
+
+#: src/re_sputnik/ui/antidpi_screen.py:531
+msgid "Сначала выберите или введите стратегию."
+msgstr "ابتدا استراتژی را انتخاب یا وارد کنید."
+
+#: src/re_sputnik/ui/antidpi_screen.py:533
+msgid "Тестирую…"
+msgstr "در حال تست…"
+
+#: src/re_sputnik/ui/antidpi_screen.py:568
+msgid "Список стратегий недоступен."
+msgstr "فهرست استراتژی‌ها در دسترس نیست."
+
+#: src/re_sputnik/ui/antidpi_screen.py:589
+#, python-brace-format
+msgid "Проверка {0}/{1}: {2}"
+msgstr "در حال بررسی {0}/{1}: {2}"
+
+#: src/re_sputnik/ui/antidpi_screen.py:624
+#, python-brace-format
+msgid "Применено: {0} — нажмите «Применить изменения»."
+msgstr "اعمال شد: {0} — «اعمال تغییرات» را کلیک کنید."
+
+#: src/re_sputnik/ui/antidpi_screen.py:633
+#, python-brace-format
+msgid "{0} — пройдено {1}/{2}"
+msgstr "{0} — موفق {1}/{2}"
+
+#: src/re_sputnik/ui/connect_screen.py:69
+msgid "❓ Не понимаю, как подключить роутер"
+msgstr "❓ نمی‌دانم چگونه روتر را وصل کنم"
+
+#: src/re_sputnik/ui/connect_screen.py:74
+msgid "Поиск роутера в сети…"
+msgstr "در حال جست‌وجوی روتر در شبکه…"
+
+#: src/re_sputnik/ui/connect_screen.py:80
+msgid "1. Питание"
+msgstr "۱. برق"
+
+#: src/re_sputnik/ui/connect_screen.py:80
+msgid ""
+"Вставьте блок питания роутера в розетку и в круглый порт питания на "
+"роутере. Подождите ~1 минуту, пока он загрузится (индикаторы перестанут "
+"мигать)."
+msgstr ""
+"آداپتور برق روتر را به پریز و به پورت گرد برق روی روتر وصل کنید. حدود ۱ "
+"دقیقه صبر کنید تا روشن شود (چشمک‌زدن چراغ‌ها متوقف شود)."
+
+#: src/re_sputnik/ui/connect_screen.py:82
+msgid "2. Кабель от провайдера"
+msgstr "۲. کابل از اپراتور"
+
+#: src/re_sputnik/ui/connect_screen.py:82
+msgid ""
+"Кабель интернета, заведённый в квартиру, вставьте в порт INTERNET (обычно"
+" синий, подписан INTERNET или WAN)."
+msgstr ""
+"کابل اینترنتی که به خانهٔ شما می‌آید را به پورت INTERNET (معمولاً آبی، با"
+" برچسب INTERNET یا WAN) وصل کنید."
+
+#: src/re_sputnik/ui/connect_screen.py:84
+msgid "3. Кабель к компьютеру"
+msgstr "۳. کابل به رایانه"
+
+#: src/re_sputnik/ui/connect_screen.py:84
+msgid ""
+"Соедините Ethernet-кабелем любой жёлтый порт LAN (LAN 1–4) роутера с "
+"сетевым разъёмом вашего компьютера."
+msgstr ""
+"با کابل اترنت، یکی از پورت‌های زرد LAN (LAN 1–4) روتر را به پورت شبکهٔ "
+"رایانهٔ خود وصل کنید."
+
+#: src/re_sputnik/ui/connect_screen.py:86
+msgid "Без кабеля?"
+msgstr "بدون کابل؟"
+
+#: src/re_sputnik/ui/connect_screen.py:86
+msgid ""
+"Можно вместо этого подключиться к Wi-Fi роутера — имя сети и пароль "
+"обычно напечатаны на наклейке снизу роутера."
+msgstr ""
+"به‌جای آن می‌توانید به Wi-Fi روتر وصل شوید — نام شبکه و گذرواژه معمولاً "
+"روی برچسب زیر روتر چاپ شده‌اند."
+
+#: src/re_sputnik/ui/connect_screen.py:88
+msgid "4. Подключиться"
+msgstr "۴. اتصال"
+
+#: src/re_sputnik/ui/connect_screen.py:88
+msgid ""
+"Вернитесь в приложение и нажмите «Подключиться». Если адрес не "
+"подставился сам — впишите 192.168.1.1."
+msgstr ""
+"به برنامه برگردید و «اتصال» را کلیک کنید. اگر آدرس خودکار وارد نشد، "
+"192.168.1.1 را وارد کنید."
+
+#: src/re_sputnik/ui/connect_screen.py:100
+#: src/re_sputnik/ui/connect_screen.py:111
+msgid "Как подключить роутер"
+msgstr "چگونه روتر را وصل کنیم"
+
+#: src/re_sputnik/ui/connect_screen.py:145
+msgid "Понятно"
+msgstr "فهمیدم"
+
+#: src/re_sputnik/ui/connect_screen.py:156
+msgid "Подключение к роутеру"
+msgstr "در حال اتصال به روتر"
+
+#: src/re_sputnik/ui/connect_screen.py:160
+msgid ""
+"Подключите роутер к ПК кабелем (порт LAN) или войдите в его Wi-Fi, затем "
+"нажмите «Подключиться»."
+msgstr ""
+"روتر را با کابل (پورت LAN) به رایانه وصل کنید یا به Wi-Fi آن بپیوندید، "
+"سپس «اتصال» را کلیک کنید."
+
+#: src/re_sputnik/ui/connect_screen.py:182
+msgid "Найдено"
+msgstr "پیدا شد"
+
+#: src/re_sputnik/ui/connect_screen.py:187
+msgid "поиск…"
+msgstr "در حال جست‌وجو…"
+
+#: src/re_sputnik/ui/connect_screen.py:196
+msgid "Адрес роутера"
+msgstr "آدرس روتر"
+
+#: src/re_sputnik/ui/connect_screen.py:197
+msgid "Порт"
+msgstr "پورت"
+
+#: src/re_sputnik/ui/connect_screen.py:198
+msgid "Логин"
+msgstr "نام کاربری"
+
+#: src/re_sputnik/ui/connect_screen.py:200
+msgid "пусто — если пароль ещё не задан"
+msgstr "خالی — اگر هنوز گذرواژه تنظیم نشده"
+
+#: src/re_sputnik/ui/connect_screen.py:203
+msgid "Новый роутер обычно без пароля — оставьте поле пустым."
+msgstr "روتر تازه معمولاً گذرواژه ندارد — این فیلد را خالی بگذارید."
+
+#: src/re_sputnik/ui/connect_screen.py:211
+msgid "Запомнить роутер (адрес и пароль — в хранилище ОС)"
+msgstr "به‌خاطر سپردن این روتر (آدرس و گذرواژه در مخزن اعتبارنامهٔ سیستم‌عامل)"
+
+#: src/re_sputnik/ui/connect_screen.py:218
+#: src/re_sputnik/ui/connect_screen.py:442
+#: src/re_sputnik/ui/internet_screen.py:297
+msgid "Подключиться"
+msgstr "اتصال"
+
+#: src/re_sputnik/ui/connect_screen.py:230
+#: src/re_sputnik/ui/connect_screen.py:502
+#: src/re_sputnik/ui/firstrun_screen.py:211
+#: src/re_sputnik/ui/firstrun_screen.py:267
+#: src/re_sputnik/ui/internet_screen.py:93
+#: src/re_sputnik/ui/internet_screen.py:139
+#: src/re_sputnik/ui/rules_screen.py:127
+#: src/re_sputnik/ui/software_screen.py:109
+#: src/re_sputnik/ui/wifi_ap_screen.py:83
+msgid "Далее →"
+msgstr "بعدی →"
+
+#: src/re_sputnik/ui/connect_screen.py:250
+#: src/re_sputnik/ui/diagnostics_screen.py:211
+#: src/re_sputnik/ui/finalize_screen.py:145
+#: src/re_sputnik/ui/firstrun_screen.py:159
+#: src/re_sputnik/ui/internet_screen.py:62
+#: src/re_sputnik/ui/preinstall_screen.py:129
+#: src/re_sputnik/ui/quick_nodes_screen.py:179
+#: src/re_sputnik/ui/rules_screen.py:134
+#: src/re_sputnik/ui/security_screen.py:112
+#: src/re_sputnik/ui/software_screen.py:122
+#: src/re_sputnik/ui/verify_screen.py:109
+#: src/re_sputnik/ui/wifi_ap_screen.py:94
+msgid "← Назад"
+msgstr "← بازگشت"
+
+#: src/re_sputnik/ui/connect_screen.py:286
+msgid "— выбрать сохранённый —"
+msgstr "— انتخاب یکی از ذخیره‌شده‌ها —"
+
+#: src/re_sputnik/ui/connect_screen.py:301
+msgid "Сохранённые"
+msgstr "ذخیره‌شده‌ها"
+
+#: src/re_sputnik/ui/connect_screen.py:334
+#, python-brace-format
+msgid "Готово к подключению: {0}"
+msgstr "آمادهٔ اتصال: {0}"
+
+#: src/re_sputnik/ui/connect_screen.py:339
+#, python-brace-format
+msgid "Роутер {0} удалён из сохранённых."
+msgstr "روتر {0} از فهرست ذخیره‌شده‌ها حذف شد."
+
+#: src/re_sputnik/ui/connect_screen.py:351
+#: src/re_sputnik/ui/connect_screen.py:352
+msgid "— не найдено —"
+msgstr "— یافت نشد —"
+
+#: src/re_sputnik/ui/connect_screen.py:353
+msgid "Роутер не найден автоматически — введите адрес вручную."
+msgstr "روتر به‌طور خودکار یافت نشد — آدرس را به‌صورت دستی وارد کنید."
+
+#: src/re_sputnik/ui/connect_screen.py:368
+#, python-brace-format
+msgid "Найден OpenWrt: {0}"
+msgstr "OpenWrt یافت شد: {0}"
+
+#: src/re_sputnik/ui/connect_screen.py:371
+msgid ""
+"SSH отвечает, но баннер не OpenWrt — проверьте адрес или выберите "
+"кандидата."
+msgstr ""
+"SSH پاسخ می‌دهد، اما بنر OpenWrt نیست — آدرس را بررسی کنید یا یک گزینه را"
+" انتخاب کنید."
+
+#: src/re_sputnik/ui/connect_screen.py:401
+msgid "Укажите адрес роутера."
+msgstr "آدرس روتر را وارد کنید."
+
+#: src/re_sputnik/ui/connect_screen.py:406
+msgid "Порт должен быть числом."
+msgstr "پورت باید عدد باشد."
+
+#: src/re_sputnik/ui/connect_screen.py:413
+msgid "Подключение…"
+msgstr "در حال اتصال…"
+
+#: src/re_sputnik/ui/connect_screen.py:416
+#, python-brace-format
+msgid "Подключаюсь к {0}:{1}…"
+msgstr "در حال اتصال به {0}:{1}…"
+
+#: src/re_sputnik/ui/connect_screen.py:452
+msgid "⚠ Отпечаток ключа роутера изменился."
+msgstr "⚠ اثر انگشت کلید روتر تغییر کرده است."
+
+#: src/re_sputnik/ui/connect_screen.py:459
+msgid ""
+"Это нормально после сброса роутера к заводским настройкам, но также может"
+" означать подмену устройства в сети. Принимайте новый ключ, только если "
+"вы только что сбрасывали роутер."
+msgstr ""
+"این پس از بازنشانی کارخانه‌ای روتر طبیعی است، اما همچنین می‌تواند "
+"به‌معنای جانشینی دستگاه در شبکه باشد. کلید جدید را فقط در صورتی بپذیرید "
+"که هم‌اکنون روتر را بازنشانی کرده‌اید."
+
+#: src/re_sputnik/ui/connect_screen.py:464
+#, python-brace-format
+msgid "Был:   {0}"
+msgstr "قبلی:   {0}"
+
+#: src/re_sputnik/ui/connect_screen.py:466
+#, python-brace-format
+msgid "Стал:  {0}"
+msgstr "فعلی:  {0}"
+
+#: src/re_sputnik/ui/connect_screen.py:470
+msgid "Принять новый ключ"
+msgstr "پذیرفتن کلید جدید"
+
+#: src/re_sputnik/ui/connect_screen.py:480
+msgid "Новый ключ принят. Переподключаюсь…"
+msgstr "کلید جدید پذیرفته شد. در حال اتصال دوباره…"
+
+#: src/re_sputnik/ui/connect_screen.py:487
+msgid "Переподключиться"
+msgstr "اتصال دوباره"
+
+#: src/re_sputnik/ui/connect_screen.py:488
+msgid "Подключено."
+msgstr "وصل شد."
+
+#: src/re_sputnik/ui/connect_screen.py:500
+msgid "Всё равно продолжить →"
+msgstr "در هر صورت ادامه →"
+
+#: src/re_sputnik/ui/connect_screen.py:518
+msgid "Чистый роутер — потребуется полная настройка"
+msgstr "روتر تازه — راه‌اندازی کامل لازم است"
+
+#: src/re_sputnik/ui/connect_screen.py:519
+msgid "ПО установлено, нужна настройка серверов"
+msgstr "نرم‌افزار نصب است، تنظیم سرورها لازم است"
+
+#: src/re_sputnik/ui/connect_screen.py:520
+msgid "Роутер уже настроен — режим управления"
+msgstr "روتر از قبل تنظیم شده — حالت مدیریت"
+
+#: src/re_sputnik/ui/connect_screen.py:526
+msgid "не определён"
+msgstr "نامشخص"
+
+#: src/re_sputnik/ui/connect_screen.py:527
+msgid "установлен"
+msgstr "نصب شده"
+
+#: src/re_sputnik/ui/connect_screen.py:527
+msgid "не установлен"
+msgstr "نصب‌نشده"
+
+#: src/re_sputnik/ui/connect_screen.py:529
+#: src/re_sputnik/ui/diagnostics_screen.py:283
+msgid "Состояние"
+msgstr "وضعیت"
+
+#: src/re_sputnik/ui/connect_screen.py:547
+msgid "Совместимость прошивки"
+msgstr "سازگاری فرم‌ور"
+
+#: src/re_sputnik/ui/connect_screen.py:559
+#, python-brace-format
+msgid ""
+"\n"
+"Решение: {0}"
+msgstr ""
+"\n"
+"راه‌حل: {0}"
+
+#: src/re_sputnik/ui/core_screen.py:35
+msgid ""
+"Если пользуетесь приложением Hiddify — поддержка всех его протоколов. Не "
+"поддерживает AmneziaWG."
+msgstr ""
+"اگر از برنامهٔ Hiddify استفاده می‌کنید — پشتیبانی از همهٔ پروتکل‌های آن. "
+"از AmneziaWG پشتیبانی نمی‌کند."
+
+#: src/re_sputnik/ui/core_screen.py:37
+msgid ""
+"Если нужен AmneziaWG и все протоколы sing-box: VLESS, Hysteria2, Mieru, "
+"TrustTunnel."
+msgstr ""
+"اگر به AmneziaWG و همهٔ پروتکل‌های sing-box نیاز دارید: VLESS، Hysteria2،"
+" Mieru، TrustTunnel."
+
+#: src/re_sputnik/ui/core_screen.py:88
+#: src/re_sputnik/ui/diagnostics_screen.py:271
+#: src/re_sputnik/ui/settings_shell.py:29
+#: src/re_sputnik/ui/software_screen.py:63
+msgid "Ядро"
+msgstr "هسته"
+
+#: src/re_sputnik/ui/core_screen.py:93
+msgid "Считываю состояние ядра…"
+msgstr "در حال خواندن وضعیت هسته…"
+
+#: src/re_sputnik/ui/core_screen.py:114
+msgid "Активное ядро"
+msgstr "هسته فعال"
+
+#: src/re_sputnik/ui/core_screen.py:144
+msgid ""
+"⚠ Выбор серверов зависит от ядра (матрица совместимости протоколов). "
+"Смена ядра применяется после перезапуска сервиса."
+msgstr ""
+"⚠ انتخاب سرورها به هسته بستگی دارد (ماتریس سازگاری پروتکل). تغییر هسته پس"
+" از راه‌اندازی مجدد سرویس اعمال می‌شود."
+
+#: src/re_sputnik/ui/core_screen.py:166
+msgid "Приложение Re:HomeProxy"
+msgstr "برنامهٔ Re:HomeProxy"
+
+#: src/re_sputnik/ui/core_screen.py:168
+msgid "Проверяю версию приложения…"
+msgstr "در حال بررسی نسخهٔ برنامه…"
+
+#: src/re_sputnik/ui/core_screen.py:182
+msgid "Управление ядром"
+msgstr "مدیریت هسته"
+
+#: src/re_sputnik/ui/core_screen.py:193
+msgid "Инструменты обхода DPI"
+msgstr "ابزارهای دور زدن DPI"
+
+#: src/re_sputnik/ui/core_screen.py:195
+msgid "Настройка — на странице AntiDPI. Здесь — установка и удаление."
+msgstr "تنظیمات در صفحهٔ AntiDPI است. اینجا فقط نصب و حذف است."
+
+#: src/re_sputnik/ui/core_screen.py:251
+#, python-brace-format
+msgid "Ошибка чтения ядра: {0}"
+msgstr "خطای خواندن هسته: {0}"
+
+#: src/re_sputnik/ui/core_screen.py:267
+msgid "  · не установлен"
+msgstr "  · نصب‌نشده"
+
+#: src/re_sputnik/ui/core_screen.py:272
+msgid "Обновить до последней"
+msgstr "به‌روزرسانی به آخرین نسخه"
+
+#: src/re_sputnik/ui/core_screen.py:275 src/re_sputnik/ui/core_screen.py:371
+#: src/re_sputnik/ui/core_screen.py:496
+#: src/re_sputnik/ui/finalize_screen.py:109
+#: src/re_sputnik/ui/finalize_screen.py:224
+#: src/re_sputnik/ui/finalize_screen.py:229
+#: src/re_sputnik/ui/software_screen.py:104
+#: src/re_sputnik/ui/software_screen.py:200
+msgid "Установить"
+msgstr "نصب"
+
+#: src/re_sputnik/ui/core_screen.py:282
+msgid "запущено 🟢"
+msgstr "اجرا شده 🟢"
+
+#: src/re_sputnik/ui/core_screen.py:282
+msgid "остановлено 🔴"
+msgstr "متوقف‌شده 🔴"
+
+#: src/re_sputnik/ui/core_screen.py:295
+msgid "Менеджер пакетов"
+msgstr "مدیر بسته"
+
+#: src/re_sputnik/ui/core_screen.py:297
+msgid "Свободно /tmp"
+msgstr "فضای آزاد /tmp"
+
+#: src/re_sputnik/ui/core_screen.py:299
+msgid "Версия ядра"
+msgstr "نسخهٔ هسته"
+
+#: src/re_sputnik/ui/core_screen.py:331
+msgid "Ядро выбрано. Нажмите «Применить изменения»."
+msgstr "هسته انتخاب شد. «اعمال تغییرات» را کلیک کنید."
+
+#: src/re_sputnik/ui/core_screen.py:370
+msgid "Приложение не установлено."
+msgstr "برنامه نصب نشده است."
+
+#: src/re_sputnik/ui/core_screen.py:374
+#, python-brace-format
+msgid "Установлено {0} · доступно {1}"
+msgstr "نصب‌شده {0} · موجود {1}"
+
+#: src/re_sputnik/ui/core_screen.py:375
+msgid "Обновить приложение"
+msgstr "به‌روزرسانی برنامه"
+
+#: src/re_sputnik/ui/core_screen.py:378
+#, python-brace-format
+msgid "{0} (последняя версия)"
+msgstr "{0} (آخرین نسخه)"
+
+#: src/re_sputnik/ui/core_screen.py:379
+#, python-brace-format
+msgid "Установлено {0}"
+msgstr "نصب‌شده {0}"
+
+#: src/re_sputnik/ui/core_screen.py:381
+#: src/re_sputnik/ui/software_screen.py:149
+msgid "Переустановить"
+msgstr "نصب دوباره"
+
+#: src/re_sputnik/ui/core_screen.py:426
+msgid "▶ Обновление приложения…"
+msgstr "▶ در حال به‌روزرسانی برنامه…"
+
+#: src/re_sputnik/ui/core_screen.py:442
+#, python-brace-format
+msgid "✗ Ошибка: {0}"
+msgstr "✗ خطا: {0}"
+
+#: src/re_sputnik/ui/core_screen.py:477
+msgid "🟢 запущен"
+msgstr "🟢 در حال اجرا"
+
+#: src/re_sputnik/ui/core_screen.py:477
+msgid "🟡 установлен"
+msgstr "🟡 نصب‌شده"
+
+#: src/re_sputnik/ui/core_screen.py:486
+msgid "Обновить"
+msgstr "به‌روزرسانی"
+
+#: src/re_sputnik/ui/core_screen.py:490
+msgid "Удалить"
+msgstr "حذف"
+
+#: src/re_sputnik/ui/core_screen.py:508
+#, python-brace-format
+msgid "▶ Установка/обновление: {0}…"
+msgstr "▶ در حال نصب/به‌روزرسانی: {0}…"
+
+#: src/re_sputnik/ui/core_screen.py:523
+#, python-brace-format
+msgid "▶ Удаление: {0}…"
+msgstr "▶ در حال حذف: {0}…"
+
+#: src/re_sputnik/ui/core_screen.py:529
+#, python-brace-format
+msgid "{0} удалён."
+msgstr "{0} حذف شد."
+
+#: src/re_sputnik/ui/core_screen.py:529
+#, python-brace-format
+msgid "Не удалось удалить {0}."
+msgstr "حذف {0} ممکن نشد."
+
+#: src/re_sputnik/ui/diagnostics_screen.py:34
+#: src/re_sputnik/ui/verify_screen.py:29
+msgid "Яндекс"
+msgstr "یاندکس"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:72
+msgid "ядро"
+msgstr "هسته"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:73
+msgid "конфиг"
+msgstr "تنظیمات"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:84
+msgid "активный сервер"
+msgstr "سرور فعال"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:85
+msgid "серверы"
+msgstr "سرورها"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:93
+msgid "отчёт"
+msgstr "گزارش"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:109
+#, python-brace-format
+msgid "связь: {0}"
+msgstr "اتصال: {0}"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:146
+#: src/re_sputnik/ui/settings_shell.py:30
+msgid "Диагностика"
+msgstr "عیب‌یابی"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:151
+#: src/re_sputnik/ui/diagnostics_screen.py:186
+#: src/re_sputnik/ui/diagnostics_screen.py:194
+#: src/re_sputnik/ui/security_screen.py:66
+#: src/re_sputnik/ui/security_screen.py:92
+#: src/re_sputnik/ui/security_screen.py:99
+#, python-brace-format
+msgid "{0} Обновить страницу"
+msgstr "{0} تازه‌سازی صفحه"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:170
+msgid "Собираю диагностику…"
+msgstr "در حال جمع‌آوری اطلاعات عیب‌یابی…"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:182
+#, python-brace-format
+msgid "Собираю диагностику… {0}"
+msgstr "در حال جمع‌آوری اطلاعات عیب‌یابی… {0}"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:226
+msgid "⚠ Ядро не запускается"
+msgstr "⚠ هسته اجرا نمی‌شود"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:232
+msgid "Сообщение ядра: "
+msgstr "پیام هسته: "
+
+#: src/re_sputnik/ui/diagnostics_screen.py:272
+msgid "Конфиг"
+msgstr "تنظیمات"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:325
+#: src/re_sputnik/ui/overview_screen.py:485
+msgid "Активный сервер"
+msgstr "سرور فعال"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:327
+msgid "нет активного сервера"
+msgstr "سرور فعالی وجود ندارد"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:340
+#: src/re_sputnik/ui/overview_screen.py:437
+#, python-brace-format
+msgid "{0} ms (таймаут)"
+msgstr "{0} میلی‌ثانیه (زمان تمام شد)"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:344
+#: src/re_sputnik/ui/overview_screen.py:439
+msgid "нет данных"
+msgstr "داده‌ای موجود نیست"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:349
+#: src/re_sputnik/ui/overview_screen.py:477
+#, python-brace-format
+msgid "   ·   группа: {0} ({1})"
+msgstr "   ·   گروه: {0} ({1})"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:356
+msgid ""
+"⚠ Высокая задержка — сервер медленный или нерабочий (возможны проблемы с "
+"DNS). Если повторяется — уберите этот сервер из списка."
+msgstr ""
+"⚠ تأخیر بالا — سرور کند یا خراب است (مشکلات DNS ممکن است). اگر تکرار شد، "
+"این سرور را از فهرست حذف کنید."
+
+#: src/re_sputnik/ui/diagnostics_screen.py:380
+msgid "IP провайдера"
+msgstr "IP اپراتور"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:381
+msgid "Через прокси"
+msgstr "از طریق پروکسی"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:399
+msgid "Россия — mail.ru"
+msgstr "روسیه — mail.ru"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:400
+msgid "Защищённый — andrevi.ch"
+msgstr "امن — andrevi.ch"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:420
+msgid "Проверка связи"
+msgstr "بررسی اتصال"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:428
+msgid "Полный отчёт (без паролей и ключей)"
+msgstr "گزارش کامل (بدون رمزها و کلیدها)"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:429
+msgid ""
+"Можно безопасно скопировать или сохранить и отправить на проверку — "
+"пароли и ключи из отчёта автоматически удалены."
+msgstr ""
+"می‌توان با امنیت کپی یا ذخیره و برای بررسی ارسال کرد — رمزها و کلیدها "
+"به‌طور خودکار از گزارش حذف شده‌اند."
+
+#: src/re_sputnik/ui/diagnostics_screen.py:436
+msgid "(пусто)"
+msgstr "(خالی)"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:440
+msgid "📋 Копировать"
+msgstr "📋 کپی"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:443
+msgid "💾 Сохранить"
+msgstr "💾 ذخیره"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:453
+msgid "Отчёт скопирован."
+msgstr "گزارش کپی شد."
+
+#: src/re_sputnik/ui/diagnostics_screen.py:457
+msgid "Нет отчёта для сохранения."
+msgstr "گزارشی برای ذخیره وجود ندارد."
+
+#: src/re_sputnik/ui/diagnostics_screen.py:461
+msgid "Текстовый файл"
+msgstr "فایل متنی"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:469
+#, python-brace-format
+msgid "Сохранено: {0}"
+msgstr "ذخیره شد: {0}"
+
+#: src/re_sputnik/ui/finalize_screen.py:37
+#: src/re_sputnik/ui/finalize_screen.py:41
+msgid "Завершение"
+msgstr "پایان‌بخشی"
+
+#: src/re_sputnik/ui/finalize_screen.py:43
+msgid "Несколько необязательных рекомендаций."
+msgstr "چند پیشنهاد اختیاری."
+
+#: src/re_sputnik/ui/finalize_screen.py:53
+msgid ""
+"Как роутер называется в сети и в веб-интерфейсе. Сейчас обычно «OpenWrt» "
+"— можно задать своё. Латиница, цифры, дефис, без пробелов."
+msgstr ""
+"روتر در شبکه و در رابط وب با این نام نشان داده می‌شود. اکنون معمولاً "
+"«OpenWrt» است — می‌توانید نام خودتان را تنظیم کنید. حروف لاتین، اعداد، خط"
+" فاصله، بدون فاصله."
+
+#: src/re_sputnik/ui/finalize_screen.py:62
+msgid "Загрузка текущего имени…"
+msgstr "در حال بار کردن نام فعلی…"
+
+#: src/re_sputnik/ui/finalize_screen.py:80
+msgid "zram-swap (рекомендуется)"
+msgstr "zram-swap (توصیه می‌شود)"
+
+#: src/re_sputnik/ui/finalize_screen.py:82
+msgid ""
+"Сжатый swap в ОЗУ — снижает риск нехватки памяти на устройствах с малым "
+"объёмом RAM."
+msgstr ""
+"فضای swap فشرده در RAM — خطر کمبود حافظه روی دستگاه‌های با RAM کم را کاهش"
+" می‌دهد."
+
+#: src/re_sputnik/ui/finalize_screen.py:85
+#: src/re_sputnik/ui/internet_screen.py:111
+msgid "Проверяю…"
+msgstr "در حال بررسی…"
+
+#: src/re_sputnik/ui/finalize_screen.py:88
+#: src/re_sputnik/ui/finalize_screen.py:274
+#: src/re_sputnik/ui/finalize_screen.py:285
+msgid "Установить zram-swap"
+msgstr "نصب zram-swap"
+
+#: src/re_sputnik/ui/finalize_screen.py:98
+msgid "Дополнительные приложения LuCI (необязательно)"
+msgstr "برنامه‌های اضافی LuCI (اختیاری)"
+
+#: src/re_sputnik/ui/finalize_screen.py:114
+msgid ""
+"После установки оба приложения требуют активации и дополнительной "
+"настройки в меню «Дополнительно» или в веб-интерфейсе роутера."
+msgstr ""
+"پس از نصب، هر دو برنامه نیاز به فعال‌سازی و تنظیم بیشتر در منوی «بیشتر» "
+"یا رابط وب روتر دارند."
+
+#: src/re_sputnik/ui/finalize_screen.py:124
+msgid "Приватность устройства"
+msgstr "حریم خصوصی دستگاه"
+
+#: src/re_sputnik/ui/finalize_screen.py:126
+msgid ""
+"Применено для нового устройства, чтобы роутер не выдавал себя провайдеру."
+" Можно отключить."
+msgstr ""
+"برای دستگاه تازه اعمال شد تا روتر خود را به اپراتور نشان ندهد. می‌توان آن"
+" را خاموش کرد."
+
+#: src/re_sputnik/ui/finalize_screen.py:131
+msgid "Не отправлять имя устройства в DHCP-запросах"
+msgstr "نام دستگاه در درخواست‌های DHCP ارسال نشود"
+
+#: src/re_sputnik/ui/finalize_screen.py:136
+msgid "Российский пул NTP (0–3.ru.pool.ntp.org)"
+msgstr "مجموعهٔ NTP روسیه (0–3.ru.pool.ntp.org)"
+
+#: src/re_sputnik/ui/finalize_screen.py:141
+#: src/re_sputnik/ui/verify_screen.py:105
+msgid "Готово"
+msgstr "انجام شد"
+
+#: src/re_sputnik/ui/finalize_screen.py:193
+#: src/re_sputnik/ui/finalize_screen.py:221
+msgid "Установлено ✓"
+msgstr "نصب‌شده ✓"
+
+#: src/re_sputnik/ui/finalize_screen.py:200
+#: src/re_sputnik/ui/finalize_screen.py:280
+msgid "Установлен"
+msgstr "نصب‌شده"
+
+#: src/re_sputnik/ui/finalize_screen.py:200
+#: src/re_sputnik/ui/finalize_screen.py:280
+msgid " и активен ✓"
+msgstr " و فعال ✓"
+
+#: src/re_sputnik/ui/finalize_screen.py:200
+#: src/re_sputnik/ui/finalize_screen.py:280
+msgid " (не активен)"
+msgstr " (غیرفعال)"
+
+#: src/re_sputnik/ui/finalize_screen.py:202
+#: src/re_sputnik/ui/finalize_screen.py:282
+msgid "Уже установлен"
+msgstr "از قبل نصب شده"
+
+#: src/re_sputnik/ui/finalize_screen.py:204
+msgid "Не установлен."
+msgstr "نصب‌نشده."
+
+#: src/re_sputnik/ui/finalize_screen.py:212
+#, python-brace-format
+msgid "Устанавливаю {0} (+ русский язык)…"
+msgstr "در حال نصب {0} (+ زبان روسی)…"
+
+#: src/re_sputnik/ui/finalize_screen.py:222
+#, python-brace-format
+msgid "{0} установлено."
+msgstr "{0} نصب شد."
+
+#: src/re_sputnik/ui/finalize_screen.py:225
+#, python-brace-format
+msgid "Не удалось установить {0} (нет в фиде или нет связи)."
+msgstr "نصب {0} ممکن نشد (در مخزن نیست یا ارتباطی برقرار نیست)."
+
+#: src/re_sputnik/ui/finalize_screen.py:230
+#, python-brace-format
+msgid "Ошибка установки {0}: {1}"
+msgstr "خطای نصب {0}: {1}"
+
+#: src/re_sputnik/ui/finalize_screen.py:235
+msgid "Введите имя роутера."
+msgstr "نام روتر را وارد کنید."
+
+#: src/re_sputnik/ui/finalize_screen.py:238
+msgid "Переименовываю роутер…"
+msgstr "در حال تغییر نام روتر…"
+
+#: src/re_sputnik/ui/finalize_screen.py:249
+#, python-brace-format
+msgid "Не удалось переименовать: {0}"
+msgstr "تغییر نام ممکن نشد: {0}"
+
+#: src/re_sputnik/ui/finalize_screen.py:256
+msgid "Имя устройства в DHCP "
+msgstr "نام دستگاه در DHCP "
+
+#: src/re_sputnik/ui/finalize_screen.py:256
+msgid "скрыто."
+msgstr "پنهان شد."
+
+#: src/re_sputnik/ui/finalize_screen.py:256
+msgid "восстановлено."
+msgstr "بازگردانده شد."
+
+#: src/re_sputnik/ui/finalize_screen.py:258
+#: src/re_sputnik/ui/finalize_screen.py:267
+#, python-brace-format
+msgid "Не сохранено: {0}"
+msgstr "ذخیره نشد: {0}"
+
+#: src/re_sputnik/ui/finalize_screen.py:265
+msgid "российский пул."
+msgstr "مجموعهٔ روسیه."
+
+#: src/re_sputnik/ui/finalize_screen.py:265
+msgid "пул OpenWrt."
+msgstr "مجموعهٔ OpenWrt."
+
+#: src/re_sputnik/ui/finalize_screen.py:271
+msgid "Устанавливаю zram-swap…"
+msgstr "در حال نصب zram-swap…"
+
+#: src/re_sputnik/ui/finalize_screen.py:275
+#: src/re_sputnik/ui/wifi_ap_screen.py:201
+#, python-brace-format
+msgid "Не удалось: {0}"
+msgstr "ناموفق: {0}"
+
+#: src/re_sputnik/ui/finalize_screen.py:283
+msgid "zram-swap установлен."
+msgstr "zram-swap نصب شد."
+
+#: src/re_sputnik/ui/finalize_screen.py:286
+msgid "Установка не подтвердилась."
+msgstr "نصب تأیید نشد."
+
+#: src/re_sputnik/ui/firstrun_screen.py:58
+#: src/re_sputnik/ui/security_screen.py:61
+#: src/re_sputnik/ui/settings_shell.py:31
+msgid "Безопасность"
+msgstr "امنیت"
+
+#: src/re_sputnik/ui/firstrun_screen.py:62
+msgid "Приложение внесёт изменения на роутер. Просмотрите и подтвердите."
+msgstr "برنامه روی روتر تغییراتی اعمال می‌کند. بررسی و تأیید کنید."
+
+#: src/re_sputnik/ui/firstrun_screen.py:70
+msgid "SSH-ключ доступа"
+msgstr "کلید دسترسی SSH"
+
+#: src/re_sputnik/ui/firstrun_screen.py:74
+msgid ""
+"Ключ приложения позволяет входить без пароля. Сначала ставим ключ и "
+"проверяем его, и только потом меняем пароль — так доступ не потеряется."
+msgstr ""
+"کلید برنامه به شما اجازه می‌دهد بدون گذرواژه وارد شوید. ابتدا کلید را نصب"
+" و بررسی می‌کنیم، و فقط بعد گذرواژه را تغییر می‌دهیم — این‌گونه دسترسی از"
+" دست نمی‌رود."
+
+#: src/re_sputnik/ui/firstrun_screen.py:79
+msgid "Запомнить это устройство — установить постоянный ключ (вход без пароля)"
+msgstr "به‌خاطر سپردن این دستگاه — نصب کلید دائمی (ورود بدون گذرواژه)"
+
+#: src/re_sputnik/ui/firstrun_screen.py:92
+#: src/re_sputnik/ui/firstrun_screen.py:106
+#: src/re_sputnik/ui/security_screen.py:289
+msgid "Пароль root"
+msgstr "گذرواژهٔ root"
+
+#: src/re_sputnik/ui/firstrun_screen.py:95
+msgid "Пароль уже задан на роутере — оставляем без изменений."
+msgstr "روتر از قبل گذرواژه دارد — بدون تغییر باقی می‌ماند."
+
+#: src/re_sputnik/ui/firstrun_screen.py:109
+msgid "Сгенерировать надёжный (рекомендуется)"
+msgstr "ساخت یک رمز قوی (توصیه می‌شود)"
+
+#: src/re_sputnik/ui/firstrun_screen.py:117
+msgid "↻ Сгенерировать заново"
+msgstr "↻ ساخت دوباره"
+
+#: src/re_sputnik/ui/firstrun_screen.py:119
+#: src/re_sputnik/ui/security_screen.py:272
+msgid "Копировать"
+msgstr "کپی"
+
+#: src/re_sputnik/ui/firstrun_screen.py:122
+msgid "Задать свой пароль"
+msgstr "تنظیم گذرواژهٔ خودم"
+
+#: src/re_sputnik/ui/firstrun_screen.py:128
+msgid "Введите свой пароль (минимум 8 символов)"
+msgstr "گذرواژهٔ خود را وارد کنید (حداقل ۸ نویسه)"
+
+#: src/re_sputnik/ui/firstrun_screen.py:135
+msgid "Показать пароль"
+msgstr "نمایش گذرواژه"
+
+#: src/re_sputnik/ui/firstrun_screen.py:140
+msgid ""
+"Любой пароль — сгенерированный или ваш — сохраняется в хранилище Windows "
+"(Credential Manager) и доступен в разделе «Безопасность»."
+msgstr ""
+"هر گذرواژه — ساخته‌شده یا انتخابی خودتان — در مخزن اعتبارنامهٔ Windows "
+"ذخیره می‌شود و در بخش «امنیت» قابل دسترسی است."
+
+#: src/re_sputnik/ui/firstrun_screen.py:166
+msgid ""
+"Без ключа каждое подключение будет запрашивать пароль root (он сохранится"
+" в хранилище — посмотреть можно в разделе «Безопасность»)."
+msgstr ""
+"بدون کلید، هر اتصال گذرواژهٔ root را خواهد خواست (در مخزن ذخیره می‌شود — "
+"در بخش «امنیت» قابل مشاهده است)."
+
+#: src/re_sputnik/ui/firstrun_screen.py:195
+#: src/re_sputnik/ui/security_screen.py:283
+msgid "Пароль скопирован в буфер обмена."
+msgstr "گذرواژه در کلیپ‌بورد کپی شد."
+
+#: src/re_sputnik/ui/firstrun_screen.py:210
+msgid "Ничего менять не нужно — ключ не ставим, пароль уже задан."
+msgstr "نیازی به تغییر نیست — کلید نصب نمی‌شود، گذرواژه از قبل تنظیم شده است."
+
+#: src/re_sputnik/ui/firstrun_screen.py:219
+msgid "Введите пароль или выберите генерацию."
+msgstr "گذرواژه را وارد کنید یا ساخت خودکار را انتخاب کنید."
+
+#: src/re_sputnik/ui/firstrun_screen.py:222
+#: src/re_sputnik/ui/security_screen.py:337
+msgid "Пароль слишком короткий (минимум 8 символов)."
+msgstr "گذرواژه بسیار کوتاه است (حداقل ۸ نویسه)."
+
+#: src/re_sputnik/ui/firstrun_screen.py:238
+msgid "Устанавливаю ключ и пароль…"
+msgstr "در حال نصب کلید و گذرواژه…"
+
+#: src/re_sputnik/ui/firstrun_screen.py:256
+msgid "Не удалось завершить настройку."
+msgstr "تکمیل راه‌اندازی ممکن نشد."
+
+#: src/re_sputnik/ui/firstrun_screen.py:258
+msgid "ключ установлен"
+msgstr "کلید نصب شد"
+
+#: src/re_sputnik/ui/firstrun_screen.py:258
+msgid "без постоянного ключа"
+msgstr "بدون کلید دائمی"
+
+#: src/re_sputnik/ui/firstrun_screen.py:260
+msgid "пароль изменён"
+msgstr "گذرواژه تغییر یافت"
+
+#: src/re_sputnik/ui/firstrun_screen.py:262
+msgid "сохранён в хранилище"
+msgstr "در مخزن ذخیره شد"
+
+#: src/re_sputnik/ui/firstrun_screen.py:263
+msgid "Готово: "
+msgstr "انجام شد: "
+
+#: src/re_sputnik/ui/internet_screen.py:59
+#: src/re_sputnik/ui/internet_screen.py:66
+msgid "Интернет"
+msgstr "اینترنت"
+
+#: src/re_sputnik/ui/internet_screen.py:74
+#: src/re_sputnik/ui/internet_screen.py:110
+msgid "Проверяю доступ в интернет…"
+msgstr "در حال بررسی دسترسی اینترنت…"
+
+#: src/re_sputnik/ui/internet_screen.py:79
+#: src/re_sputnik/ui/internet_screen.py:131
+#: src/re_sputnik/ui/internet_screen.py:135
+msgid "Проверить"
+msgstr "بررسی"
+
+#: src/re_sputnik/ui/internet_screen.py:130
+#, python-brace-format
+msgid "Ошибка проверки: {0}"
+msgstr "خطای بررسی: {0}"
+
+#: src/re_sputnik/ui/internet_screen.py:138
+msgid "✓ Интернет есть — можно продолжать"
+msgstr "✓ اینترنت موجود است — می‌توانید ادامه دهید"
+
+#: src/re_sputnik/ui/internet_screen.py:144
+msgid ""
+"Роутер пока без интернета. Можно заранее задать параметры подключения "
+"(они применятся, когда появится кабель) и продолжить."
+msgstr ""
+"روتر هنوز اینترنت ندارد. می‌توانید از قبل پارامترهای اتصال را تنظیم کنید "
+"(پس از وصل شدن کابل اعمال می‌شوند) و ادامه دهید."
+
+#: src/re_sputnik/ui/internet_screen.py:149
+msgid "✗ Роутер не в интернете. Выберите, как подключить:"
+msgstr "✗ روتر به اینترنت وصل نیست. روش اتصال را انتخاب کنید:"
+
+#: src/re_sputnik/ui/internet_screen.py:154
+msgid "Продолжить без интернета →"
+msgstr "ادامه بدون اینترنت →"
+
+#: src/re_sputnik/ui/internet_screen.py:169
+msgid "⚠ Конфликт адресов сети"
+msgstr "⚠ تضاد آدرس شبکه"
+
+#: src/re_sputnik/ui/internet_screen.py:173
+#, python-brace-format
+msgid ""
+"Роутер провайдера выдал WAN адрес {0} из той же подсети {1}, что "
+"используется для домашней сети ({2}). Из-за наложения подсетей "
+"маршрутизация ломается и интернет через роутер работать не будет.\n"
+"\n"
+"Решение — перенести роутер на свободный адрес. Ниже предложен подходящий,"
+" при желании укажите свой (частный адрес из другой подсети)."
+msgstr ""
+"روتر اپراتور آدرس WAN {0} را از همان زیرشبکهٔ {1} اختصاص داده که برای "
+"شبکهٔ خانگی ({2}) استفاده می‌شود. هم‌پوشانی زیرشبکه‌ها مسیریابی را خراب "
+"می‌کند و اینترنت از طریق روتر کار نخواهد کرد.\n"
+"\n"
+"راه‌حل — انتقال روتر به آدرسی آزاد. در پایین آدرسی مناسب پیشنهاد شده، در "
+"صورت تمایل آدرس خودتان را وارد کنید (آدرس خصوصی از زیرشبکهٔ دیگر)."
+
+#: src/re_sputnik/ui/internet_screen.py:178
+#, python-brace-format
+msgid ""
+"ВАЖНО: после смены приложение потеряет связь с роутером — это нормально. "
+"Подождите 20–30 секунд (компьютер получит новый адрес) и переподключитесь"
+" к роутеру по адресу {0}."
+msgstr ""
+"مهم: پس از تغییر، برنامه ارتباطش را با روتر از دست می‌دهد — این طبیعی "
+"است. ۲۰ تا ۳۰ ثانیه صبر کنید (رایانه آدرس جدید می‌گیرد) و با آدرس {0} "
+"دوباره به روتر وصل شوید."
+
+#: src/re_sputnik/ui/internet_screen.py:183
+msgid "Новый адрес роутера:"
+msgstr "آدرس جدید روتر:"
+
+#: src/re_sputnik/ui/internet_screen.py:189
+#: src/re_sputnik/ui/internet_screen.py:429
+msgid "Сменить и переподключиться"
+msgstr "تغییر و اتصال دوباره"
+
+#: src/re_sputnik/ui/internet_screen.py:205
+msgid "🔌  Кабельное подключение (рекомендуется)"
+msgstr "🔌  اتصال کابلی (توصیه می‌شود)"
+
+#: src/re_sputnik/ui/internet_screen.py:208
+msgid ""
+"Кабель в WAN-порту обнаружен, но интернета нет. Обычно подходит DHCP; "
+"если провайдер требует — выберите PPPoE (логин/пароль) или статический "
+"IP."
+msgstr ""
+"کابل در پورت WAN شناسایی شد، اما اینترنتی نیست. معمولاً DHCP کافی است؛ "
+"اگر اپراتور نیاز دارد، PPPoE (نام کاربری/گذرواژه) یا IP ثابت را انتخاب "
+"کنید."
+
+#: src/re_sputnik/ui/internet_screen.py:211
+msgid ""
+"Кабель в WAN-порту не обнаружен. Можно заранее ввести данные провайдера "
+"(PPPoE/статический IP) — они применятся, как только вы вставите кабель в "
+"порт WAN."
+msgstr ""
+"کابلی در پورت WAN شناسایی نشد. می‌توانید از قبل اطلاعات اپراتور (PPPoE/IP"
+" ثابت) را وارد کنید — به‌محض وصل شدن کابل به پورت WAN اعمال می‌شوند."
+
+#: src/re_sputnik/ui/internet_screen.py:246
+msgid "Логин (PPPoE)"
+msgstr "نام کاربری (PPPoE)"
+
+#: src/re_sputnik/ui/internet_screen.py:246
+msgid "Пароль (PPPoE)"
+msgstr "گذرواژه (PPPoE)"
+
+#: src/re_sputnik/ui/internet_screen.py:248
+msgid "IP-адрес, напр. 192.168.0.10"
+msgstr "آدرس IP، مثلاً 192.168.0.10"
+
+#: src/re_sputnik/ui/internet_screen.py:249
+msgid "Маска (255.255.255.0)"
+msgstr "ماسک (255.255.255.0)"
+
+#: src/re_sputnik/ui/internet_screen.py:250
+msgid "Шлюз, напр. 192.168.0.1"
+msgstr "دروازه، مثلاً 192.168.0.1"
+
+#: src/re_sputnik/ui/internet_screen.py:251
+msgid "DNS (через пробел), напр. 1.1.1.1"
+msgstr "DNS (با فاصله جدا شده)، مثلاً 1.1.1.1"
+
+#: src/re_sputnik/ui/internet_screen.py:264
+msgid "📶  Wi-Fi-клиент (временно)"
+msgstr "📶  کلاینت Wi-Fi (موقت)"
+
+#: src/re_sputnik/ui/internet_screen.py:266
+msgid ""
+"Подключение к существующей Wi-Fi-сети как временное решение. Для "
+"стабильной работы рекомендуется проводное подключение роутера к "
+"интернету."
+msgstr ""
+"اتصال به شبکهٔ Wi-Fi موجود به‌عنوان راه‌حل موقت. برای کارکرد پایدار، "
+"اتصال کابلی روتر به اینترنت توصیه می‌شود."
+
+#: src/re_sputnik/ui/internet_screen.py:272
+msgid ""
+"На этом устройстве нет Wi-Fi-радио — этот способ недоступен. Используйте "
+"кабель."
+msgstr ""
+"این دستگاه رادیوی Wi-Fi ندارد — این روش در دسترس نیست. از کابل استفاده "
+"کنید."
+
+#: src/re_sputnik/ui/internet_screen.py:277
+#: src/re_sputnik/ui/internet_screen.py:314
+msgid "Сканировать сети"
+msgstr "اسکن شبکه‌ها"
+
+#: src/re_sputnik/ui/internet_screen.py:295
+#: src/re_sputnik/ui/wifi_ap_screen.py:66
+msgid "Пароль Wi-Fi"
+msgstr "گذرواژهٔ Wi-Fi"
+
+#: src/re_sputnik/ui/internet_screen.py:306
+msgid "Сканирую… (~10 сек)"
+msgstr "در حال اسکن… (حدود ۱۰ ثانیه)"
+
+#: src/re_sputnik/ui/internet_screen.py:315
+#, python-brace-format
+msgid "Скан не удался: {0}"
+msgstr "اسکن ناموفق بود: {0}"
+
+#: src/re_sputnik/ui/internet_screen.py:319
+msgid "Сканировать заново"
+msgstr "اسکن دوباره"
+
+#: src/re_sputnik/ui/internet_screen.py:321
+msgid "Сети не найдены. Попробуйте ещё раз."
+msgstr "شبکه‌ای یافت نشد. دوباره تلاش کنید."
+
+#: src/re_sputnik/ui/internet_screen.py:326
+#, python-brace-format
+msgid "{0}  {1}    {2} ГГц  {3}"
+msgstr "{0}  {1}    {2} گیگاهرتز  {3}"
+
+#: src/re_sputnik/ui/internet_screen.py:334
+#, python-brace-format
+msgid "Сеть: {0} · {1} ГГц · "
+msgstr "شبکه: {0} · {1} گیگاهرتز · "
+
+#: src/re_sputnik/ui/internet_screen.py:335
+msgid "открытая"
+msgstr "باز"
+
+#: src/re_sputnik/ui/internet_screen.py:349
+msgid "Введите логин PPPoE."
+msgstr "نام کاربری PPPoE را وارد کنید."
+
+#: src/re_sputnik/ui/internet_screen.py:352
+msgid "Введите IP-адрес."
+msgstr "آدرس IP را وارد کنید."
+
+#: src/re_sputnik/ui/internet_screen.py:354
+msgid "Поднимаю кабельное подключение…"
+msgstr "در حال راه‌اندازی اتصال کابلی…"
+
+#: src/re_sputnik/ui/internet_screen.py:365
+msgid "Выберите сеть из списка."
+msgstr "شبکه‌ای از فهرست انتخاب کنید."
+
+#: src/re_sputnik/ui/internet_screen.py:369
+msgid "Введите пароль Wi-Fi."
+msgstr "گذرواژهٔ Wi-Fi را وارد کنید."
+
+#: src/re_sputnik/ui/internet_screen.py:372
+#, python-brace-format
+msgid "Подключаюсь к «{0}» (до 10 сек)…"
+msgstr "در حال اتصال به «{0}» (تا ۱۰ ثانیه)…"
+
+#: src/re_sputnik/ui/internet_screen.py:390
+msgid "Пока без интернета. Проверьте кабель/пароль или попробуйте другой вариант."
+msgstr ""
+"هنوز اینترنتی نیست. کابل/گذرواژه را بررسی کنید یا روش دیگری را امتحان "
+"کنید."
+
+#: src/re_sputnik/ui/internet_screen.py:405
+msgid "Сменить адрес роутера"
+msgstr "تغییر آدرس روتر"
+
+#: src/re_sputnik/ui/internet_screen.py:406
+#, python-brace-format
+msgid ""
+"Адрес роутера будет изменён с {0} на {1}, чтобы убрать конфликт с сетью "
+"провайдера ({2}).\n"
+"\n"
+"После смены приложение ПОТЕРЯЕТ связь с роутером — это нормально и "
+"ожидаемо. Через 20–30 секунд компьютер получит новый адрес, и нужно будет"
+" переподключиться к роутеру по адресу {3}.\n"
+"\n"
+"Продолжить?"
+msgstr ""
+"آدرس روتر از {0} به {1} تغییر می‌کند تا تضاد با شبکهٔ اپراتور ({2}) برطرف"
+" شود.\n"
+"\n"
+"پس از تغییر، برنامه ارتباطش را با روتر از دست خواهد داد — این طبیعی و "
+"قابل انتظار است. پس از ۲۰ تا ۳۰ ثانیه رایانه آدرس جدید می‌گیرد و باید با "
+"آدرس {3} دوباره به روتر وصل شوید.\n"
+"\n"
+"ادامه می‌دهید؟"
+
+#: src/re_sputnik/ui/internet_screen.py:409
+msgid "Меняю адрес…"
+msgstr "در حال تغییر آدرس…"
+
+#: src/re_sputnik/ui/internet_screen.py:410
+msgid "Меняю адрес роутера…"
+msgstr "در حال تغییر آدرس روتر…"
+
+#: src/re_sputnik/ui/internet_screen.py:425
+#, python-brace-format
+msgid ""
+"✓ Адрес роутера изменён на {0}.\n"
+"\n"
+"Связь с роутером сейчас разорвётся — это нормально. Подождите 20–30 "
+"секунд, пока компьютер получит новый адрес, затем переподключитесь к "
+"роутеру по адресу {1} (заново откройте подключение в приложении)."
+msgstr ""
+"✓ آدرس روتر به {0} تغییر یافت.\n"
+"\n"
+"ارتباط با روتر اکنون قطع می‌شود — این طبیعی است. ۲۰ تا ۳۰ ثانیه صبر کنید "
+"تا رایانه آدرس جدید بگیرد، سپس با آدرس {1} دوباره به روتر وصل شوید (اتصال"
+" را دوباره در برنامه باز کنید)."
+
+#: src/re_sputnik/ui/internet_screen.py:430
+#, python-brace-format
+msgid "Не удалось сменить адрес: {0}"
+msgstr "تغییر آدرس ممکن نشد: {0}"
+
+#: src/re_sputnik/ui/kit.py:115
+msgid "Быстрая настройка"
+msgstr "راه‌اندازی سریع"
+
+#: src/re_sputnik/ui/kit.py:135
+#, python-brace-format
+msgid "Шаг {0} из {1}"
+msgstr "مرحلهٔ {0} از {1}"
+
+#: src/re_sputnik/ui/nodes_screen.py:40
+msgid "Ключи и подписки VPN"
+msgstr "کلیدها و اشتراک‌های VPN"
+
+#: src/re_sputnik/ui/nodes_screen.py:46
+msgid ""
+"Подписка — это ссылка (URL) от VPN-сервиса: приложение само скачивает по "
+"ней список серверов и периодически обновляет его. Ключ — это один "
+"конкретный сервер в виде строки (vless://, hysteria2://, ss://…) или "
+"файла .conf, который вы добавляете вручную."
+msgstr ""
+"اشتراک لینکی (URL) از یک سرویس VPN است: برنامه فهرست سرورها را از آن "
+"دانلود می‌کند و به‌طور دوره‌ای به‌روزرسانی می‌کند. کلید یک سرور مشخص "
+"به‌صورت رشته (vless://، hysteria2://، ss:// و غیره) یا فایل .conf است که "
+"خودتان دستی اضافه می‌کنید."
+
+#: src/re_sputnik/ui/nodes_screen.py:57 src/re_sputnik/ui/settings_shell.py:25
+msgid "Ключи и подписки"
+msgstr "کلیدها و اشتراک‌ها"
+
+#: src/re_sputnik/ui/nodes_screen.py:59
+msgid "Серверы"
+msgstr "سرورها"
+
+#: src/re_sputnik/ui/nodes_screen.py:97
+msgid "Считываю подписки и серверы…"
+msgstr "در حال خواندن اشتراک‌ها و سرورها…"
+
+#: src/re_sputnik/ui/nodes_screen.py:129
+#, python-brace-format
+msgid "Автообновление включено — ежедневно в {hour}:00."
+msgstr "به‌روزرسانی خودکار فعال است — هر روز ساعت {hour}:۰۰."
+
+#: src/re_sputnik/ui/nodes_screen.py:130
+msgid "Автообновление выключено."
+msgstr "به‌روزرسانی خودکار غیرفعال است."
+
+#: src/re_sputnik/ui/nodes_screen.py:147
+msgid ""
+"Вставьте сюда либо ссылку-подписку (начинается с http:// или https://), "
+"либо ключи отдельных серверов (vless:// vmess:// hysteria2:// trojan:// "
+"ss:// vpn:// …) — по одному в строке. Приложение само определит, где "
+"подписка, а где ключ."
+msgstr ""
+"اینجا یا لینک اشتراک (با http:// یا https:// شروع می‌شود) یا کلیدهای "
+"سرورهای جدا (vless:// vmess:// hysteria2:// trojan:// ss:// vpn:// …) را "
+"وارد کنید — هر کدام در یک سطر. برنامه خودش تشخیص می‌دهد کجا اشتراک و کجا "
+"کلید است."
+
+#: src/re_sputnik/ui/nodes_screen.py:161 src/re_sputnik/ui/rules_screen.py:353
+msgid "+ Добавить"
+msgstr "+ افزودن"
+
+#: src/re_sputnik/ui/nodes_screen.py:164
+#, python-brace-format
+msgid "{0} Обновить все"
+msgstr "{0} به‌روزرسانی همه"
+
+#: src/re_sputnik/ui/nodes_screen.py:181
+#: src/re_sputnik/ui/quick_nodes_screen.py:105
+msgid "Автообновление подписок"
+msgstr "به‌روزرسانی خودکار اشتراک‌ها"
+
+#: src/re_sputnik/ui/nodes_screen.py:185
+#: src/re_sputnik/ui/quick_nodes_screen.py:109
+msgid "ежедневно в"
+msgstr "هر روز ساعت"
+
+#: src/re_sputnik/ui/nodes_screen.py:206
+msgid "Подписок нет."
+msgstr "اشتراکی موجود نیست."
+
+#: src/re_sputnik/ui/nodes_screen.py:223
+#: src/re_sputnik/ui/quick_nodes_screen.py:276
+msgid "Вставьте ссылку-подписку или ключ сервера."
+msgstr "لینک اشتراک یا کلید سرور را وارد کنید."
+
+#: src/re_sputnik/ui/nodes_screen.py:226
+#: src/re_sputnik/ui/quick_nodes_screen.py:278
+msgid "Добавляю…"
+msgstr "در حال افزودن…"
+
+#: src/re_sputnik/ui/nodes_screen.py:240
+#: src/re_sputnik/ui/quick_nodes_screen.py:300
+#, python-brace-format
+msgid "подписок добавлено: {0}"
+msgstr "اشتراک افزوده شد: {0}"
+
+#: src/re_sputnik/ui/nodes_screen.py:243
+#, python-brace-format
+msgid "серверов из подписок: +{0} / −{1}"
+msgstr "سرورهای حاصل از اشتراک‌ها: +{0} / −{1}"
+
+#: src/re_sputnik/ui/nodes_screen.py:245
+#, python-brace-format
+msgid "ключей импортировано: {0}"
+msgstr "کلیدهای وارد شده: {0}"
+
+#: src/re_sputnik/ui/nodes_screen.py:247
+#: src/re_sputnik/ui/quick_nodes_screen.py:304
+#, python-brace-format
+msgid "пропущено: {0}"
+msgstr "نادیده گرفته شد: {0}"
+
+#: src/re_sputnik/ui/nodes_screen.py:249
+#: src/re_sputnik/ui/quick_nodes_screen.py:306
+msgid "Ничего не распознано — проверьте формат ссылок."
+msgstr "چیزی شناسایی نشد — قالب لینک‌ها را بررسی کنید."
+
+#: src/re_sputnik/ui/nodes_screen.py:251
+msgid "Готово — "
+msgstr "انجام شد — "
+
+#: src/re_sputnik/ui/nodes_screen.py:251
+#: src/re_sputnik/ui/quick_nodes_screen.py:308
+msgid "Не удалось добавить."
+msgstr "افزودن ممکن نشد."
+
+#: src/re_sputnik/ui/nodes_screen.py:260
+msgid "Удаляю подписку…"
+msgstr "در حال حذف اشتراک…"
+
+#: src/re_sputnik/ui/nodes_screen.py:262
+msgid "Подписка удалена."
+msgstr "اشتراک حذف شد."
+
+#: src/re_sputnik/ui/nodes_screen.py:270
+msgid "Обновляю подписки (загрузка и импорт)…"
+msgstr "در حال به‌روزرسانی اشتراک‌ها (دانلود و وارد کردن)…"
+
+#: src/re_sputnik/ui/nodes_screen.py:275
+msgid "Не удалось обновить подписки. Подробности в логе роутера."
+msgstr "به‌روزرسانی اشتراک‌ها ممکن نشد. جزئیات در گزارش روتر است."
+
+#: src/re_sputnik/ui/nodes_screen.py:279
+#, python-brace-format
+msgid "Подписки обновлены: добавлено {0}, удалено {1}."
+msgstr "اشتراک‌ها به‌روزرسانی شد: {0} افزوده، {1} حذف شد."
+
+#: src/re_sputnik/ui/nodes_screen.py:281
+msgid "Подписки обновлены."
+msgstr "اشتراک‌ها به‌روزرسانی شدند."
+
+#: src/re_sputnik/ui/nodes_screen.py:290
+msgid "Импорт конфигурации WireGuard / AmneziaWG (.conf):"
+msgstr "وارد کردن تنظیمات WireGuard / AmneziaWG (.conf):"
+
+#: src/re_sputnik/ui/nodes_screen.py:295
+msgid "📄 Выбрать .conf файл"
+msgstr "📄 انتخاب فایل .conf"
+
+#: src/re_sputnik/ui/nodes_screen.py:318
+#, python-brace-format
+msgid "Импортирую {0}…"
+msgstr "در حال وارد کردن {0}…"
+
+#: src/re_sputnik/ui/nodes_screen.py:324
+#, python-brace-format
+msgid "Импортировано: {0} ({1})"
+msgstr "وارد شد: {0} ({1})"
+
+#: src/re_sputnik/ui/nodes_screen.py:328
+#, python-brace-format
+msgid "Импорт не удался: {0}"
+msgstr "وارد کردن ناموفق بود: {0}"
+
+#: src/re_sputnik/ui/nodes_screen.py:341
+#, python-brace-format
+msgid "Всего серверов: {0}"
+msgstr "تعداد کل سرورها: {0}"
+
+#: src/re_sputnik/ui/nodes_screen.py:359
+#, python-brace-format
+msgid "…и ещё {0} серверов"
+msgstr "…و {0} سرور دیگر"
+
+#: src/re_sputnik/ui/overview_screen.py:39
+msgid "Автоматическая смена — по доступности и задержке (мс)"
+msgstr "تغییر خودکار — بر اساس دسترس‌پذیری و تأخیر (میلی‌ثانیه)"
+
+#: src/re_sputnik/ui/overview_screen.py:44
+msgid "Статический IP"
+msgstr "IP ثابت"
+
+#: src/re_sputnik/ui/overview_screen.py:49
+msgid ""
+"DNS — это «справочник» интернета: превращает имена сайтов (mail.ru, "
+"youtube.com) в IP-адреса, по которым устройство к ним подключается.\n"
+"• «Россия» — DNS для российских сайтов: они открываются напрямую, быстро "
+"и без прокси.\n"
+"• «Защищённый» — DNS по шифрованному каналу (DoH/DoT) для остального "
+"трафика: провайдер не видит и не может подменить ваши запросы."
+msgstr ""
+"DNS «راهنمای» اینترنت است: نام سایت‌ها (mail.ru، youtube.com) را به آدرس "
+"IP که دستگاه به آن وصل می‌شود تبدیل می‌کند.\n"
+"• «روسیه» — DNS برای سایت‌های روسی: مستقیم، سریع و بدون پروکسی باز "
+"می‌شوند.\n"
+"• «امن» — DNS از طریق کانال رمزنگاری‌شده (DoH/DoT) برای بقیهٔ ترافیک: "
+"اپراتور نمی‌تواند درخواست‌های شما را ببیند یا تغییر دهد."
+
+#: src/re_sputnik/ui/overview_screen.py:100
+#: src/re_sputnik/ui/overview_screen.py:290
+#: src/re_sputnik/ui/settings_shell.py:24
+msgid "Обзор"
+msgstr "نمای کلی"
+
+#: src/re_sputnik/ui/overview_screen.py:110
+msgid "Авто-обновление страницы"
+msgstr "تازه‌سازی خودکار صفحه"
+
+#: src/re_sputnik/ui/overview_screen.py:128
+msgid "Собираю данные…"
+msgstr "در حال جمع‌آوری داده‌ها…"
+
+#: src/re_sputnik/ui/overview_screen.py:294
+#, python-brace-format
+msgid "аптайм {0}"
+msgstr "زمان روشن‌بودن {0}"
+
+#: src/re_sputnik/ui/overview_screen.py:295
+#, python-brace-format
+msgid "IP роутера {0}"
+msgstr "IP روتر {0}"
+
+#: src/re_sputnik/ui/overview_screen.py:314
+#, python-brace-format
+msgid "{0}%  ·  свободно {1} из {2} МБ"
+msgstr "{0}٪  ·  {1} از {2} مگابایت آزاد"
+
+#: src/re_sputnik/ui/overview_screen.py:317
+msgid "Система"
+msgstr "سیستم"
+
+#: src/re_sputnik/ui/overview_screen.py:322
+msgid "Загрузка процессора"
+msgstr "بار پردازنده"
+
+#: src/re_sputnik/ui/overview_screen.py:324
+msgid "Свободно ОЗУ"
+msgstr "RAM آزاد"
+
+#: src/re_sputnik/ui/overview_screen.py:368
+msgid "Не удалось определить интерфейс выхода в интернет."
+msgstr "تشخیص رابط خروجی اینترنت ممکن نشد."
+
+#: src/re_sputnik/ui/overview_screen.py:372
+msgid "Wi-Fi (клиент)"
+msgstr "Wi-Fi (کلاینت)"
+
+#: src/re_sputnik/ui/overview_screen.py:374
+msgid " ГГц"
+msgstr " گیگاهرتز"
+
+#: src/re_sputnik/ui/overview_screen.py:376
+#, python-brace-format
+msgid "{0} Мбит/с"
+msgstr "{0} مگابیت بر ثانیه"
+
+#: src/re_sputnik/ui/overview_screen.py:378
+msgid "Кабель"
+msgstr "کابل"
+
+#: src/re_sputnik/ui/overview_screen.py:387
+msgid "Есть подключение к интернету"
+msgstr "اتصال اینترنت برقرار است"
+
+#: src/re_sputnik/ui/overview_screen.py:389
+msgid "Нет подключения к интернету"
+msgstr "اتصال اینترنت برقرار نیست"
+
+#: src/re_sputnik/ui/overview_screen.py:392
+msgid "Подключение к интернету"
+msgstr "اتصال اینترنت"
+
+#: src/re_sputnik/ui/overview_screen.py:416
+msgid "Обновляю…"
+msgstr "در حال تازه‌سازی…"
+
+#: src/re_sputnik/ui/overview_screen.py:470
+msgid "Сервис ещё запускается — активный сервер появится через несколько секунд."
+msgstr "سرویس هنوز در حال راه‌اندازی است — سرور فعال در چند ثانیه ظاهر می‌شود."
+
+#: src/re_sputnik/ui/overview_screen.py:473
+msgid "Прокси-сервис не запущен — активного сервера пока нет."
+msgstr "سرویس پروکسی اجرا نمی‌شود — هنوز سرور فعالی وجود ندارد."
+
+#: src/re_sputnik/ui/overview_screen.py:558
+msgid "Ядро: не установлено"
+msgstr "هسته: نصب نشده"
+
+#: src/re_sputnik/ui/overview_screen.py:560
+#, python-brace-format
+msgid "Ядро: {0}"
+msgstr "هسته: {0}"
+
+#: src/re_sputnik/ui/overview_screen.py:561
+msgid "   ·   запущено"
+msgstr "   ·   در حال اجرا"
+
+#: src/re_sputnik/ui/overview_screen.py:561
+msgid "   ·   остановлено"
+msgstr "   ·   متوقف‌شده"
+
+#: src/re_sputnik/ui/overview_screen.py:565
+msgid "ByeDPI: не установлен"
+msgstr "ByeDPI: نصب نشده"
+
+#: src/re_sputnik/ui/overview_screen.py:567
+msgid "ByeDPI: запущен"
+msgstr "ByeDPI: در حال اجرا"
+
+#: src/re_sputnik/ui/overview_screen.py:569
+msgid "ByeDPI: установлен, остановлен"
+msgstr "ByeDPI: نصب‌شده، متوقف"
+
+#: src/re_sputnik/ui/overview_screen.py:572
+msgid "Zapret: не установлен"
+msgstr "Zapret: نصب نشده"
+
+#: src/re_sputnik/ui/overview_screen.py:574
+msgid "Zapret: запущен"
+msgstr "Zapret: در حال اجرا"
+
+#: src/re_sputnik/ui/overview_screen.py:576
+msgid "Zapret: установлен, остановлен"
+msgstr "Zapret: نصب‌شده، متوقف"
+
+#: src/re_sputnik/ui/overview_screen.py:586
+msgid "Пул серверов"
+msgstr "مجموعهٔ سرورها"
+
+#: src/re_sputnik/ui/overview_screen.py:604
+msgid "Сервер"
+msgstr "سرور"
+
+#: src/re_sputnik/ui/overview_screen.py:622
+msgid "Серверы в пуле"
+msgstr "سرورهای مجموعه"
+
+#: src/re_sputnik/ui/overview_screen.py:634
+msgid "Интервал проверки (с)"
+msgstr "فاصلهٔ بررسی (ثانیه)"
+
+#: src/re_sputnik/ui/overview_screen.py:635
+msgid ""
+"Время в секундах: меньше = серверы тестируются чаще, больше = реже тесты "
+"— меньше нагрузки."
+msgstr ""
+"زمان به ثانیه: کمتر = سرورها بیشتر تست می‌شوند، بیشتر = تست‌های کمتر — "
+"بار کمتر."
+
+#: src/re_sputnik/ui/overview_screen.py:637
+msgid "Допуск (мс)"
+msgstr "تحمل (میلی‌ثانیه)"
+
+#: src/re_sputnik/ui/overview_screen.py:638
+msgid ""
+"Минимальная разница задержек (мс) для переключения на более быстрый "
+"сервер — предотвращает постоянное переключение между серверами с близкой "
+"задержкой."
+msgstr ""
+"کمترین اختلاف تأخیر (میلی‌ثانیه) برای تغییر به سرور سریع‌تر — از تغییر "
+"دائمی بین سرورهای با تأخیر نزدیک جلوگیری می‌کند."
+
+#: src/re_sputnik/ui/overview_screen.py:730
+msgid "Выберите хотя бы один сервер для пула URLTest."
+msgstr "حداقل یک سرور برای مجموعهٔ URLTest انتخاب کنید."
+
+#: src/re_sputnik/ui/overview_screen.py:734
+msgid "Интервал и допуск должны быть числами."
+msgstr "فاصله و تحمل باید عدد باشند."
+
+#: src/re_sputnik/ui/overview_screen.py:738
+msgid "Применяю изменения…"
+msgstr "در حال اعمال تغییرات…"
+
+#: src/re_sputnik/ui/overview_screen.py:787
+msgid "Россия — протестировано на mail.ru"
+msgstr "روسیه — تست‌شده روی mail.ru"
+
+#: src/re_sputnik/ui/overview_screen.py:789
+msgid "Защищённый — протестировано на andrevi.ch"
+msgstr "امن — تست‌شده روی andrevi.ch"
+
+#: src/re_sputnik/ui/overview_screen.py:818
+msgid "Активные правила"
+msgstr "قوانین فعال"
+
+#: src/re_sputnik/ui/overview_screen.py:820
+msgid "Правил нет — весь трафик идёт напрямую."
+msgstr "قانونی موجود نیست — همهٔ ترافیک مستقیم می‌رود."
+
+#: src/re_sputnik/ui/overview_screen.py:844
+#, python-brace-format
+msgid "Устройства в сети ({0})"
+msgstr "دستگاه‌های شبکه ({0})"
+
+#: src/re_sputnik/ui/overview_screen.py:846
+msgid "Нет активных аренд DHCP."
+msgstr "اجارهٔ DHCP فعالی موجود نیست."
+
+#: src/re_sputnik/ui/overview_screen.py:862
+#, python-brace-format
+msgid "… и ещё {0} устройств"
+msgstr "… و {0} دستگاه دیگر"
+
+#: src/re_sputnik/ui/overview_screen.py:872
+msgid "Wi-Fi сети роутера"
+msgstr "شبکه‌های Wi-Fi روتر"
+
+#: src/re_sputnik/ui/overview_screen.py:874
+msgid "Точка доступа не настроена."
+msgstr "نقطهٔ دسترسی تنظیم نشده است."
+
+#: src/re_sputnik/ui/overview_screen.py:889
+#, python-brace-format
+msgid "{0} ГГц"
+msgstr "{0} گیگاهرتز"
+
+#: src/re_sputnik/ui/overview_screen.py:890
+msgid "скрытая"
+msgstr "پنهان"
+
+#: src/re_sputnik/ui/overview_screen.py:895
+#, python-brace-format
+msgid "Пароль: {0}"
+msgstr "گذرواژه: {0}"
+
+#: src/re_sputnik/ui/overview_screen.py:899
+msgid "Открытая сеть (без пароля)"
+msgstr "شبکهٔ باز (بدون گذرواژه)"
+
+#: src/re_sputnik/ui/overview_screen.py:906
+msgid "Наведите камеру телефона"
+msgstr "دوربین گوشی را نشانه بگیرید"
+
+#: src/re_sputnik/ui/preinstall_screen.py:42
+msgid "Компоненты"
+msgstr "اجزا"
+
+#: src/re_sputnik/ui/preinstall_screen.py:48
+msgid ""
+"Пакеты скачает этот компьютер и передаст на роутер — для подготовки "
+"устройства к установке без интернета."
+msgstr ""
+"این رایانه بسته‌ها را دانلود می‌کند و به روتر منتقل می‌کند — برای "
+"آماده‌سازی دستگاه جهت نصب بدون اینترنت."
+
+#: src/re_sputnik/ui/preinstall_screen.py:55
+msgid "Проверяю, что уже установлено на роутере…"
+msgstr "در حال بررسی آنچه روی روتر نصب شده…"
+
+#: src/re_sputnik/ui/preinstall_screen.py:64
+msgid "Ядро (с модулями ядра)"
+msgstr "هسته (همراه با ماژول‌های هسته)"
+
+#: src/re_sputnik/ui/preinstall_screen.py:72
+msgid "Обязательно: kmod-nft-tproxy + kmod-tun."
+msgstr "لازم: kmod-nft-tproxy + kmod-tun."
+
+#: src/re_sputnik/ui/preinstall_screen.py:79
+msgid "Установить LuCI-приложение Re:HomeProxy (+ русский язык)"
+msgstr "نصب برنامهٔ LuCI Re:HomeProxy (+ زبان روسی)"
+
+#: src/re_sputnik/ui/preinstall_screen.py:83
+msgid ""
+"Без него на роутере будет только ядро, но не сам HomeProxy (веб-настройки"
+" и импорт серверов работать не будут). Оставьте включённым для полной "
+"офлайн-установки."
+msgstr ""
+"بدون آن، روی روتر فقط هسته خواهد بود، نه خود HomeProxy (تنظیمات وب و وارد"
+" کردن سرورها کار نخواهد کرد). برای نصب آفلاین کامل، فعال نگه دارید."
+
+#: src/re_sputnik/ui/preinstall_screen.py:93
+#: src/re_sputnik/ui/software_screen.py:87
+msgid "Также установить ByeDPI"
+msgstr "همچنین ByeDPI نصب شود"
+
+#: src/re_sputnik/ui/preinstall_screen.py:96
+#: src/re_sputnik/ui/software_screen.py:90
+msgid ""
+"Обход DPI открывает заблокированные сайты без полного VPN: маскирует "
+"трафик, чтобы фильтры провайдера его не распознавали. Иногда нужно "
+"вручную подобрать параметры под вашего провайдера."
+msgstr ""
+"دور زدن DPI سایت‌های مسدودشده را بدون VPN کامل باز می‌کند: ترافیک را "
+"پنهان می‌کند تا فیلترهای اپراتور آن را تشخیص ندهند. گاهی نیاز است "
+"پارامترها برای اپراتورتان به‌صورت دستی تنظیم شود."
+
+#: src/re_sputnik/ui/preinstall_screen.py:101
+#: src/re_sputnik/ui/software_screen.py:95
+msgid "Также установить Zapret"
+msgstr "همچنین Zapret نصب شود"
+
+#: src/re_sputnik/ui/preinstall_screen.py:104
+msgid ""
+"Другой движок обхода DPI: умеет ещё видео (QUIC) и звонки, с которыми "
+"ByeDPI не справляется. Нужный модуль ядра (kmod-nft-queue) скачивается и "
+"ставится вместе с ним."
+msgstr ""
+"موتور دیگر دور زدن DPI: همچنین ویدئو (QUIC) و تماس‌هایی را که ByeDPI "
+"نمی‌تواند مدیریت کند، انجام می‌دهد. ماژول هستهٔ لازم (kmod-nft-queue) "
+"همراه آن دانلود و نصب می‌شود."
+
+#: src/re_sputnik/ui/preinstall_screen.py:110
+#: src/re_sputnik/ui/preinstall_screen.py:212
+#: src/re_sputnik/ui/preinstall_screen.py:221
+msgid "Скачать и установить"
+msgstr "دانلود و نصب"
+
+#: src/re_sputnik/ui/preinstall_screen.py:124
+msgid "Далее: интернет (WAN) и Wi-Fi →"
+msgstr "بعدی: اینترنت (WAN) و Wi-Fi →"
+
+#: src/re_sputnik/ui/preinstall_screen.py:142
+msgid "Не удалось проверить роутер — можно предустановить заново."
+msgstr "بررسی روتر ممکن نشد — می‌توانید دوباره پیش‌نصب کنید."
+
+#: src/re_sputnik/ui/preinstall_screen.py:157
+#, python-brace-format
+msgid ""
+"✓ На роутере уже есть: приложение, {0}, модули ядра{1}. Предустановка не "
+"нужна — можно сразу к настройке."
+msgstr ""
+"✓ روی روتر از قبل وجود دارد: برنامه، {0}، ماژول‌های هسته{1}. پیش‌نصب لازم"
+" نیست — می‌توانید مستقیم به تنظیمات بروید."
+
+#: src/re_sputnik/ui/preinstall_screen.py:158
+#, python-brace-format
+msgid "✓ На роутере уже всё установлено ({0}{1})."
+msgstr "✓ همه چیز روی روتر از قبل نصب است ({0}{1})."
+
+#: src/re_sputnik/ui/preinstall_screen.py:160
+msgid "Предустановить заново"
+msgstr "پیش‌نصب دوباره"
+
+#: src/re_sputnik/ui/preinstall_screen.py:166
+#: src/re_sputnik/ui/software_screen.py:154
+msgid "приложение"
+msgstr "برنامه"
+
+#: src/re_sputnik/ui/preinstall_screen.py:170
+#: src/re_sputnik/ui/software_screen.py:158
+msgid "модули ядра"
+msgstr "ماژول‌های هسته"
+
+#: src/re_sputnik/ui/preinstall_screen.py:172
+#: src/re_sputnik/ui/software_screen.py:160
+msgid "Частично установлено: "
+msgstr "بخشی نصب شده: "
+
+#: src/re_sputnik/ui/preinstall_screen.py:173
+msgid ". Предустановка доставит недостающее."
+msgstr ". پیش‌نصب موارد کم را تکمیل می‌کند."
+
+#: src/re_sputnik/ui/preinstall_screen.py:175
+msgid "На роутере ничего не установлено."
+msgstr "روی روتر چیزی نصب نشده است."
+
+#: src/re_sputnik/ui/preinstall_screen.py:190
+msgid "Работаю…"
+msgstr "در حال کار…"
+
+#: src/re_sputnik/ui/preinstall_screen.py:223
+#: src/re_sputnik/ui/software_screen.py:206
+msgid "✓ Установлено: "
+msgstr "✓ نصب‌شده: "
+
+#: src/re_sputnik/ui/preinstall_screen.py:225
+msgid "Можно заранее настроить интернет (WAN) и Wi-Fi — кнопка ниже."
+msgstr "می‌توانید از قبل اینترنت (WAN) و Wi-Fi را تنظیم کنید — دکمهٔ پایین."
+
+#: src/re_sputnik/ui/preinstall_screen.py:228
+#: src/re_sputnik/ui/software_screen.py:211
+msgid "не удалось"
+msgstr "ناموفق"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:51
+#: src/re_sputnik/ui/quick_nodes_screen.py:55
+msgid "Серверы и подписки"
+msgstr "سرورها و اشتراک‌ها"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:55
+msgid "Серверы (офлайн-подготовка)"
+msgstr "سرورها (آماده‌سازی آفلاین)"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:59
+msgid "Сервер (VPN/прокси) — это то, через что пойдёт ваш трафик. "
+msgstr "سرور (VPN/پروکسی) چیزی است که ترافیک شما از آن می‌گذرد. "
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:61
+msgid ""
+"Вставьте ссылки-ключи (vless://, hysteria2://, vpn://…) или импортируйте "
+".conf. Подписки добавятся позже, когда у роутера появится интернет."
+msgstr ""
+"لینک‌های کلید (vless://، hysteria2://، vpn:// و غیره) را وارد کنید یا یک "
+".conf وارد کنید. اشتراک‌ها بعداً پس از داشتن اینترنت روتر افزوده خواهند "
+"شد."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:64
+msgid ""
+"Добавьте подписку или вставьте ссылки-ключи (vless://, hysteria2://…). "
+"Затем выберите основной сервер."
+msgstr ""
+"اشتراک بیفزایید یا لینک‌های کلید (vless://، hysteria2:// و غیره) را وارد "
+"کنید. سپس سرور اصلی را انتخاب کنید."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:77
+msgid "Подписка или ключи серверов"
+msgstr "اشتراک یا کلیدهای سرور"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:80
+msgid ""
+"Ссылка-подписка (http:// https://) или ключи серверов (vless:// vmess:// "
+"hysteria2:// trojan:// ss:// vpn:// …) — по одному в строке. Приложение "
+"само определит, где подписка, а где ключ."
+msgstr ""
+"لینک اشتراک (http:// https://) یا کلیدهای سرور (vless:// vmess:// "
+"hysteria2:// trojan:// ss:// vpn:// …) — هر کدام در یک سطر. برنامه خودش "
+"تشخیص می‌دهد کجا اشتراک و کجا کلید است."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:90
+#: src/re_sputnik/ui/quick_nodes_screen.py:289
+#: src/re_sputnik/ui/quick_nodes_screen.py:317
+msgid "Добавить"
+msgstr "افزودن"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:94
+#: src/re_sputnik/ui/quick_nodes_screen.py:339
+#: src/re_sputnik/ui/quick_nodes_screen.py:348
+msgid "Импорт .conf…"
+msgstr "وارد کردن .conf…"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:124
+msgid "Добавленные серверы"
+msgstr "سرورهای افزوده‌شده"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:133
+msgid "Основной сервер"
+msgstr "سرور اصلی"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:135
+msgid "Авто — выбирать самый быстрый (рекомендуется)"
+msgstr "خودکار — انتخاب سریع‌ترین (توصیه می‌شود)"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:139
+msgid "Выбрать конкретный сервер"
+msgstr "انتخاب سرور مشخص"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:150
+msgid "У меня белые списки"
+msgstr "من فهرست سفید دارم"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:154
+msgid ""
+"Белые списки - режим фильтрации интернета провайдером когда работают "
+"только разрешенные сайты одобренные государством - Яндекс, ВК и прочие."
+msgstr ""
+"فهرست سفید — حالتی از فیلترگذاری اینترنت توسط اپراتور که فقط سایت‌های "
+"مجاز و تأییدشدهٔ دولت کار می‌کنند — یاندکس، VK و مشابه آن‌ها."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:161
+#: src/re_sputnik/ui/quick_nodes_screen.py:384
+#: src/re_sputnik/ui/quick_nodes_screen.py:393
+msgid "Применить и продолжить"
+msgstr "اعمال و ادامه"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:173
+msgid "Готово — серверы добавлю позже →"
+msgstr "انجام شد — سرورها را بعداً اضافه می‌کنم →"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:214
+#, python-brace-format
+msgid "Автообновление подписок включено — ежедневно в {hour}:00."
+msgstr "به‌روزرسانی خودکار اشتراک‌ها فعال است — هر روز ساعت {hour}:۰۰."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:215
+msgid "Автообновление подписок выключено."
+msgstr "به‌روزرسانی خودکار اشتراک‌ها غیرفعال است."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:241
+msgid ""
+"Подписка обработана, но ни одного сервера не добавилось. Возможные "
+"причины: у роутера нет интернета, ссылка недействительна, или формат "
+"подписки не поддерживается этой версией Re:HomeProxy. Проверьте ссылку и "
+"связь — или вставьте серверы ссылками-ключами / .conf ниже."
+msgstr ""
+"اشتراک پردازش شد، اما هیچ سروری افزوده نشد. دلایل احتمالی: روتر اینترنت "
+"ندارد، لینک نامعتبر است، یا قالب اشتراک توسط این نسخهٔ Re:HomeProxy "
+"پشتیبانی نمی‌شود. لینک و اتصال را بررسی کنید — یا در پایین سرورها را با "
+"لینک‌های کلید / .conf وارد کنید."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:247
+msgid ""
+"Пока серверов нет. Добавьте подписку или вставьте ссылки-ключи / .conf "
+"ниже."
+msgstr ""
+"هنوز سروری نیست. اشتراکی بیفزایید یا در پایین لینک‌های کلید / .conf را "
+"وارد کنید."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:261
+#, python-brace-format
+msgid "… и ещё {0} серверов"
+msgstr "… و {0} سرور دیگر"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:266
+#, python-brace-format
+msgid "Серверов: {0}"
+msgstr "تعداد سرورها: {0}"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:298
+#, python-brace-format
+msgid "подписок: +{0} (серверов +{1} / −{2})"
+msgstr "اشتراک‌ها: +{0} (سرورها +{1} / −{2})"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:302
+#, python-brace-format
+msgid "ключей: +{0}"
+msgstr "کلیدها: +{0}"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:318
+#, python-brace-format
+msgid "Не удалось добавить: {0}"
+msgstr "افزودن ممکن نشد: {0}"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:322
+msgid "Выберите .conf (WireGuard/AmneziaWG)"
+msgstr "انتخاب .conf (WireGuard/AmneziaWG)"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:333
+msgid "Импортирую…"
+msgstr "در حال وارد کردن…"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:341
+#: src/re_sputnik/ui/quick_nodes_screen.py:349
+#, python-brace-format
+msgid "Импорт .conf не удался: {0}"
+msgstr "وارد کردن .conf ناموفق بود: {0}"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:343
+msgid "Сервер из .conf импортирован."
+msgstr "سرور از .conf وارد شد."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:353
+msgid "Сначала добавьте серверы."
+msgstr "ابتدا سرورها را اضافه کنید."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:369
+msgid "Подходящих серверов для авто-пула не найдено в подписках."
+msgstr "سرور مناسبی برای مجموعهٔ خودکار در اشتراک‌ها یافت نشد."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:386
+msgid "Сервер применён."
+msgstr "سرور اعمال شد."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:389
+msgid "Сервер сохранён, но перезапуск сервиса не удался. Проверьте «Ядро»."
+msgstr "سرور ذخیره شد، اما راه‌اندازی مجدد سرویس ناموفق بود. «هسته» را بررسی کنید."
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:394
+#, python-brace-format
+msgid "Не удалось применить: {0}"
+msgstr "اعمال ممکن نشد: {0}"
+
+#: src/re_sputnik/ui/rules_screen.py:29
+msgid "Россия (раздельное туннелирование)"
+msgstr "روسیه (تونل‌سازی تقسیم‌شده)"
+
+#: src/re_sputnik/ui/rules_screen.py:30
+msgid "Глобальный (весь трафик через прокси)"
+msgstr "سراسری (همهٔ ترافیک از طریق پروکسی)"
+
+#: src/re_sputnik/ui/rules_screen.py:31
+msgid "Китай — GFWList"
+msgstr "چین — GFWList"
+
+#: src/re_sputnik/ui/rules_screen.py:32
+msgid "Китай — Direct"
+msgstr "چین — Direct"
+
+#: src/re_sputnik/ui/rules_screen.py:33
+msgid "Китай — Proxy"
+msgstr "چین — Proxy"
+
+#: src/re_sputnik/ui/rules_screen.py:34
+msgid "Своя маршрутизация"
+msgstr "مسیریابی سفارشی"
+
+#: src/re_sputnik/ui/rules_screen.py:35
+msgid "Свой JSON"
+msgstr "JSON سفارشی"
+
+#: src/re_sputnik/ui/rules_screen.py:53
+msgid ""
+"Раздельное туннелирование: по умолчанию весь трафик идёт напрямую (как "
+"обычно и быстро), а через VPN направляется только то, что заблокировано в"
+" России — по списку Re:filter (домены и IP из реестра РКН) и выбранным "
+"сервисам ниже. Так зарубежные сервисы открываются, а российские сайты и "
+"банки продолжают работать напрямую, без VPN."
+msgstr ""
+"تونل‌سازی تقسیم‌شده: به‌طور پیش‌فرض همهٔ ترافیک مستقیم می‌رود (مثل همیشه "
+"و سریع)، و فقط آنچه در روسیه مسدود است از طریق VPN هدایت می‌شود — طبق "
+"فهرست Re:filter (دامنه‌ها و IP‌های فهرست RKN) و سرویس‌های انتخاب‌شده در "
+"پایین. به این ترتیب سرویس‌های خارجی باز می‌شوند، در حالی که سایت‌ها و "
+"بانک‌های روسی همچنان مستقیم و بدون VPN کار می‌کنند."
+
+#: src/re_sputnik/ui/rules_screen.py:64
+msgid "Звонки в мессенджерах через прокси"
+msgstr "تماس‌های پیام‌رسان‌ها از طریق پروکسی"
+
+#: src/re_sputnik/ui/rules_screen.py:65
+msgid "WhatsApp, Telegram, FaceTime и др. — пускать голос/видео через прокси."
+msgstr ""
+"WhatsApp، Telegram، FaceTime و غیره — صدا/ویدئو را از طریق پروکسی عبور "
+"دهید."
+
+#: src/re_sputnik/ui/rules_screen.py:67
+msgid "Торренты через прокси"
+msgstr "تورنت از طریق پروکسی"
+
+#: src/re_sputnik/ui/rules_screen.py:68
+msgid ""
+"Рекомендуем отключить — торренты перегружают канал и часто заблокированы "
+"на серверах."
+msgstr ""
+"توصیه می‌کنیم خاموش کنید — تورنت کانال را پر می‌کند و اغلب روی سرورها "
+"مسدود است."
+
+#: src/re_sputnik/ui/rules_screen.py:92 src/re_sputnik/ui/settings_shell.py:26
+msgid "Правила"
+msgstr "قوانین"
+
+#: src/re_sputnik/ui/rules_screen.py:95
+msgid "Считываю правила…"
+msgstr "در حال خواندن قوانین…"
+
+#: src/re_sputnik/ui/rules_screen.py:130 src/re_sputnik/ui/wifi_ap_screen.py:91
+msgid "Пропустить"
+msgstr "رد کردن"
+
+#: src/re_sputnik/ui/rules_screen.py:148
+#, python-brace-format
+msgid "Ошибка применения: {0}. Повторите или «Пропустить»."
+msgstr "خطای اعمال: {0}. دوباره تلاش کنید یا «رد کردن» را بزنید."
+
+#: src/re_sputnik/ui/rules_screen.py:199
+msgid "Режим маршрутизации"
+msgstr "حالت مسیریابی"
+
+#: src/re_sputnik/ui/rules_screen.py:246
+msgid "Особый трафик"
+msgstr "ترافیک ویژه"
+
+#: src/re_sputnik/ui/rules_screen.py:293
+msgid "Привязка сервисов к серверам"
+msgstr "اتصال سرویس‌ها به سرورها"
+
+#: src/re_sputnik/ui/rules_screen.py:296
+msgid ""
+"Маршрут по умолчанию — прямой. Добавленные правила проксируются с "
+"автоматическим приоритетом:\n"
+"1. Небольшие списки (YouTube, Discord и т.д.)\n"
+"2. Russia Inside (1000+ доменов, itdoginfo) — общий набор небольших "
+"списков (YouTube, Discord, Telegram, Meta…)\n"
+"3. Re:filter (60000+ доменов + 25000+ IP) — список заблокированных в "
+"России доменов и IP (Роскомнадзор, от сообщества)"
+msgstr ""
+"مسیر پیش‌فرض مستقیم است. قوانین افزوده‌شده با اولویت خودکار از طریق "
+"پروکسی می‌روند:\n"
+"۱. فهرست‌های کوچک (YouTube، Discord و غیره)\n"
+"۲. Russia Inside (بیش از ۱۰۰۰ دامنه، itdoginfo) — مجموعه‌ای از فهرست‌های "
+"کوچک (YouTube، Discord، Telegram، Meta…)\n"
+"۳. Re:filter (بیش از ۶۰۰۰۰ دامنه + ۲۵۰۰۰ IP) — فهرست دامنه‌ها و IP‌های "
+"مسدودشده در روسیه (RKN، نگه‌داری‌شده توسط جامعه)"
+
+#: src/re_sputnik/ui/rules_screen.py:310
+msgid "Пока нет привязок."
+msgstr "هنوز اتصالی نیست."
+
+#: src/re_sputnik/ui/rules_screen.py:326
+msgid ""
+"Логотипы — товарные знаки соответствующих владельцев, используются лишь "
+"для обозначения сервиса."
+msgstr ""
+"لوگوها علائم تجاری مالکان مربوط هستند و فقط برای شناسایی سرویس استفاده "
+"شده‌اند."
+
+#: src/re_sputnik/ui/rules_screen.py:338
+msgid "Все сервисы уже добавлены."
+msgstr "همهٔ سرویس‌ها از قبل افزوده شده‌اند."
+
+#: src/re_sputnik/ui/security_screen.py:82
+msgid "Читаю ключи доступа на роутере…"
+msgstr "در حال خواندن کلیدهای دسترسی روی روتر…"
+
+#: src/re_sputnik/ui/security_screen.py:131
+msgid ""
+"Доступ к управлению роутером дают SSH-ключи и пароль root. Чтобы "
+"полностью закрыть доступ, отзовите лишние ключи и смените пароль — иначе "
+"вход по паролю позволит прописать новый ключ."
+msgstr ""
+"دسترسی به مدیریت روتر توسط کلیدهای SSH و گذرواژهٔ root داده می‌شود. برای "
+"بستن کامل دسترسی، کلیدهای اضافی را لغو کرده و گذرواژه را تغییر دهید — در "
+"غیر این صورت ورود با گذرواژه امکان افزودن کلید تازه را می‌دهد."
+
+#: src/re_sputnik/ui/security_screen.py:142
+msgid "SSH-ключи доступа"
+msgstr "کلیدهای دسترسی SSH"
+
+#: src/re_sputnik/ui/security_screen.py:144
+msgid "Ключей нет — вход только по паролю."
+msgstr "کلیدی موجود نیست — ورود فقط با گذرواژه."
+
+#: src/re_sputnik/ui/security_screen.py:157
+msgid "Отозвать все ключи"
+msgstr "لغو همهٔ کلیدها"
+
+#: src/re_sputnik/ui/security_screen.py:181
+msgid "● это устройство"
+msgstr "● این دستگاه"
+
+#: src/re_sputnik/ui/security_screen.py:187
+msgid "Отозвать"
+msgstr "لغو"
+
+#: src/re_sputnik/ui/security_screen.py:195
+msgid "  Это ключ ТЕКУЩЕГО устройства — приложение потеряет доступ по ключу."
+msgstr ""
+"  این کلید دستگاه فعلی است — برنامه دسترسی مبتنی بر کلید را از دست خواهد "
+"داد."
+
+#: src/re_sputnik/ui/security_screen.py:196
+msgid "Отзываю ключ…"
+msgstr "در حال لغو کلید…"
+
+#: src/re_sputnik/ui/security_screen.py:215
+msgid "Ключ устройства отозван — следующее подключение потребует пароль."
+msgstr "کلید دستگاه لغو شد — اتصال بعدی به گذرواژه نیاز خواهد داشت."
+
+#: src/re_sputnik/ui/security_screen.py:218
+msgid "Ключ отозван."
+msgstr "کلید لغو شد."
+
+#: src/re_sputnik/ui/security_screen.py:220
+msgid "Ключ не найден (уже удалён?)."
+msgstr "کلید یافت نشد (شاید قبلاً حذف شده؟)."
+
+#: src/re_sputnik/ui/security_screen.py:227
+msgid "Точно? Ещё раз — будут удалены ВСЕ ключи, включая ключ этого устройства"
+msgstr "مطمئنید؟ دوباره — همهٔ کلیدها از جمله کلید این دستگاه حذف خواهند شد"
+
+#: src/re_sputnik/ui/security_screen.py:231
+msgid "Отзываю все ключи…"
+msgstr "در حال لغو همهٔ کلیدها…"
+
+#: src/re_sputnik/ui/security_screen.py:243
+#, python-brace-format
+msgid ""
+"Удалено ключей: {0}. Вход теперь только по паролю — убедитесь, что он "
+"надёжный."
+msgstr "{0} کلید حذف شد. ورود اکنون فقط با گذرواژه است — مطمئن شوید که قوی است."
+
+#: src/re_sputnik/ui/security_screen.py:259
+msgid "Текущий пароль root (сохранён приложением)"
+msgstr "گذرواژهٔ فعلی root (ذخیره‌شده توسط برنامه)"
+
+#: src/re_sputnik/ui/security_screen.py:260
+msgid "Если вы его забыли — откройте глазом и скопируйте."
+msgstr "اگر آن را فراموش کرده‌اید — با چشمک روی آن کلیک کنید و کپی کنید."
+
+#: src/re_sputnik/ui/security_screen.py:291
+msgid "Задайте надёжный случайный пароль администратора роутера."
+msgstr "یک گذرواژهٔ تصادفی و قوی برای مدیر روتر تنظیم کنید."
+
+#: src/re_sputnik/ui/security_screen.py:299
+msgid "новый пароль root"
+msgstr "گذرواژهٔ root جدید"
+
+#: src/re_sputnik/ui/security_screen.py:308
+#: src/re_sputnik/ui/wifi_ap_screen.py:73
+msgid "Сгенерировать"
+msgstr "ساخت"
+
+#: src/re_sputnik/ui/security_screen.py:312
+msgid "Сохранить в хранилище приложения"
+msgstr "ذخیره در مخزن برنامه"
+
+#: src/re_sputnik/ui/security_screen.py:317
+#: src/re_sputnik/ui/security_screen.py:357
+#: src/re_sputnik/ui/security_screen.py:365
+msgid "Установить пароль"
+msgstr "تنظیم گذرواژه"
+
+#: src/re_sputnik/ui/security_screen.py:345
+msgid "Меняю пароль root…"
+msgstr "در حال تغییر گذرواژهٔ root…"
+
+#: src/re_sputnik/ui/security_screen.py:361
+msgid " и сохранён в приложении."
+msgstr " و در برنامه ذخیره شد."
+
+#: src/re_sputnik/ui/security_screen.py:362
+msgid "Пароль root изменён"
+msgstr "گذرواژهٔ root تغییر یافت"
+
+#: src/re_sputnik/ui/security_screen.py:366
+#, python-brace-format
+msgid "Не удалось сменить пароль: {0}"
+msgstr "تغییر گذرواژه ممکن نشد: {0}"
+
+#: src/re_sputnik/ui/settings_shell.py:28
+msgid "AntiDPI"
+msgstr "AntiDPI"
+
+#: src/re_sputnik/ui/settings_shell.py:33
+msgid "О программе"
+msgstr "درباره"
+
+#: src/re_sputnik/ui/settings_shell.py:71
+msgid "Настройки"
+msgstr "تنظیمات"
+
+#: src/re_sputnik/ui/settings_shell.py:88
+msgid "← Выход"
+msgstr "← خروج"
+
+#: src/re_sputnik/ui/settings_shell.py:153
+msgid "Раздел в разработке."
+msgstr "این بخش در حال توسعه است."
+
+#: src/re_sputnik/ui/software_screen.py:48
+msgid ""
+"Роутер скачает и установит приложение, ядро и модули ядра. Нужен интернет"
+" на роутере (предыдущий шаг)."
+msgstr ""
+"روتر برنامه، هسته و ماژول‌های هسته را دانلود و نصب می‌کند. روتر به "
+"اینترنت نیاز دارد (مرحلهٔ قبل)."
+
+#: src/re_sputnik/ui/software_screen.py:55
+msgid "Проверяю, что уже установлено…"
+msgstr "در حال بررسی آنچه از قبل نصب شده…"
+
+#: src/re_sputnik/ui/software_screen.py:65
+msgid ""
+"Оба ядра на базе sing-box и отличаются набором протоколов. Несовместимые "
+"серверы приложение исключит автоматически."
+msgstr ""
+"هر دو هسته بر پایهٔ sing-box هستند و در مجموعهٔ پروتکل‌ها تفاوت دارند. "
+"برنامه سرورهای ناسازگار را به‌طور خودکار حذف می‌کند."
+
+#: src/re_sputnik/ui/software_screen.py:80
+msgid "Размер сборки подбирается под устройство автоматически."
+msgstr "اندازهٔ ساخت به‌طور خودکار برای دستگاه شما انتخاب می‌شود."
+
+#: src/re_sputnik/ui/software_screen.py:98
+msgid ""
+"Другой движок обхода DPI: умеет ещё видео (QUIC) и звонки, с которыми "
+"ByeDPI не справляется. Тоже бесплатно и без VPN; нужные модули ядра "
+"ставятся автоматически. Что сработает — зависит от провайдера, можно "
+"включить оба."
+msgstr ""
+"موتور دیگر دور زدن DPI: همچنین ویدئو (QUIC) و تماس‌هایی را که ByeDPI "
+"نمی‌تواند مدیریت کند انجام می‌دهد. این هم رایگان و بدون VPN است؛ "
+"ماژول‌های هستهٔ لازم به‌طور خودکار نصب می‌شوند. اینکه کدام جواب می‌دهد به"
+" اپراتور بستگی دارد، می‌توانید هر دو را فعال کنید."
+
+#: src/re_sputnik/ui/software_screen.py:134
+msgid "Не удалось проверить установленные пакеты — можно установить заново."
+msgstr "بررسی بسته‌های نصب‌شده ممکن نشد — می‌توانید دوباره نصب کنید."
+
+#: src/re_sputnik/ui/software_screen.py:148
+#, python-brace-format
+msgid ""
+"✓ Уже установлено: приложение, {0}, модули ядра{1}. Можно идти дальше — "
+"или переустановить."
+msgstr ""
+"✓ از قبل نصب است: برنامه، {0}، ماژول‌های هسته{1}. می‌توانید ادامه دهید — "
+"یا دوباره نصب کنید."
+
+#: src/re_sputnik/ui/software_screen.py:161
+msgid ". Нажмите «Установить», чтобы доставить недостающее."
+msgstr ". «نصب» را کلیک کنید تا موارد کم تکمیل شود."
+
+#: src/re_sputnik/ui/software_screen.py:164
+msgid "Ничего не установлено — нажмите «Установить»."
+msgstr "چیزی نصب نشده — «نصب» را کلیک کنید."
+
+#: src/re_sputnik/ui/software_screen.py:210
+msgid "Повторить"
+msgstr "تلاش دوباره"
+
+#: src/re_sputnik/ui/verify_screen.py:83 src/re_sputnik/ui/verify_screen.py:116
+msgid "Проверяю подключение…"
+msgstr "در حال بررسی اتصال…"
+
+#: src/re_sputnik/ui/verify_screen.py:101
+msgid "Проверить снова"
+msgstr "بررسی دوباره"
+
+#: src/re_sputnik/ui/verify_screen.py:124
+#, python-brace-format
+msgid "Ошибка проверки: {e}"
+msgstr "خطای بررسی: {e}"
+
+#: src/re_sputnik/ui/verify_screen.py:135
+msgid "✓ Всё работает"
+msgstr "✓ همه چیز کار می‌کند"
+
+#: src/re_sputnik/ui/verify_screen.py:137
+msgid "✗ Нет связи через прокси"
+msgstr "✗ ارتباطی از طریق پروکسی نیست"
+
+#: src/re_sputnik/ui/verify_screen.py:140
+#, python-brace-format
+msgid "⚠ Частично: {ok} из {total} сайтов"
+msgstr "⚠ بخشی: {ok} از {total} سایت"
+
+#: src/re_sputnik/ui/verify_screen.py:145
+msgid "Активный сервер: —  (сервер не выбран или сервис не запущен)"
+msgstr "سرور فعال: — (سروری انتخاب نشده یا سرویس اجرا نمی‌شود)"
+
+#: src/re_sputnik/ui/verify_screen.py:150
+#, python-brace-format
+msgid "Активный сервер: {name} · {type} · {delay}"
+msgstr "سرور فعال: {name} · {type} · {delay}"
+
+#: src/re_sputnik/ui/verify_screen.py:173
+msgid "Причина: конфигурация ядра невалидна"
+msgstr "دلیل: تنظیمات هسته نامعتبر است"
+
+#: src/re_sputnik/ui/verify_screen.py:175
+msgid "Причина: ядро не установлено — вернитесь на шаг «Установка ПО»."
+msgstr "دلیل: هسته نصب نشده — به مرحلهٔ «نصب نرم‌افزار» برگردید."
+
+#: src/re_sputnik/ui/verify_screen.py:177
+msgid ""
+"Причина: сервис не выбрал сервер. Возможно, он не запущен или серверы "
+"недоступны. Нажмите «Проверить снова» через 10–20 секунд."
+msgstr ""
+"دلیل: سرویس سروری انتخاب نکرده است. شاید در حال اجرا نباشد یا سرورها در "
+"دسترس نیستند. پس از ۱۰ تا ۲۰ ثانیه «بررسی دوباره» را کلیک کنید."
+
+#: src/re_sputnik/ui/verify_screen.py:180
+msgid ""
+"Сервер выбран, но трафик не проходит — серверы могут быть мертвы или "
+"заблокированы. Попробуйте другие серверы или ByeDPI."
+msgstr ""
+"سرور انتخاب شده، اما ترافیک عبور نمی‌کند — سرورها ممکن است غیرفعال یا "
+"مسدود باشند. سرورهای دیگر یا ByeDPI را امتحان کنید."
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:38
+msgid "Точка доступа"
+msgstr "نقطهٔ دسترسی"
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:40
+msgid ""
+"Создайте Wi-Fi-сеть роутера, к которой будут подключаться ваши "
+"устройства. Можно пропустить, если используете только провод."
+msgstr ""
+"شبکهٔ Wi-Fi روتر را بسازید که دستگاه‌های شما به آن وصل شوند. اگر فقط از "
+"کابل استفاده می‌کنید می‌توانید این مرحله را رد کنید."
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:58
+msgid "Моя сеть"
+msgstr "شبکهٔ من"
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:60
+msgid "Пароль (не менее 8 символов)"
+msgstr "گذرواژه (حداقل ۸ نویسه)"
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:78
+#: src/re_sputnik/ui/wifi_ap_screen.py:170
+#: src/re_sputnik/ui/wifi_ap_screen.py:200
+msgid "Создать сеть"
+msgstr "ساخت شبکه"
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:122
+msgid ""
+"⚠ На этом устройстве не найден Wi-Fi-чип — точку доступа создать нельзя. "
+"Подключайте устройства по кабелю. Этот шаг можно пропустить."
+msgstr ""
+"⚠ روی این دستگاه تراشهٔ Wi-Fi یافت نشد — نمی‌توان نقطهٔ دسترسی ساخت. "
+"دستگاه‌ها را با کابل وصل کنید. این مرحله را می‌توان رد کرد."
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:132
+#, python-brace-format
+msgid "Текущая сеть: «{0}»"
+msgstr "شبکهٔ فعلی: «{0}»"
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:163
+msgid "Создаю…"
+msgstr "در حال ساخت…"
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:180
+msgid ""
+"Не удалось поднять Wi-Fi — ни один диапазон не запустился. Возможно, "
+"радио занято Wi-Fi-подключением к интернету, или прошивка его блокирует. "
+"Подключите интернет кабелем и попробуйте снова."
+msgstr ""
+"راه‌اندازی Wi-Fi ممکن نشد — هیچ باندی شروع نشد. ممکن است رادیو با اتصال "
+"اینترنت Wi-Fi مشغول باشد یا فرم‌ور آن را مسدود کند. اینترنت را با کابل "
+"وصل کرده و دوباره تلاش کنید."
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:187
+#, python-brace-format
+msgid "Wi-Fi создан и работает (диапазоны {0})."
+msgstr "Wi-Fi ساخته شد و کار می‌کند (باندها {0})."
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:191
+#, python-brace-format
+msgid ""
+"\n"
+"Диапазон {0} включить не удалось: устройства, которым нужен именно он, "
+"эту сеть не увидят — но на остальных диапазонах Wi-Fi работает."
+msgstr ""
+"\n"
+"باند {0} فعال نشد: دستگاه‌هایی که دقیقاً به آن نیاز دارند این شبکه را "
+"نخواهند دید — اما Wi-Fi روی باندهای دیگر کار می‌کند."
+
+#: src/re_sputnik/ui/wifi_ap_screen.py:193
+msgid ""
+" Чаще всего так бывает с 6 ГГц — из-за устаревших настроек разрешённых "
+"частот в прошивке роутера."
+msgstr ""
+" این مورد بیشتر در باند 6 گیگاهرتز رخ می‌دهد — به دلیل تنظیمات قدیمی "
+"فرکانس‌های مجاز در فرم‌ور روتر."
+

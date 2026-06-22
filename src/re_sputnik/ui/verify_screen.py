@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Quick Setup phase 5 — Verify.
 
 Runs the connectivity probes + active-node check and gives a plain verdict:
@@ -18,13 +19,14 @@ from ..router import RouterClient
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import _, N_
 
 OnDone = Callable[[], None]
 
 _SITES = [
     ("youtube", "YouTube"),
     ("google", "Google"),
-    ("yandex", "Яндекс"),
+    ("yandex", N_("Яндекс")),
     ("speedtest", "Speedtest"),
     ("baidu", "Baidu"),
 ]
@@ -72,13 +74,13 @@ class VerifyScreen(ctk.CTkFrame):
         self._on_done = on_done
         self._on_back = on_back
 
-        self._sc = kit.WizardScaffold(self, palette, step=7, label="Проверка", footer=False)
+        self._sc = kit.WizardScaffold(self, palette, step=7, label=_("Проверка"), footer=False)
         self._scroll = self._sc.content
         body = self._scroll
 
-        ctk.CTkLabel(body, text="Проверка", font=fonts.title(), text_color=palette.text).grid(
+        ctk.CTkLabel(body, text=_("Проверка"), font=fonts.title(), text_color=palette.text).grid(
             row=0, column=0, pady=(28, 4), padx=32, sticky="w")
-        self._verdict = ctk.CTkLabel(body, text="Проверяю подключение…", font=fonts.heading(),
+        self._verdict = ctk.CTkLabel(body, text=_("Проверяю подключение…"), font=fonts.heading(),
                                      text_color=palette.text_muted)
         self._verdict.grid(row=1, column=0, padx=32, pady=(0, 12), sticky="w")
 
@@ -96,22 +98,22 @@ class VerifyScreen(ctk.CTkFrame):
         self._sites.grid(row=4, column=0, padx=32, pady=(10, 12), sticky="ew")
         self._sites.grid_columnconfigure(0, weight=1)
 
-        self._retry = ctk.CTkButton(body, text=f"{kit.REFRESH_GLYPH} Проверить снова", font=fonts.body(),
+        self._retry = ctk.CTkButton(body, text=f"{kit.REFRESH_GLYPH} " + _("Проверить снова"), font=fonts.body(),
                                     fg_color=palette.surface, hover_color=palette.surface_hover,
                                     command=self.refresh)
         self._retry.grid(row=5, column=0, padx=32, pady=(0, 6), sticky="w")
-        ctk.CTkButton(body, text="Готово", font=fonts.heading(), height=42, fg_color=palette.accent, text_color=palette.accent_fg,
+        ctk.CTkButton(body, text=_("Готово"), font=fonts.heading(), height=42, fg_color=palette.accent, text_color=palette.accent_fg,
                       hover_color=palette.accent_hover, command=on_done).grid(
             row=6, column=0, padx=32, pady=(6, 6), sticky="ew")
         if on_back is not None:
-            ctk.CTkButton(body, text="← Назад", font=fonts.body(), fg_color="transparent",
+            ctk.CTkButton(body, text=_("← Назад"), font=fonts.body(), fg_color="transparent",
                           hover_color=palette.surface_hover, width=90, command=on_back).grid(
                 row=7, column=0, padx=32, pady=(0, 14), sticky="w")
         self.refresh()
 
     def refresh(self) -> None:
         self._retry.configure(state="disabled")
-        self._verdict.configure(text="Проверяю подключение…", text_color=self.p.text_muted)
+        self._verdict.configure(text=_("Проверяю подключение…"), text_color=self.p.text_muted)
         for w in self._sites.winfo_children():
             w.destroy()
         client = self._client
@@ -119,7 +121,7 @@ class VerifyScreen(ctk.CTkFrame):
 
     def _err(self, e: BaseException) -> None:
         self._retry.configure(state="normal")
-        self._verdict.configure(text=f"Ошибка проверки: {e}", text_color=self.p.fail)
+        self._verdict.configure(text=_("Ошибка проверки: {e}").format(e=e), text_color=self.p.fail)
 
     def _render(self, d: dict[str, Any]) -> None:
         p = self.p
@@ -130,27 +132,30 @@ class VerifyScreen(ctk.CTkFrame):
         ok_count = sum(1 for v in conn.values() if v)
         total = len(conn)
         if ok_count == total:
-            self._verdict.configure(text="✓ Всё работает", text_color=p.ok)
+            self._verdict.configure(text=_("✓ Всё работает"), text_color=p.ok)
         elif ok_count == 0:
-            self._verdict.configure(text="✗ Нет связи через прокси", text_color=p.fail)
+            self._verdict.configure(text=_("✗ Нет связи через прокси"), text_color=p.fail)
         else:
-            self._verdict.configure(text=f"⚠ Частично: {ok_count} из {total} сайтов", text_color=p.warn)
+            self._verdict.configure(
+                text=_("⚠ Частично: {ok} из {total} сайтов").format(ok=ok_count, total=total),
+                text_color=p.warn)
 
         has_node = not ("error" in node or not node.get("node"))
         if not has_node:
-            self._node.configure(text="Активный сервер: —  (сервер не выбран или сервис не запущен)")
+            self._node.configure(text=_("Активный сервер: —  (сервер не выбран или сервис не запущен)"))
         else:
             delay = node.get("delay")
             ds = f"{delay} ms" if delay is not None else "—"
             name = _resolve_node_name(node.get("node"), d.get("nodes", []))
-            self._node.configure(text=f"Активный сервер: {name} · {node.get('type') or '—'} · {ds}")
+            self._node.configure(text=_("Активный сервер: {name} · {type} · {delay}").format(
+                name=name, type=node.get('type') or '—', delay=ds))
 
         self._show_diagnosis(d, ok_count, has_node)
 
         for i, (key, label) in enumerate(_SITES):
             v = conn.get(key)
             dot, color = ("●", p.ok) if v else (("○", p.fail) if v is not None else ("○", p.text_muted))
-            ctk.CTkLabel(self._sites, text=f"{dot}  {label}", font=fonts.body(), text_color=color,
+            ctk.CTkLabel(self._sites, text=f"{dot}  {_(label)}", font=fonts.body(), text_color=color,
                          anchor="w").grid(row=i, column=0, padx=16, pady=4, sticky="w")
 
     def _show_diagnosis(self, d: dict[str, Any], ok_count: int, has_node: bool) -> None:
@@ -165,14 +170,14 @@ class VerifyScreen(ctk.CTkFrame):
         if "error" not in config and config.get("valid") is False:
             out = (config.get("check_output") or "").strip()
             tail = (": " + out[-300:]) if out else "."
-            msg = "Причина: конфигурация ядра невалидна" + tail
+            msg = _("Причина: конфигурация ядра невалидна") + tail
         elif not core.get("hiddify_installed") and not core.get("singbox_installed"):
-            msg = "Причина: ядро не установлено — вернитесь на шаг «Установка ПО»."
+            msg = _("Причина: ядро не установлено — вернитесь на шаг «Установка ПО».")
         elif not has_node:
-            msg = ("Причина: сервис не выбрал сервер. Возможно, он не запущен или серверы "
-                   "недоступны. Нажмите «Проверить снова» через 10–20 секунд.")
+            msg = (_("Причина: сервис не выбрал сервер. Возможно, он не запущен или серверы "
+                   "недоступны. Нажмите «Проверить снова» через 10–20 секунд."))
         else:
-            msg = ("Сервер выбран, но трафик не проходит — серверы могут быть мертвы или "
-                   "заблокированы. Попробуйте другие серверы или ByeDPI.")
+            msg = (_("Сервер выбран, но трафик не проходит — серверы могут быть мертвы или "
+                   "заблокированы. Попробуйте другие серверы или ByeDPI."))
         self._diag.configure(text=msg)
         self._diag.grid()

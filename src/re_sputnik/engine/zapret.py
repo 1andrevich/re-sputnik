@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Zapret (zapret2 / nfqws2) — status, install, strategy config, and testing.
 
 Packet-level DPI bypass that complements ByeDPI: it can also carry QUIC video
@@ -14,6 +15,7 @@ import json
 from typing import Any, Callable, Optional
 
 from ..router import RouterClient
+from ..i18n import _
 
 ENABLED_KEY = "homeproxy.config.zapret_enabled"
 CMD_KEY = "homeproxy.config.zapret_cmd_opts"
@@ -94,7 +96,7 @@ def run_test(client: RouterClient, cmd_opts: str) -> dict:
     try:
         data = json.loads(res.get("output") or "{}")
     except ValueError:
-        return {"error": "Не удалось разобрать результат теста."}
+        return {"error": _("Не удалось разобрать результат теста.")}
     if data.get("error"):
         return {"error": data["error"]}
     return {
@@ -115,22 +117,22 @@ def install(client: RouterClient, progress: Optional[Callable[[str], None]] = No
         if progress:
             progress(m)
 
-    say("Проверяю требования…")
+    say(_("Проверяю требования…"))
     prep: dict[str, Any] = client.ubus_homeproxy("zapret_prepare_install", timeout=60)
     if prep.get("error") or not prep.get("dl_url"):
-        return False, prep.get("error") or "Не удалось подготовить установку (нет ссылки)."
+        return False, prep.get("error") or _("Не удалось подготовить установку (нет ссылки).")
 
-    say("Скачиваю пакет…")
+    say(_("Скачиваю пакет…"))
     if not client.run(f"wget -qO {prep['tmp_path']} '{prep['dl_url']}'", timeout=300).ok:
-        return False, "Не удалось скачать пакет Zapret."
+        return False, _("Не удалось скачать пакет Zapret.")
 
-    say("Устанавливаю…")
+    say(_("Устанавливаю…"))
     inst = client.ubus_homeproxy(
         "zapret_install_pkg",
         {"tmp_path": prep["tmp_path"], "pkg_manager": prep["pkg_manager"]}, timeout=180)
     if not inst.get("result"):
-        return False, inst.get("error") or "Установка Zapret не удалась."
-    return True, "Zapret установлен."
+        return False, inst.get("error") or _("Установка Zapret не удалась.")
+    return True, _("Zapret установлен.")
 
 
 def remove(client: RouterClient) -> bool:

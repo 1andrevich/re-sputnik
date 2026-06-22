@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Quick-Setup phase 2 — install Re:HomeProxy software on a clean router.
 
 Online flow (router already has internet from the previous phase): installs the
@@ -19,6 +20,7 @@ from . import kit
 from .core_screen import CORE_OPTIONS
 from .theme import Palette, fonts
 from .worker import post_to, run_async
+from ..i18n import _, luci_lang
 
 OnDone = Callable[[], None]
 
@@ -37,20 +39,20 @@ class SoftwareScreen(ctk.CTkFrame):
         self._busy = False
         self._finished = False
 
-        self._sc = kit.WizardScaffold(self, palette, step=3, label="Установка ПО", footer=False)
+        self._sc = kit.WizardScaffold(self, palette, step=3, label=_("Установка ПО"), footer=False)
         self._scroll = self._sc.content
         body = self._scroll
 
-        ctk.CTkLabel(body, text="Установка ПО", font=fonts.title(),
+        ctk.CTkLabel(body, text=_("Установка ПО"), font=fonts.title(),
                      text_color=palette.text).grid(row=0, column=0, pady=(28, 2), padx=32, sticky="w")
-        ctk.CTkLabel(body, text="Роутер скачает и установит приложение, ядро и модули ядра. "
-                     "Нужен интернет на роутере (предыдущий шаг).",
+        ctk.CTkLabel(body, text=_("Роутер скачает и установит приложение, ядро и модули ядра. "
+                     "Нужен интернет на роутере (предыдущий шаг)."),
                      font=fonts.body(), text_color=palette.text_muted, wraplength=560,
                      justify="left").grid(row=1, column=0, pady=(0, 8), padx=32, sticky="w")
 
         # Filled in once we've probed the router (see _load_status): tells the user
         # what's already installed so they aren't forced to re-install.
-        self._banner = ctk.CTkLabel(body, text="Проверяю, что уже установлено…",
+        self._banner = ctk.CTkLabel(body, text=_("Проверяю, что уже установлено…"),
                                     font=fonts.small(), text_color=palette.text_muted,
                                     wraplength=560, justify="left", anchor="w")
         self._banner.grid(row=2, column=0, padx=32, pady=(0, 10), sticky="ew")
@@ -58,10 +60,10 @@ class SoftwareScreen(ctk.CTkFrame):
         core_card = ctk.CTkFrame(body, fg_color=palette.surface, corner_radius=12)
         core_card.grid(row=3, column=0, padx=32, sticky="ew")
         core_card.grid_columnconfigure(0, weight=1)
-        kit.SectionHeader(core_card, palette, "core", "Ядро").grid(
+        kit.SectionHeader(core_card, palette, "core", _("Ядро")).grid(
             row=0, column=0, padx=16, pady=(12, 2), sticky="w")
-        ctk.CTkLabel(core_card, text="Оба ядра на базе sing-box и отличаются набором протоколов. "
-                     "Несовместимые серверы приложение исключит автоматически.",
+        ctk.CTkLabel(core_card, text=_("Оба ядра на базе sing-box и отличаются набором протоколов. "
+                     "Несовместимые серверы приложение исключит автоматически."),
                      font=fonts.small(), text_color=palette.text_muted, wraplength=540,
                      justify="left").grid(row=1, column=0, padx=16, pady=(0, 4), sticky="w")
         # Same captions as the «Ядро» page — single source of truth in core_screen.
@@ -71,40 +73,40 @@ class SoftwareScreen(ctk.CTkFrame):
                                font=fonts.body(), fg_color=palette.accent,
                                hover_color=palette.accent_hover).grid(
                 row=r, column=0, padx=16, pady=(6, 0), sticky="w")
-            ctk.CTkLabel(core_card, text=sub, font=fonts.small(), text_color=palette.text_muted,
+            ctk.CTkLabel(core_card, text=_(sub), font=fonts.small(), text_color=palette.text_muted,
                          wraplength=520, justify="left").grid(
                 row=r + 1, column=0, padx=(40, 16), pady=(0, 2), sticky="w")
             r += 2
-        ctk.CTkLabel(core_card, text="Размер сборки подбирается под устройство автоматически.",
+        ctk.CTkLabel(core_card, text=_("Размер сборки подбирается под устройство автоматически."),
                      font=fonts.small(), text_color=palette.text_muted).grid(
             row=r, column=0, padx=16, pady=(4, 12), sticky="w")
 
         bd_card = ctk.CTkFrame(body, fg_color=palette.surface, corner_radius=12)
         bd_card.grid(row=4, column=0, padx=32, pady=(12, 0), sticky="ew")
         bd_card.grid_columnconfigure(0, weight=1)
-        ctk.CTkSwitch(bd_card, text="Также установить ByeDPI", font=fonts.body(),
+        ctk.CTkSwitch(bd_card, text=_("Также установить ByeDPI"), font=fonts.body(),
                       variable=self._byedpi, onvalue="1", offvalue="0",
                       progress_color=palette.accent).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
-        ctk.CTkLabel(bd_card, text="Обход DPI открывает заблокированные сайты без полного VPN: "
+        ctk.CTkLabel(bd_card, text=_("Обход DPI открывает заблокированные сайты без полного VPN: "
                      "маскирует трафик, чтобы фильтры провайдера его не распознавали. Иногда нужно "
-                     "вручную подобрать параметры под вашего провайдера.", font=fonts.small(),
+                     "вручную подобрать параметры под вашего провайдера."), font=fonts.small(),
                      text_color=palette.text_muted, wraplength=520, justify="left", anchor="w").grid(
             row=1, column=0, padx=16, pady=(0, 12), sticky="w")
-        ctk.CTkSwitch(bd_card, text="Также установить Zapret", font=fonts.body(),
+        ctk.CTkSwitch(bd_card, text=_("Также установить Zapret"), font=fonts.body(),
                       variable=self._zapret, onvalue="1", offvalue="0",
                       progress_color=palette.accent).grid(row=2, column=0, padx=16, pady=(0, 2), sticky="w")
-        ctk.CTkLabel(bd_card, text="Другой движок обхода DPI: умеет ещё видео (QUIC) и звонки, "
+        ctk.CTkLabel(bd_card, text=_("Другой движок обхода DPI: умеет ещё видео (QUIC) и звонки, "
                      "с которыми ByeDPI не справляется. Тоже бесплатно и без VPN; нужные модули ядра "
-                     "ставятся автоматически. Что сработает — зависит от провайдера, можно включить оба.",
+                     "ставятся автоматически. Что сработает — зависит от провайдера, можно включить оба."),
                      font=fonts.small(), text_color=palette.text_muted, wraplength=520, justify="left",
                      anchor="w").grid(row=3, column=0, padx=16, pady=(0, 12), sticky="w")
 
-        self._go = ctk.CTkButton(body, text="Установить", font=fonts.heading(), height=42,
+        self._go = ctk.CTkButton(body, text=_("Установить"), font=fonts.heading(), height=42,
                                  fg_color=palette.accent, text_color=palette.accent_fg, hover_color=palette.accent_hover,
                                  command=self._run)
         self._go.grid(row=5, column=0, padx=32, pady=(16, 6), sticky="ew")
 
-        self._next = ctk.CTkButton(body, text="Далее →", font=fonts.heading(), height=42,
+        self._next = ctk.CTkButton(body, text=_("Далее →"), font=fonts.heading(), height=42,
                                    fg_color=palette.ok, hover_color=palette.accent_hover,
                                    command=self._on_done)
         self._next.grid(row=6, column=0, padx=32, pady=(0, 6), sticky="ew")
@@ -117,7 +119,7 @@ class SoftwareScreen(ctk.CTkFrame):
         self._log.grid_remove()  # hidden until an install runs (no empty void)
 
         if on_back is not None:
-            ctk.CTkButton(body, text="← Назад", font=fonts.body(), fg_color="transparent",
+            ctk.CTkButton(body, text=_("← Назад"), font=fonts.body(), fg_color="transparent",
                           hover_color=palette.surface_hover, width=90, command=on_back).grid(
                 row=8, column=0, padx=32, pady=(0, 10), sticky="w")
 
@@ -129,7 +131,7 @@ class SoftwareScreen(ctk.CTkFrame):
         client = self._client
         run_async(self, lambda: install_app.software_status(client), self._render_status,
                   lambda _e: self._banner.configure(
-                      text="Не удалось проверить установленные пакеты — можно установить заново.",
+                      text=_("Не удалось проверить установленные пакеты — можно установить заново."),
                       text_color=self.p.text_muted))
 
     def _render_status(self, st: install_app.SoftwareStatus) -> None:
@@ -143,24 +145,23 @@ class SoftwareScreen(ctk.CTkFrame):
             core_label = "hiddify-core" if st.core == "hiddify" else "sing-box-extended"
             extra = "".join(x for x, on in ((" + ByeDPI", st.byedpi), (" + Zapret", st.zapret)) if on)
             self._banner.configure(
-                text=f"✓ Уже установлено: приложение, {core_label}, модули ядра{extra}. "
-                     "Можно идти дальше — или переустановить.", text_color=self.p.ok)
-            self._go.configure(text="Переустановить")
+                text=_("✓ Уже установлено: приложение, {0}, модули ядра{1}. Можно идти дальше — или переустановить.").format(core_label, extra), text_color=self.p.ok)
+            self._go.configure(text=_("Переустановить"))
             self._next.grid()                  # let the user proceed without reinstalling
         elif st.app or st.core or st.kmods:
             have = []
             if st.app:
-                have.append("приложение")
+                have.append(_("приложение"))
             if st.core:
                 have.append("hiddify-core" if st.core == "hiddify" else "sing-box-extended")
             if st.kmods:
-                have.append("модули ядра")
+                have.append(_("модули ядра"))
             self._banner.configure(
-                text="Частично установлено: " + ", ".join(have) +
-                     ". Нажмите «Установить», чтобы доставить недостающее.",
+                text=_("Частично установлено: ") + ", ".join(have) +
+                     _(". Нажмите «Установить», чтобы доставить недостающее."),
                 text_color=self.p.warn)
         else:
-            self._banner.configure(text="Ничего не установлено — нажмите «Установить».",
+            self._banner.configure(text=_("Ничего не установлено — нажмите «Установить»."),
                                    text_color=self.p.text_muted)
 
     # ----- run ----------------------------------------------------------
@@ -175,7 +176,7 @@ class SoftwareScreen(ctk.CTkFrame):
         if self._busy:
             return
         self._busy = True
-        self._go.configure(state="disabled", text="Устанавливаю…")
+        self._go.configure(state="disabled", text=_("Устанавливаю…"))
         self._log.grid()  # reveal the log panel now that there's output
         self._log.configure(state="normal")
         self._log.delete("1.0", "end")
@@ -190,21 +191,21 @@ class SoftwareScreen(ctk.CTkFrame):
 
         def task() -> install_app.InstallResult:
             return install_app.run(client, core, with_byedpi=with_byedpi,
-                                   with_zapret=with_zapret, progress=progress)
+                                   with_zapret=with_zapret, language=luci_lang(), progress=progress)
 
         run_async(self, task, self._done, self._err)
 
     def _err(self, e: BaseException) -> None:
         self._busy = False
-        self._go.configure(state="normal", text="Установить")
-        self._append(f"Ошибка: {e}")
+        self._go.configure(state="normal", text=_("Установить"))
+        self._append(_("Ошибка: {0}").format(e))
 
     def _done(self, res: install_app.InstallResult) -> None:
         self._busy = False
         if res.ok:
-            self._append("✓ Установлено: " + ", ".join(res.steps))
+            self._append(_("✓ Установлено: ") + ", ".join(res.steps))
             self._go.grid_remove()
             self._next.grid()
         else:
-            self._go.configure(state="normal", text="Повторить")
-            self._append("✗ " + (res.error or "не удалось"))
+            self._go.configure(state="normal", text=_("Повторить"))
+            self._append("✗ " + (res.error or _("не удалось")))

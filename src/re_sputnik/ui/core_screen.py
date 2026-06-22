@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Core settings section — pick the active core + show "Управление ядром" info.
 
 Scope: select which INSTALLED core is active (uci ``preferred_core``) and show
@@ -24,15 +25,16 @@ from ..router import RouterClient, RouterState
 from . import kit
 from .theme import Palette, fonts
 from .worker import post_to, run_async
+from ..i18n import N_, _, luci_lang
 
 # uci preferred_core value -> display label + one-line protocol difference.
 # Shared source of truth for the core captions — also used on the Quick-Setup
 # software step (software_screen) so both screens read identically.
 CORE_OPTIONS = [
     ("hiddify", "hiddify-core",
-     "Если пользуетесь приложением Hiddify — поддержка всех его протоколов. Не поддерживает AmneziaWG."),
+     N_("Если пользуетесь приложением Hiddify — поддержка всех его протоколов. Не поддерживает AmneziaWG.")),
     ("singbox", "sing-box-extended",
-     "Если нужен AmneziaWG и все протоколы sing-box: VLESS, Hysteria2, Mieru, TrustTunnel."),
+     N_("Если нужен AmneziaWG и все протоколы sing-box: VLESS, Hysteria2, Mieru, TrustTunnel.")),
 ]
 
 
@@ -83,12 +85,12 @@ class CoreScreen(ctk.CTkFrame):
 
     def _build_static(self) -> None:
         p = self.p
-        ctk.CTkLabel(self._body, text="Ядро", font=fonts.title(), text_color=p.text,
+        ctk.CTkLabel(self._body, text=_("Ядро"), font=fonts.title(), text_color=p.text,
                      image=kit.icon(kit._ICON_FOR["core"], 26), compound="left").grid(
             row=0, column=0, pady=(4, 12), sticky="w"
         )
         self._status = ctk.CTkLabel(
-            self._body, text="Считываю состояние ядра…", font=fonts.small(),
+            self._body, text=_("Считываю состояние ядра…"), font=fonts.small(),
             text_color=p.text_muted, anchor="w",
         )
         self._status.grid(row=1, column=0, sticky="w", pady=(0, 8))
@@ -109,7 +111,7 @@ class CoreScreen(ctk.CTkFrame):
         self._sel_card.grid(row=3, column=0, sticky="ew", pady=(0, 12))
         self._sel_card.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(
-            self._sel_card, text="Активное ядро", font=fonts.heading(), text_color=p.text
+            self._sel_card, text=_("Активное ядро"), font=fonts.heading(), text_color=p.text
         ).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
         self._radios: dict[str, ctk.CTkRadioButton] = {}
         self._radio_hints: dict[str, ctk.CTkLabel] = {}
@@ -124,7 +126,7 @@ class CoreScreen(ctk.CTkFrame):
             # wraplength bounds the column-0 width so the text wraps instead of
             # forcing the card wider than the viewport (the action button sits in
             # column 1, so unbounded text would push everything off the right edge).
-            hint = ctk.CTkLabel(self._sel_card, text=sub, font=fonts.small(),
+            hint = ctk.CTkLabel(self._sel_card, text=_(sub), font=fonts.small(),
                                 text_color=p.text_muted, wraplength=300, justify="left")
             hint.grid(row=i * 2, column=0, padx=(40, 16), pady=(0, 2), sticky="w")
             # Per-core action: "Установить" (if missing) / "Обновить до последней"
@@ -139,8 +141,8 @@ class CoreScreen(ctk.CTkFrame):
 
         self._warn_lbl = ctk.CTkLabel(
             self._sel_card,
-            text="⚠ Выбор серверов зависит от ядра (матрица совместимости протоколов). "
-            "Смена ядра применяется после перезапуска сервиса.",
+            text=_("⚠ Выбор серверов зависит от ядра (матрица совместимости протоколов). "
+            "Смена ядра применяется после перезапуска сервиса."),
             font=fonts.small(), text_color=p.warn, wraplength=520, justify="left")
         # span both columns: this row has no action button, so it gets full width.
         self._warn_lbl.grid(row=len(CORE_OPTIONS) * 2 + 1, column=0, columnspan=2,
@@ -150,7 +152,7 @@ class CoreScreen(ctk.CTkFrame):
         self._apply_row.grid(row=len(CORE_OPTIONS) * 2 + 2, column=0, columnspan=2,
                              padx=16, pady=(0, 12), sticky="w")
         self._restart_btn = ctk.CTkButton(
-            self._apply_row, text="Применить изменения", font=fonts.body(), width=200,
+            self._apply_row, text=_("Применить изменения"), font=fonts.body(), width=200,
             fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover, command=self._restart, state="disabled",
         )
         self._restart_btn.grid(row=0, column=0)
@@ -161,9 +163,9 @@ class CoreScreen(ctk.CTkFrame):
         self._app_card = ctk.CTkFrame(self._body, fg_color=p.surface, corner_radius=12)
         self._app_card.grid(row=4, column=0, sticky="ew", pady=(0, 12))
         self._app_card.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(self._app_card, text="Приложение Re:HomeProxy", font=fonts.heading(),
+        ctk.CTkLabel(self._app_card, text=_("Приложение Re:HomeProxy"), font=fonts.heading(),
                      text_color=p.text).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
-        self._app_ver = ctk.CTkLabel(self._app_card, text="Проверяю версию приложения…",
+        self._app_ver = ctk.CTkLabel(self._app_card, text=_("Проверяю версию приложения…"),
                                      font=fonts.small(), text_color=p.text_muted, anchor="w",
                                      wraplength=330, justify="left")
         self._app_ver.grid(row=1, column=0, padx=16, pady=(0, 8), sticky="w")
@@ -177,7 +179,7 @@ class CoreScreen(ctk.CTkFrame):
         self._info_card.grid(row=5, column=0, sticky="ew", pady=(0, 12))
         self._info_card.grid_columnconfigure(1, weight=1)
         ctk.CTkLabel(
-            self._info_card, text="Управление ядром", font=fonts.heading(), text_color=p.text
+            self._info_card, text=_("Управление ядром"), font=fonts.heading(), text_color=p.text
         ).grid(row=0, column=0, columnspan=2, padx=16, pady=(12, 6), sticky="w")
         self._info_rows = ctk.CTkFrame(self._info_card, fg_color="transparent")
         self._info_rows.grid(row=1, column=0, columnspan=2, padx=16, pady=(0, 12), sticky="ew")
@@ -188,9 +190,9 @@ class CoreScreen(ctk.CTkFrame):
         self._tools_card = ctk.CTkFrame(self._body, fg_color=p.surface, corner_radius=12)
         self._tools_card.grid(row=6, column=0, sticky="ew", pady=(0, 12))
         self._tools_card.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(self._tools_card, text="Инструменты обхода DPI", font=fonts.heading(),
+        ctk.CTkLabel(self._tools_card, text=_("Инструменты обхода DPI"), font=fonts.heading(),
                      text_color=p.text).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
-        ctk.CTkLabel(self._tools_card, text="Настройка — на странице AntiDPI. Здесь — установка и удаление.",
+        ctk.CTkLabel(self._tools_card, text=_("Настройка — на странице AntiDPI. Здесь — установка и удаление."),
                      font=fonts.small(), text_color=p.text_muted).grid(row=1, column=0, padx=16, sticky="w")
         self._tools_rows = ctk.CTkFrame(self._tools_card, fg_color="transparent")
         self._tools_rows.grid(row=2, column=0, padx=16, pady=(6, 12), sticky="ew")
@@ -246,7 +248,7 @@ class CoreScreen(ctk.CTkFrame):
         run_async(self, task, self._render_info, self._on_error)
 
     def _on_error(self, exc: BaseException) -> None:
-        self._status.configure(text=f"Ошибка чтения ядра: {exc}", text_color=self.p.fail)
+        self._status.configure(text=_("Ошибка чтения ядра: {0}").format(exc), text_color=self.p.fail)
 
     def _render_info(self, info: dict[str, Any]) -> None:
         self._core_info = info
@@ -262,23 +264,23 @@ class CoreScreen(ctk.CTkFrame):
             self._radios[k].configure(state="normal" if present else "disabled")
             # Reset hint to the base text first (so repeated renders don't stack
             # "· не установлен" onto an already-annotated label).
-            self._radio_hints[k].configure(text=sub + ("" if present else "  · не установлен"))
+            self._radio_hints[k].configure(text=_(sub) + ("" if present else _("  · не установлен")))
             if self._busy:
                 continue  # an action is running — leave buttons disabled
             btn = self._core_btns[k]
             if present:
-                btn.configure(text="Обновить до последней", state="normal",
+                btn.configure(text=_("Обновить до последней"), state="normal",
                               fg_color=p.surface_hover, hover_color=p.border, text_color=p.text)
             else:
-                btn.configure(text="Установить", state="normal",
+                btn.configure(text=_("Установить"), state="normal",
                               fg_color=p.accent, hover_color=p.accent_hover, text_color=p.accent_fg)
         # If no explicit preferred_core, preselect the active one (auto precedence: hiddify first).
         if not self._choice.get():
             self._choice.set("hiddify" if installed["hiddify"] else ("singbox" if installed["singbox"] else ""))
         self._initial_choice = self._choice.get()
 
-        running = "запущено 🟢" if info.get("running") else "остановлено 🔴"
-        self._status.configure(text=f"Состояние: {running}", text_color=p.text_muted)
+        running = _("запущено 🟢") if info.get("running") else _("остановлено 🔴")
+        self._status.configure(text=_("Состояние: {0}").format(running), text_color=p.text_muted)
 
         # Config-error explainer: if the core is down because of a bad node, name it.
         failure = info.get("_failure")
@@ -290,11 +292,11 @@ class CoreScreen(ctk.CTkFrame):
             self._fail_card.grid_remove()
 
         rows = [
-            ("Менеджер пакетов", self._state.package_manager.value),
-            ("Архитектура", self._state.arch or "—"),
-            ("Свободно /tmp", f"{self._state.free_tmp_mb} MB" if self._state.free_tmp_mb is not None else "—"),
+            (_("Менеджер пакетов"), self._state.package_manager.value),
+            (_("Архитектура"), self._state.arch or "—"),
+            (_("Свободно /tmp"), f"{self._state.free_tmp_mb} MB" if self._state.free_tmp_mb is not None else "—"),
             ("Свободно overlay", f"{self._state.free_overlay_mb} MB" if self._state.free_overlay_mb is not None else "—"),
-            ("Версия ядра", _clean_version(info.get("version", ""))),
+            (_("Версия ядра"), _clean_version(info.get("version", ""))),
         ]
         for i, (k, v) in enumerate(rows):
             color = p.text
@@ -326,27 +328,27 @@ class CoreScreen(ctk.CTkFrame):
         def done(_r: Any) -> None:
             self._restart_btn.configure(state="normal")
             self._apply_note.configure(
-                text="Ядро выбрано. Нажмите «Применить изменения».", text_color=self.p.warn
+                text=_("Ядро выбрано. Нажмите «Применить изменения»."), text_color=self.p.warn
             )
 
         run_async(self, task, done, self._on_error)
 
     def _restart(self) -> None:
-        self._restart_btn.configure(state="disabled", text="Применяю…")
+        self._restart_btn.configure(state="disabled", text=_("Применяю…"))
         client = self._client
         run_async(self, lambda: client.ubus_homeproxy("diag_service_restart", timeout=40),
                   self._after_restart, self._on_error)
 
     def _after_restart(self, res: dict[str, Any]) -> None:
         ok = bool(res.get("result"))
-        self._restart_btn.configure(text="Применить изменения")
+        self._restart_btn.configure(text=_("Применить изменения"))
         if ok:
             self._initial_choice = self._choice.get()
-            self._apply_note.configure(text="Изменения применены.", text_color=self.p.ok)
+            self._apply_note.configure(text=_("Изменения применены."), text_color=self.p.ok)
             self._load_core_info()
         else:
             self._restart_btn.configure(state="normal")
-            self._apply_note.configure(text="Не удалось применить изменения.", text_color=self.p.fail)
+            self._apply_note.configure(text=_("Не удалось применить изменения."), text_color=self.p.fail)
 
     # ----- install / update actions -------------------------------------
 
@@ -365,18 +367,18 @@ class CoreScreen(ctk.CTkFrame):
         inst, latest = vers
         p = self.p
         if not inst:
-            self._app_ver.configure(text="Приложение не установлено.", text_color=p.warn)
-            self._app_btn.configure(text="Установить", state="normal", fg_color=p.accent,
+            self._app_ver.configure(text=_("Приложение не установлено."), text_color=p.warn)
+            self._app_btn.configure(text=_("Установить"), state="normal", fg_color=p.accent,
                                     hover_color=p.accent_hover, text_color=p.accent_fg)
         elif install_app.is_newer(latest, inst):
-            self._app_ver.configure(text=f"Установлено {inst} · доступно {latest}", text_color=p.warn)
-            self._app_btn.configure(text="Обновить приложение", state="normal", fg_color=p.accent,
+            self._app_ver.configure(text=_("Установлено {0} · доступно {1}").format(inst, latest), text_color=p.warn)
+            self._app_btn.configure(text=_("Обновить приложение"), state="normal", fg_color=p.accent,
                                     hover_color=p.accent_hover, text_color=p.accent_fg)
         else:
-            shown = f"{inst} (последняя версия)" if latest else inst
-            self._app_ver.configure(text=f"Установлено {shown}",
+            shown = _("{0} (последняя версия)").format(inst) if latest else inst
+            self._app_ver.configure(text=_("Установлено {0}").format(shown),
                                     text_color=p.ok if latest else p.text_muted)
-            self._app_btn.configure(text="Переустановить", state="normal",
+            self._app_btn.configure(text=_("Переустановить"), state="normal",
                                     fg_color=p.surface_hover, hover_color=p.border, text_color=p.text)
 
     def _show_log(self) -> None:
@@ -421,13 +423,14 @@ class CoreScreen(ctk.CTkFrame):
             return
         self._lock()
         self._show_log()
-        self._append_log("▶ Обновление приложения…")
+        self._append_log(_("▶ Обновление приложения…"))
         client = self._client
 
         def task() -> tuple[bool, str]:
             ti = preinstall.get_target_info(client)
             return install_app.update_app(
-                client, ti, progress=lambda m: post_to(self, lambda: self._append_log(m)))
+                client, ti, language=luci_lang(),
+                progress=lambda m: post_to(self, lambda: self._append_log(m)))
 
         run_async(self, task, self._op_done, self._op_err)
 
@@ -437,7 +440,7 @@ class CoreScreen(ctk.CTkFrame):
         self._refresh_all()
 
     def _op_err(self, exc: BaseException) -> None:
-        self._append_log(f"✗ Ошибка: {exc}")
+        self._append_log(_("✗ Ошибка: {0}").format(exc))
         self._refresh_all()
 
     def _refresh_all(self) -> None:
@@ -472,26 +475,26 @@ class CoreScreen(ctk.CTkFrame):
             ctk.CTkLabel(self._tools_rows, text=name, font=fonts.body(), text_color=p.text).grid(
                 row=i, column=0, padx=(0, 10), pady=4, sticky="w")
             if installed:
-                stxt = ("🟢 запущен" if running else "🟡 установлен") + (f" · {ver}" if ver else "")
+                stxt = (_("🟢 запущен") if running else _("🟡 установлен")) + (f" · {ver}" if ver else "")
                 scol = p.ok if running else p.warn
             else:
-                stxt, scol = "🔴 не установлен", p.text_muted
+                stxt, scol = _("🔴 не установлен"), p.text_muted
             ctk.CTkLabel(self._tools_rows, text=stxt, font=fonts.small(), text_color=scol,
                          anchor="w").grid(row=i, column=1, pady=4, sticky="w")
             actrow = ctk.CTkFrame(self._tools_rows, fg_color="transparent")
             actrow.grid(row=i, column=2, sticky="e")
             if installed:
-                upd = ctk.CTkButton(actrow, text="Обновить", font=fonts.small(), width=110, height=28,
+                upd = ctk.CTkButton(actrow, text=_("Обновить"), font=fonts.small(), width=110, height=28,
                                     fg_color=p.surface_hover, hover_color=p.border, text_color=p.text,
                                     command=lambda k=key: self._tool_install(k))
                 upd.grid(row=0, column=0, padx=(0, 6))
-                dele = ctk.CTkButton(actrow, text="Удалить", font=fonts.small(), width=90, height=28,
+                dele = ctk.CTkButton(actrow, text=_("Удалить"), font=fonts.small(), width=90, height=28,
                                      fg_color=p.surface_hover, hover_color=p.fail, text_color=p.text_muted,
                                      command=lambda k=key: self._tool_remove(k))
                 dele.grid(row=0, column=1)
                 self._tool_btns += [upd, dele]
             else:
-                ins = ctk.CTkButton(actrow, text="Установить", font=fonts.small(), width=110, height=28,
+                ins = ctk.CTkButton(actrow, text=_("Установить"), font=fonts.small(), width=110, height=28,
                                     fg_color=p.accent, hover_color=p.accent_hover, text_color=p.accent_fg,
                                     command=lambda k=key: self._tool_install(k))
                 ins.grid(row=0, column=0)
@@ -503,7 +506,7 @@ class CoreScreen(ctk.CTkFrame):
         self._lock()
         self._show_log()
         name = "ByeDPI" if key == "byedpi" else "Zapret"
-        self._append_log(f"▶ Установка/обновление: {name}…")
+        self._append_log(_("▶ Установка/обновление: {0}…").format(name))
         client = self._client
         eng = bd if key == "byedpi" else zp
 
@@ -518,12 +521,12 @@ class CoreScreen(ctk.CTkFrame):
         self._lock()
         self._show_log()
         name = "ByeDPI" if key == "byedpi" else "Zapret"
-        self._append_log(f"▶ Удаление: {name}…")
+        self._append_log(_("▶ Удаление: {0}…").format(name))
         client = self._client
         eng = bd if key == "byedpi" else zp
 
         def task() -> tuple[bool, str]:
             ok = eng.remove(client)
-            return (ok, f"{name} удалён." if ok else f"Не удалось удалить {name}.")
+            return (ok, _("{0} удалён.").format(name) if ok else _("Не удалось удалить {0}.").format(name))
 
         run_async(self, task, self._op_done, self._op_err)

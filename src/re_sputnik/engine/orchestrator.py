@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Orchestrator — the deterministic state machine over setup phases.
 
 Quick Setup walks these phases 0->5 in order; Advanced mode lets the UI jump to
@@ -16,6 +17,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Optional
 
 from ..router import RouterClient, RouterState, Readiness
+from ..i18n import _
 
 
 class PhaseStatus(enum.Enum):
@@ -55,12 +57,12 @@ def _needs_nodes(state: RouterState) -> bool:
 # The canonical Quick-Setup phase list (mirrors SETUP_AGENT's flow).
 def default_phases() -> list[Phase]:
     return [
-        Phase("connect", "Подключение"),
-        Phase("firstrun", "Первичная настройка"),
-        Phase("software", "Установка ПО", gate=_needs_software),
+        Phase("connect", _("Подключение")),
+        Phase("firstrun", _("Первичная настройка")),
+        Phase("software", _("Установка ПО"), gate=_needs_software),
         Phase("nodes", "VPN / ByeDPI", gate=_needs_nodes),
         Phase("wifi", "Wi-Fi"),
-        Phase("verify", "Проверка"),
+        Phase("verify", _("Проверка")),
     ]
 
 
@@ -96,11 +98,11 @@ class Orchestrator:
 
     def summary(self) -> str:
         readiness = {
-            Readiness.CLEAN: "чистый роутер — полная настройка",
-            Readiness.PARTIAL: "ПО есть, нужна настройка серверов",
-            Readiness.CONFIGURED: "уже настроен — режим управления",
+            Readiness.CLEAN: _("чистый роутер — полная настройка"),
+            Readiness.PARTIAL: _("ПО есть, нужна настройка серверов"),
+            Readiness.CONFIGURED: _("уже настроен — режим управления"),
         }[self.state.readiness]
-        lines = [f"Состояние: {readiness}"]
+        lines = [_("Состояние: {0}").format(readiness)]
         for p in self.phases:
             mark = {
                 PhaseStatus.PENDING: "○",

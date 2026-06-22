@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """LAN address / DHCP server settings + per-device static leases.
 
 These are the router's core network identity, so changing them is dangerous: a
@@ -20,6 +21,7 @@ import shlex
 from dataclasses import dataclass
 
 from ..router import RouterClient, RouterError
+from ..i18n import _
 
 # How the LAN address is configured changed across OpenWrt releases:
 #   <= 24.10  : separate `network.lan.ipaddr` + `network.lan.netmask` (two fields)
@@ -79,7 +81,7 @@ def parse_cidr(cidr: str) -> "tuple[str, str] | None":
     cidr = cidr.strip()
     if "/" not in cidr:
         return None
-    ip, _, pfx = cidr.partition("/")
+    ip, _sep, pfx = cidr.partition("/")
     if not pfx.isdigit():
         return None
     try:
@@ -114,7 +116,7 @@ def get_lan_settings(client: RouterClient) -> LanSettings:
     # OpenWrt allows CIDR in ipaddr (e.g. "192.168.1.1/24") with no separate
     # netmask — split it so the IP field stays clean and the mask reflects reality.
     if "/" in ip:
-        ip, _, prefix = ip.partition("/")
+        ip, _sep, prefix = ip.partition("/")
         if not mask and prefix.isdigit():
             try:
                 mask = str(ipaddress.ip_network(f"0.0.0.0/{prefix}").netmask)
@@ -176,15 +178,15 @@ def validate_hm(hours: str, minutes: str) -> "str | None":
     """Validate the ЧЧ:ММ lease-time form. Returns an error string or None."""
     h, m = hours.strip(), minutes.strip()
     if not h.isdigit() or not m.isdigit():
-        return "Время аренды: введите ЧЧ:ММ, например 12:00."
+        return _("Время аренды: введите ЧЧ:ММ, например 12:00.")
     hh, mm = int(h), int(m)
     if mm > 59:
-        return "Минуты должны быть от 00 до 59."
+        return _("Минуты должны быть от 00 до 59.")
     total = hh * 60 + mm
     if total < 2:
-        return "Слишком маленькое время аренды — минимум 00:02."
+        return _("Слишком маленькое время аренды — минимум 00:02.")
     if total > _LEASE_MAX_MIN:
-        return "Слишком большое время аренды — максимум 720:00 (30 суток)."
+        return _("Слишком большое время аренды — максимум 720:00 (30 суток).")
     return None
 
 
@@ -194,27 +196,27 @@ def validate_lan_settings(ipaddr: str, netmask: str, dhcp_start: str, dhcp_limit
     try:
         ip = ipaddress.ip_address(ipaddr.strip())
     except ValueError:
-        return "Неверный IP-адрес роутера."
+        return _("Неверный IP-адрес роутера.")
     if ip.version != 4:
-        return "Нужен адрес IPv4."
+        return _("Нужен адрес IPv4.")
     if not ip.is_private:
-        return "Используйте частный адрес (192.168.x.x, 10.x.x.x или 172.16–31.x.x)."
+        return _("Используйте частный адрес (192.168.x.x, 10.x.x.x или 172.16–31.x.x).")
     try:
         net = ipaddress.ip_network(f"{ip}/{netmask.strip()}", strict=False)
     except ValueError:
-        return "Неверная маска подсети."
+        return _("Неверная маска подсети.")
     if net.prefixlen > 30:
-        return "Слишком маленькая подсеть — выберите маску не уже /30."
+        return _("Слишком маленькая подсеть — выберите маску не уже /30.")
     if int(str(ip).split(".")[-1]) in (0, 255):
-        return "Адрес роутера не может быть адресом сети/широковещания."
-    for label, raw in (("Начало диапазона DHCP", dhcp_start), ("Размер диапазона DHCP", dhcp_limit)):
+        return _("Адрес роутера не может быть адресом сети/широковещания.")
+    for label, raw in ((_("Начало диапазона DHCP"), dhcp_start), (_("Размер диапазона DHCP"), dhcp_limit)):
         if not raw.strip().isdigit() or int(raw) <= 0:
             return f"{label}: введите положительное число."
     usable = net.num_addresses - 2  # minus network + broadcast
     if int(dhcp_start) + int(dhcp_limit) - 1 > usable:
-        return "Диапазон DHCP не помещается в подсеть — уменьшите начало или размер."
+        return _("Диапазон DHCP не помещается в подсеть — уменьшите начало или размер.")
     if not _leasetime_ok(leasetime):
-        return "Время аренды: например 30m, 12h, 1d или infinite."
+        return _("Время аренды: например 30m, 12h, 1d или infinite.")
     return None
 
 
@@ -281,7 +283,7 @@ def add_static_lease(client: RouterClient, *, name: str, mac: str, ip: str) -> N
     mac = mac.strip().lower()
     ip = ip.strip()
     if not mac or not ip:
-        raise ValueError("Нужны MAC и IP устройства.")
+        raise ValueError(_("Нужны MAC и IP устройства."))
     try:
         ipaddress.ip_address(ip)
     except ValueError as exc:
@@ -306,7 +308,7 @@ def remove_static_lease(client: RouterClient, mac: str) -> None:
     mac = mac.strip().lower()
     target = next((l for l in list_static_leases(client) if l.mac.strip().lower() == mac), None)
     if target is None:
-        raise RouterError("Закрепление для этого устройства не найдено.")
+        raise RouterError(_("Закрепление для этого устройства не найдено."))
     client.run(
         f"uci -q delete dhcp.@host[{target.index}]; uci commit dhcp; "
         "/etc/init.d/dnsmasq reload >/dev/null 2>&1",

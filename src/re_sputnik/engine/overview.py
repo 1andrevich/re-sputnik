@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Overview / dashboard data — system stats and the Wi-Fi join QR payload.
 
 System figures (hostname, model, uptime, CPU %, RAM %, LAN IP) come from a single
@@ -15,6 +16,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from ..router import RouterClient
+from ..i18n import _
 
 
 @dataclass(slots=True)
@@ -103,7 +105,7 @@ def set_hostname(client: RouterClient, name: str) -> str:
     applied name; raises ValueError on a bad name."""
     name = name.strip()
     if not _HOSTNAME_RE.match(name):
-        raise ValueError("Имя: латинские буквы, цифры и дефис, без пробелов (1–63 символа).")
+        raise ValueError(_("Имя: латинские буквы, цифры и дефис, без пробелов (1–63 символа)."))
     client.run(
         f"uci set system.@system[0].hostname={shlex.quote(name)}; "
         "uci commit system; /etc/init.d/system reload",
@@ -121,11 +123,11 @@ def format_uptime(seconds: int) -> str:
     m = rem // 60
     parts = []
     if d:
-        parts.append(f"{d}д")
+        parts.append(_("{0}д").format(d))
     if h:
-        parts.append(f"{h}ч")
+        parts.append(_("{0}ч").format(h))
     if m or not parts:
-        parts.append(f"{m}м")
+        parts.append(_("{0}м").format(m))
     return " ".join(parts)
 
 

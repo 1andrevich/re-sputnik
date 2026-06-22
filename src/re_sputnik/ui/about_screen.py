@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """О программе / Лицензии — app info + bundled third-party NOTICE.
 
 Shows the app name, version, copyright and a scrollable view of the
@@ -9,55 +10,20 @@ file cannot be located a short inline fallback is shown.
 
 from __future__ import annotations
 
-import os
-import sys
-
 import customtkinter as ctk
 
 from .. import APP_NAME, __version__
+from ..i18n import _
 from .theme import Palette, fonts
 
 _COPYRIGHT = "© 2026 1andrevich"
 
-_FALLBACK = (
-    "Сторонние компоненты:\n"
-    "  • paramiko (LGPL-2.1), customtkinter (MIT), Pillow (HPND), qrcode (BSD)\n"
-    "  • Иконки сервисов — Simple Icons (CC0-1.0); товарные знаки принадлежат "
-    "их владельцам и используются только для обозначения сервисов.\n\n"
-    "Полный текст — в файле NOTICE в каталоге программы."
-)
-
 
 def _load_notice() -> str:
-    """Locate the repo-root NOTICE (or a resources copy) and return its text."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    candidates = []
-    # Frozen app (PyInstaller): bundled data lives under sys._MEIPASS. This is the
-    # robust location on BOTH the Windows onefile and the macOS .app — the
-    # __file__-relative paths below only resolve inside the onefile temp dir, which
-    # is why the .app fell back to the short notice. Check _MEIPASS first.
-    base = getattr(sys, "_MEIPASS", None)
-    if base:
-        candidates += [
-            os.path.join(base, "re_sputnik", "resources", "NOTICE"),
-            os.path.join(base, "re_sputnik", "resources", "NOTICE.txt"),
-            os.path.join(base, "NOTICE"),
-        ]
-    candidates += [
-        # repo root: ui -> re_sputnik -> src -> <root>
-        os.path.join(here, os.pardir, os.pardir, os.pardir, "NOTICE"),
-        # packaged copy alongside resources, if one is ever added
-        os.path.join(here, os.pardir, "resources", "NOTICE"),
-        os.path.join(here, os.pardir, "resources", "NOTICE.txt"),
-    ]
-    for path in candidates:
-        try:
-            if os.path.exists(path):
-                with open(path, "r", encoding="utf-8") as fh:
-                    return fh.read().strip()
-        except OSError:
-            pass
-    return _FALLBACK
+    """Full third-party NOTICE text (shared loader; see ``legal.load_notice``)."""
+    from ..legal import load_notice
+
+    return load_notice()
 
 
 class AboutScreen(ctk.CTkFrame):
@@ -90,10 +56,19 @@ class AboutScreen(ctk.CTkFrame):
             font=fonts.body(), text_color=p.text_muted, justify="left",
         ).grid(row=1, column=1, sticky="nw", pady=(2, 0))
 
+        head = ctk.CTkFrame(self, fg_color="transparent")
+        head.grid(row=1, column=0, padx=32, pady=(8, 6), sticky="ew")
+        head.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(
-            self, text="Лицензии третьих сторон", font=fonts.heading(),
-            text_color=p.text,
-        ).grid(row=1, column=0, padx=32, pady=(8, 6), sticky="w")
+            head, text=_("Лицензии третьих сторон"), font=fonts.heading(), text_color=p.text,
+        ).grid(row=0, column=0, sticky="w")
+        # Opens the full-text browser (NOTICE + every bundled license file) so the
+        # complete texts are readable in-app, not just the attribution summary.
+        ctk.CTkButton(
+            head, text=_("Полные тексты лицензий"), font=fonts.small(), height=32, width=200,
+            fg_color=p.surface, hover_color=p.surface_hover, text_color=p.text,
+            command=self._open_licenses,
+        ).grid(row=0, column=1, sticky="e")
 
         box = ctk.CTkTextbox(
             self, font=fonts.small(), fg_color=p.surface,
@@ -102,3 +77,9 @@ class AboutScreen(ctk.CTkFrame):
         box.grid(row=2, column=0, padx=32, pady=(0, 32), sticky="nsew")
         box.insert("1.0", _load_notice())
         box.configure(state="disabled")
+
+    def _open_licenses(self) -> None:
+        """Open the App's full-text license browser (lives on the top-level window)."""
+        opener = getattr(self.winfo_toplevel(), "show_licenses_browser", None)
+        if callable(opener):
+            opener()

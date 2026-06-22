@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Option 3 — preinstall packages offline.
 
 Use case: stage a router for install elsewhere, where the router itself may have
@@ -15,15 +16,25 @@ from __future__ import annotations
 
 import json
 import re
+import shlex
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
 from ..router import RouterClient
 from ._net import http_get
+from ..i18n import _
 
 OPENWRT_DL = "https://downloads.openwrt.org"
 KMODS = ("kmod-nft-tproxy", "kmod-tun")
 ZAPRET_KMOD = "kmod-nft-queue"   # NFQUEUE — needed only when installing Zapret
+
+# Transitive kmod deps the OFFLINE `apk add` can't fetch (online would pull them):
+# kmod-nft-tproxy needs kmod-nf-tproxy; the sing-box-based cores (both) need
+# kmod-inet-diag; kmod-nft-queue needs kmod-nfnetlink-queue. The base nft/netlink
+# modules THESE rest on are already present on any firewall4 router. Staged
+# installed-aware + tolerant (a dep absent from the feed is assumed kernel-built-in).
+KMOD_DEPS = ("kmod-nf-tproxy", "kmod-inet-diag")
+ZAPRET_KMOD_DEP = "kmod-nfnetlink-queue"
 BYEDPI_REPO = "1andrevich/ByeDPI-OpenWrt"
 ZAPRET_REPO = "1andrevich/zapret2-openwrt"
 
@@ -46,6 +57,17 @@ _CURL_CLOSURE: tuple[_CurlEntry, ...] = (
 # default (mbedtls) is added so libcurl can link.
 _TLS_INSTALLED = r"^(libmbedtls\d+|libopenssl\d+)$"
 _TLS_FALLBACK: _CurlEntry = ("base", r"^libmbedtls\d+[-_]\d", r"^libmbedtls\d+$")
+
+# zapret2's prebuilt package hard-depends on GNU coreutils (sleep/sort) and gzip —
+# busybox does NOT satisfy these as packages, so an OFFLINE preinstall must stage
+# them too or `apk add zapret2` fails with "coreutils-sleep (no such package)" etc.
+# (an online install pulls them from the feed automatically). All are in `packages`.
+_ZAPRET_CLOSURE: tuple[_CurlEntry, ...] = (
+    ("packages", r"^coreutils[-_]\d",       r"^coreutils$"),
+    ("packages", r"^coreutils-sleep[-_]\d", r"^coreutils-sleep$"),
+    ("packages", r"^coreutils-sort[-_]\d",  r"^coreutils-sort$"),
+    ("packages", r"^gzip[-_]\d",            r"^gzip$"),
+)
 
 Progress = Callable[[str], None]
 
@@ -130,24 +152,51 @@ def resolve_core_url(ti: TargetInfo, core: str) -> str:
     raise RuntimeError(f"нет пакета sing-box-extended для {ti.arch}")
 
 
-def resolve_kmod_urls(ti: TargetInfo, names: tuple[str, ...] = KMODS) -> list[Pkg]:
-    """The kmod packages from the (single) kernel dir under the target's kmods/."""
+def _kmod_dir(ti: TargetInfo) -> tuple[str, list[str]]:
+    """(kernel-dir URL, file list) for the target's single kmods/<kver>/ directory."""
     base = f"{OPENWRT_DL}/releases/{ti.version}/targets/{ti.board}/kmods/"
     subdirs = [l for l in _links(_http_get(base).decode()) if l.endswith("/") and l[0].isdigit()]
     if not subdirs:
-        raise RuntimeError("не найден каталог ядра в kmods/")
+        raise RuntimeError(_("не найден каталог ядра в kmods/"))
     kdir = base + subdirs[0]
-    files = _links(_http_get(kdir).decode())
+    return kdir, _links(_http_get(kdir).decode())
+
+
+def _find_kmod(files: list[str], kdir: str, want: str, ext: str) -> Optional[Pkg]:
+    # apk names as `kmod-nft-tproxy-<ver>.apk` (hyphen), opkg as `kmod-..._<ver>.ipk`
+    # (underscore). Require the separator be followed by a version digit so a longer
+    # package name can't be matched by accident.
+    pat = re.compile(rf"^{re.escape(want)}[-_]\d")
+    match = next((f for f in files if pat.match(f) and f.endswith(ext)), None)
+    return Pkg(name=want, url=kdir + match) if match else None
+
+
+def resolve_kmod_urls(ti: TargetInfo, names: tuple[str, ...] = KMODS) -> list[Pkg]:
+    """The kmod packages from the (single) kernel dir under the target's kmods/."""
+    kdir, files = _kmod_dir(ti)
     pkgs: list[Pkg] = []
     for want in names:
-        # apk names as `kmod-nft-tproxy-<ver>.apk` (hyphen), opkg as `kmod-..._<ver>.ipk`
-        # (underscore). Require the separator be followed by a version digit so a
-        # longer package name can't be matched by accident.
-        pat = re.compile(rf"^{re.escape(want)}[-_]\d")
-        match = next((f for f in files if pat.match(f) and f.endswith(ti.ext)), None)
-        if not match:
+        pkg = _find_kmod(files, kdir, want, ti.ext)
+        if pkg is None:
             raise RuntimeError(f"не найден {want} в {kdir}")
-        pkgs.append(Pkg(name=want, url=kdir + match))
+        pkgs.append(pkg)
+    return pkgs
+
+
+def resolve_kmod_deps(client: RouterClient, ti: TargetInfo, names: tuple[str, ...]) -> list[Pkg]:
+    """Transitive kmod deps of the primary kmods/core, minus whatever the router
+    already has — needed only for the OFFLINE preinstall path. Tolerant: a dep
+    that isn't a separate package in the feed is assumed kernel-built-in and skipped
+    (the deeper nft/netlink modules it rests on are already on a firewall4 router)."""
+    installed = installed_packages(client, ti)
+    kdir, files = _kmod_dir(ti)
+    pkgs: list[Pkg] = []
+    for want in names:
+        if want in installed:
+            continue
+        pkg = _find_kmod(files, kdir, want, ti.ext)
+        if pkg is not None:
+            pkgs.append(pkg)
     return pkgs
 
 
@@ -225,6 +274,51 @@ def resolve_curl_pkgs(client: RouterClient, ti: TargetInfo) -> list[Pkg]:
     return pkgs
 
 
+def resolve_luci_i18n_pkgs(client: RouterClient, ti: TargetInfo, language: str) -> list[Pkg]:
+    """LuCI UI language packs from the `luci` feed — staged for the OFFLINE
+    preinstall so the WHOLE web interface (every installed luci-app/mod page, not
+    just Re:HomeProxy) is localized. Online install pulls these via `apk add`
+    (install_app._install_luci_i18n); offline they must be downloaded. The
+    component set is derived from what's actually installed on the router, and a
+    component without an own pack in the feed (luci-mod-* covered by base, opkg on
+    an apk system, …) is simply skipped."""
+    if not language or language == "en":
+        return []
+    from .install_app import luci_i18n_components
+    files = _feed_files(ti, "luci")
+    base = _feed_url(ti, "luci")
+    pkgs: list[Pkg] = []
+    for comp in luci_i18n_components(client):
+        want = f"luci-i18n-{comp}-{language}"
+        pat = re.compile(rf"^{re.escape(want)}[-_]\d")
+        match = next((f for f in files if pat.match(f) and f.endswith(ti.ext)), None)
+        if match:
+            pkgs.append(Pkg(name=want, url=base + match))
+    return pkgs
+
+
+def resolve_zapret_deps(client: RouterClient, ti: TargetInfo) -> list[Pkg]:
+    """zapret2's runtime closure (coreutils + coreutils-sleep/sort + gzip), minus
+    whatever the router already has — needed only for the OFFLINE preinstall path,
+    since the single `apk add` of staged files can't fetch them from the network."""
+    installed = installed_packages(client, ti)
+    cache: dict[str, list[str]] = {}
+    pkgs: list[Pkg] = []
+    for feed, file_re, name_re in _ZAPRET_CLOSURE:
+        if any(re.match(name_re, n) for n in installed):
+            continue  # already on the router
+        files = cache.get(feed) or cache.setdefault(feed, _feed_files(ti, feed))
+        fpat = re.compile(file_re)
+        match = next((f for f in files if fpat.match(f) and f.endswith(ti.ext)), None)
+        if not match:
+            # All four are hard deps of zapret2; a miss means the offline install
+            # would fail later anyway — surface it now with a clear message.
+            raise RuntimeError(f"не найдена зависимость Zapret «{file_re}» в фиде {feed}")
+        pkgs.append(Pkg(name=match[: match.index(ti.ext)].rstrip("._-"),
+                        url=_feed_url(ti, feed) + match))
+    return pkgs
+
+
 # ----- orchestration ----------------------------------------------------
 
 
@@ -237,6 +331,10 @@ def plan_packages(client: RouterClient, ti: TargetInfo, core: str,
     # Zapret's `nft queue` needs the NFQUEUE module; pull it alongside the core kmods.
     kmods = KMODS + ((ZAPRET_KMOD,) if with_zapret else ())
     pkgs += resolve_kmod_urls(ti, kmods)
+    # Their own kmod deps (kmod-nf-tproxy, kmod-inet-diag [+ kmod-nfnetlink-queue])
+    # — the offline `apk add` can't fetch them; stage what the router lacks.
+    dep_kmods = KMOD_DEPS + ((ZAPRET_KMOD_DEP,) if with_zapret else ())
+    pkgs += resolve_kmod_deps(client, ti, dep_kmods)
     if with_app:
         # Lazy import: install_app imports THIS module at top level, so importing
         # it at module load would be circular. By call time both are fully loaded.
@@ -245,12 +343,19 @@ def plan_packages(client: RouterClient, ti: TargetInfo, core: str,
         pkgs.append(Pkg(name=APP_PKG, url=assets.app_url))
         if assets.i18n_url:
             pkgs.append(Pkg(name=f"luci-i18n-homeproxy-{language}", url=assets.i18n_url))
+        # Base LuCI UI language packs (luci-i18n-base/firewall/package-manager-…) so
+        # the WHOLE interface is localized, not just Re:HomeProxy — the offline
+        # `apk add` can't fetch them, so stage them from the `luci` feed.
+        pkgs += resolve_luci_i18n_pkgs(client, ti, language)
     if with_byedpi:
         url, ver = resolve_byedpi_url(ti)
         pkgs.append(Pkg(name=f"byedpi-{ver}", url=url))
     if with_zapret:
         url, ver = resolve_zapret_url(ti)
         pkgs.append(Pkg(name=f"zapret2-{ver}", url=url))
+        # Stage zapret2's coreutils/gzip closure too — the offline `apk add` can't
+        # fetch them from the network (busybox doesn't satisfy these deps).
+        pkgs += resolve_zapret_deps(client, ti)
     # curl is a runtime dep of BOTH testers — resolve its closure once if either is on.
     if with_byedpi or with_zapret:
         pkgs += resolve_curl_pkgs(client, ti)
@@ -275,18 +380,18 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     ti = get_target_info(client)
     if ti.is_snapshot:
         if kmods_installed(client):
-            say("SNAPSHOT: нужные kmod уже установлены — ставлю только ядро.")
+            say(_("SNAPSHOT: нужные kmod уже установлены — ставлю только ядро."))
         else:
-            res.error = ("На устройстве SNAPSHOT — автоматическая установка kmod невозможна "
-                         "(модули привязаны к сборке). Используйте релизную прошивку.")
+            res.error = (_("На устройстве SNAPSHOT — автоматическая установка kmod невозможна "
+                         "(модули привязаны к сборке). Используйте релизную прошивку."))
             return res
     if not ti.arch or not ti.board:
-        res.error = "не удалось определить arch/board роутера"
+        res.error = _("не удалось определить arch/board роутера")
         return res
 
     try:
         say(f"Роутер: {ti.board} · {ti.version} · {ti.arch} ({ti.pkg_manager})")
-        say("Определяю ссылки на пакеты…")
+        say(_("Определяю ссылки на пакеты…"))
         pkgs = plan_packages(client, ti, core, with_byedpi=with_byedpi,
                              with_zapret=with_zapret, with_app=with_app, language=language)
         if ti.is_snapshot:
@@ -308,7 +413,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             return res
 
     if not do_install:
-        say("Файлы переданы (установка пропущена).")
+        say(_("Файлы переданы (установка пропущена)."))
         res.ok = True
         res.installed = [p.name for p in pkgs]
         return res
@@ -316,7 +421,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     # Install from the pushed local files (offline; --allow-untrusted since the
     # PC fetched them over https, the router has no repo keys for these).
     remotes = " ".join(p.remote for p in pkgs)
-    say("Устанавливаю пакеты…")
+    say(_("Устанавливаю пакеты…"))
     if ti.pkg_manager == "apk":
         cmd = f"apk add --no-cache --allow-untrusted {remotes}"
     else:
@@ -331,8 +436,13 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     if with_app:
         # Register luci.homeproxy + its rpcd scripts, exactly as the online
         # installer does, so the staged router is ready for node import offline.
-        say("Перезапускаю rpcd…")
+        say(_("Перезапускаю rpcd…"))
         client.run("/etc/init.d/rpcd restart 2>/dev/null; sleep 2; true")
+        # Pin the LuCI web UI to the chosen language (mirrors the online installer);
+        # the base langpacks were staged above, so the interface is actually localized.
+        if language and language != "en":
+            client.run(f"uci set luci.main.lang={shlex.quote(language)}; "
+                       "uci commit luci 2>/dev/null; true", timeout=15)
     if with_byedpi:
         # Match the on-device installer: ByeDPI must not auto-start after a bare
         # preinstall — it's enabled later from Re:HomeProxy's ByeDPI section.
@@ -343,5 +453,5 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         # package's bundled service must stay stopped/disabled.
         client.run("/etc/init.d/zapret2 stop 2>/dev/null; "
                    "/etc/init.d/zapret2 disable 2>/dev/null; true")
-    say("Готово.")
+    say(_("Готово."))
     return res

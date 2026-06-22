@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Final housekeeping tweaks offered at the end of setup.
 
 Small, optional system settings that aren't homeproxy-specific:
@@ -13,6 +14,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from ..router import RouterClient
+from ..i18n import N_
 
 ASU_CHECK_OPT = "login_check_for_upgrades"
 
@@ -92,14 +94,14 @@ def install_zram(client: RouterClient) -> ZramStatus:
 # (package, title, one-line description) — installed on demand from the feed,
 # each with its ru language pack.
 OPTIONAL_APPS: list[tuple[str, str, str]] = [
-    ("luci-app-upnp", "UPnP / NAT-PMP — автопроброс портов",
-     "Позволяет приставкам, играм, торрент-клиентам и видеозвонкам самим открывать "
-     "нужные порты — без ручной настройки проброса. Удобно, но любое приложение в сети "
-     "сможет открыть порт наружу, поэтому включайте, если это действительно нужно."),
-    ("luci-app-sqm", "SQM — умная очередь (борьба с лагами)",
-     "Не даёт каналу «захлёбываться», когда кто-то качает или раздаёт большой трафик: "
-     "пинг остаётся низким. Заметно улучшает игры и видеозвонки во время загрузок "
-     "(устраняет буфер-блоат)."),
+    ("luci-app-upnp", N_("UPnP / NAT-PMP — автопроброс портов"),
+     N_("Позволяет приставкам, играм, торрент-клиентам и видеозвонкам самим открывать "
+        "нужные порты — без ручной настройки проброса. Удобно, но любое приложение в сети "
+        "сможет открыть порт наружу, поэтому включайте, если это действительно нужно.")),
+    ("luci-app-sqm", N_("SQM — умная очередь (борьба с лагами)"),
+     N_("Не даёт каналу «захлёбываться», когда кто-то качает или раздаёт большой трафик: "
+        "пинг остаётся низким. Заметно улучшает игры и видеозвонки во время загрузок "
+        "(устраняет буфер-блоат).")),
 ]
 
 

@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Service brand icons (Simple Icons, pre-rasterized PNGs bundled in resources).
 
 Icons are loaded lazily and cached as CTkImage. Service brand marks belong to

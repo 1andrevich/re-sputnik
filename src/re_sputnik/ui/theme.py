@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Visual theme: a modern font (Inter) + a restrained palette.
 
 customtkinter is already a "not-Arial" toolkit; we lift it to ~8/10 with a

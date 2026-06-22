@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """RU proxy rules — bind a service/list to the node that should carry it.
 
 In ``proxy_banned_ru`` routing mode the default route is Direct; each added
@@ -14,42 +15,43 @@ from dataclasses import dataclass
 
 from ..router import RouterClient
 from . import nodes as nd
+from ..i18n import _, N_
 
 RULE_TYPE = "proxy_ru_rule"
 
 # Source lists/services offered, mirroring client.js (value -> label).
 SERVICE_SOURCES: list[tuple[str, str]] = [
-    ("refilter", "Re:filter — блок-лист РФ (60000+ доменов + 25000+ IP)"),
-    ("russia-inside", "Russia Inside — must-have РФ (1000+ доменов)"),
-    ("youtube", "YouTube"),
-    ("telegram", "Telegram"),
-    ("discord", "Discord"),
-    ("twitter", "Twitter / X"),
-    ("tiktok", "TikTok"),
-    ("meta", "Meta (Facebook, Instagram)"),
-    ("roblox", "Roblox"),
-    ("anime", "Аниме-стриминг"),
-    ("hdrezka", "HDRezka"),
-    ("news", "Мировые новости"),
-    ("porn", "Контент 18+"),
-    ("google_ai", "Google AI"),
-    ("google_play", "Google Play"),
-    ("geoblock", "GeoBlock-сервисы"),
-    ("cloudflare", "Cloudflare CDN"),
-    ("cloudfront", "CloudFront CDN"),
-    ("ovh", "OVH (Франция)"),
-    ("hetzner", "Hetzner (Германия)"),
-    ("digitalocean", "DigitalOcean"),
-    ("hodca", "HODCA"),
+    ("refilter",      N_("Re:filter — блок-лист РФ (60000+ доменов + 25000+ IP)")),
+    ("russia-inside", N_("Russia Inside — must-have РФ (1000+ доменов)")),
+    ("youtube",       "YouTube"),
+    ("telegram",      "Telegram"),
+    ("discord",       "Discord"),
+    ("twitter",       "Twitter / X"),
+    ("tiktok",        "TikTok"),
+    ("meta",          "Meta (Facebook, Instagram)"),
+    ("roblox",        "Roblox"),
+    ("anime",         N_("Аниме-стриминг")),
+    ("hdrezka",       "HDRezka"),
+    ("news",          N_("Мировые новости")),
+    ("porn",          N_("Контент 18+")),
+    ("google_ai",     "Google AI"),
+    ("google_play",   "Google Play"),
+    ("geoblock",      N_("GeoBlock-сервисы")),
+    ("cloudflare",    "Cloudflare CDN"),
+    ("cloudfront",    "CloudFront CDN"),
+    ("ovh",           N_("OVH (Франция)")),
+    ("hetzner",       N_("Hetzner (Германия)")),
+    ("digitalocean",  "DigitalOcean"),
+    ("hodca",         "HODCA"),
 ]
 _SOURCE_LABELS = dict(SERVICE_SOURCES)
 
 # Special node targets (besides actual proxy nodes).
 NODE_SPECIAL: list[tuple[str, str]] = [
-    ("main-out", "Основной пул серверов"),
-    ("urltest", "Отдельный URLTest (авто)"),
-    ("byedpi-out", "ByeDPI"),
-    ("zapret-out", "Zapret"),
+    ("main-out",    N_("Основной пул серверов")),
+    ("urltest",     N_("Отдельный URLTest (авто)")),
+    ("byedpi-out",  "ByeDPI"),
+    ("zapret-out",  "Zapret"),
 ]
 _SPECIAL_LABELS = dict(NODE_SPECIAL)
 
@@ -62,12 +64,12 @@ class RuRule:
 
 
 def source_label(value: str) -> str:
-    return _SOURCE_LABELS.get(value, value)
+    return _(_SOURCE_LABELS.get(value, value))
 
 
 def node_label(value: str, nodes: list[nd.Node]) -> str:
     if value in _SPECIAL_LABELS:
-        return _SPECIAL_LABELS[value]
+        return _(_SPECIAL_LABELS[value])
     for n in nodes:
         if n.section == value:
             return f"{n.label or n.section} ({n.type})"

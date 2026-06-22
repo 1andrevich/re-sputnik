@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Phase 1 — first-run setup screen (consent UI).
 
 Shows exactly what will change on the router (install SSH key, set root
@@ -22,6 +23,7 @@ from ..router import RouterClient, RouterState
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import _
 
 OnDone = Callable[[RouterClient, RouterState], None]
 OnBack = Callable[[], None]
@@ -53,11 +55,11 @@ class FirstRunScreen(ctk.CTkFrame):
 
     def _build(self) -> None:
         p = self.p
-        self._sc = kit.WizardScaffold(self, p, step=1, label="Безопасность")
+        self._sc = kit.WizardScaffold(self, p, step=1, label=_("Безопасность"))
         body = self._sc.content
 
         ctk.CTkLabel(
-            body, text="Приложение внесёт изменения на роутер. Просмотрите и подтвердите.",
+            body, text=_("Приложение внесёт изменения на роутер. Просмотрите и подтвердите."),
             font=fonts.body(), text_color=p.text_muted, wraplength=620, justify="left",
         ).grid(row=0, column=0, padx=28, pady=(16, 12), sticky="w")
 
@@ -65,16 +67,16 @@ class FirstRunScreen(ctk.CTkFrame):
         keycard = kit.Card(body, p)
         keycard.grid(row=1, column=0, padx=28, pady=(0, 12), sticky="ew")
         keycard.grid_columnconfigure(0, weight=1)
-        kit.SectionHeader(keycard, p, "ssh", "SSH-ключ доступа").grid(
+        kit.SectionHeader(keycard, p, "ssh", _("SSH-ключ доступа")).grid(
             row=0, column=0, padx=16, pady=(14, 2), sticky="w")
         ctk.CTkLabel(
             keycard,
-            text="Ключ приложения позволяет входить без пароля. Сначала ставим ключ и "
-            "проверяем его, и только потом меняем пароль — так доступ не потеряется.",
+            text=_("Ключ приложения позволяет входить без пароля. Сначала ставим ключ и "
+            "проверяем его, и только потом меняем пароль — так доступ не потеряется."),
             font=fonts.small(), text_color=p.text_muted, wraplength=600, justify="left",
         ).grid(row=1, column=0, padx=16, pady=(0, 8), sticky="w")
         kit.check(
-            keycard, p, "Запомнить это устройство — установить постоянный ключ (вход без пароля)",
+            keycard, p, _("Запомнить это устройство — установить постоянный ключ (вход без пароля)"),
             variable=self._remember, onvalue="1", offvalue="0", command=self._on_remember,
         ).grid(row=2, column=0, padx=16, pady=(0, 6), sticky="w")
         self._remember_note = ctk.CTkLabel(
@@ -87,10 +89,10 @@ class FirstRunScreen(ctk.CTkFrame):
             existing = kit.Card(body, p)
             existing.grid(row=2, column=0, padx=28, pady=(0, 12), sticky="ew")
             existing.grid_columnconfigure(0, weight=1)
-            kit.SectionHeader(existing, p, "password", "Пароль root").grid(
+            kit.SectionHeader(existing, p, "password", _("Пароль root")).grid(
                 row=0, column=0, padx=16, pady=(14, 2), sticky="w")
             ctk.CTkLabel(
-                existing, text="Пароль уже задан на роутере — оставляем без изменений.",
+                existing, text=_("Пароль уже задан на роутере — оставляем без изменений."),
                 font=fonts.small(), text_color=p.text_muted, wraplength=600, justify="left",
             ).grid(row=1, column=0, padx=16, pady=(0, 14), sticky="w")
             self._build_status(body, row=3)
@@ -101,10 +103,10 @@ class FirstRunScreen(ctk.CTkFrame):
         pwcard = kit.Card(body, p)
         pwcard.grid(row=2, column=0, padx=28, pady=(0, 12), sticky="ew")
         pwcard.grid_columnconfigure(1, weight=1)
-        kit.SectionHeader(pwcard, p, "password", "Пароль root").grid(
+        kit.SectionHeader(pwcard, p, "password", _("Пароль root")).grid(
             row=0, column=0, columnspan=2, padx=16, pady=(14, 6), sticky="w")
 
-        kit.radio(pwcard, p, "Сгенерировать надёжный (рекомендуется)", value="random",
+        kit.radio(pwcard, p, _("Сгенерировать надёжный (рекомендуется)"), value="random",
                   variable=self._pw_mode, command=self._on_pw_mode).grid(
             row=1, column=0, columnspan=2, padx=16, pady=4, sticky="w")
 
@@ -112,31 +114,31 @@ class FirstRunScreen(ctk.CTkFrame):
         self._pw_entry.grid(row=2, column=0, columnspan=2, padx=(40, 16), pady=4, sticky="ew")
         links = ctk.CTkFrame(pwcard, fg_color="transparent")
         links.grid(row=3, column=0, columnspan=2, padx=(40, 16), pady=(0, 4), sticky="w")
-        self._regen_btn = kit.link_button(links, p, "↻ Сгенерировать заново", self._regen, accent=True)
+        self._regen_btn = kit.link_button(links, p, _("↻ Сгенерировать заново"), self._regen, accent=True)
         self._regen_btn.pack(side="left", padx=(0, 14))
-        self._copy_btn = kit.link_button(links, p, "Копировать", self._copy_pw, accent=True)
+        self._copy_btn = kit.link_button(links, p, _("Копировать"), self._copy_pw, accent=True)
         self._copy_btn.pack(side="left")
 
-        kit.radio(pwcard, p, "Задать свой пароль", value="own",
+        kit.radio(pwcard, p, _("Задать свой пароль"), value="own",
                   variable=self._pw_mode, command=self._on_pw_mode).grid(
             row=4, column=0, columnspan=2, padx=16, pady=(8, 4), sticky="w")
 
         # Dedicated input for a user-supplied password (separate from the generated
         # field above, so it's obvious where to type). Active only in "own" mode.
-        self._own_entry = kit.field(pwcard, p, placeholder="Введите свой пароль (минимум 8 символов)")
+        self._own_entry = kit.field(pwcard, p, placeholder=_("Введите свой пароль (минимум 8 символов)"))
         self._own_entry.grid(row=5, column=0, columnspan=2, padx=(40, 16), pady=4, sticky="ew")
         # Allow only English-layout (ASCII) characters into the password fields;
         # a Cyrillic/other layout is blocked at the keystroke (digits still pass).
         _vcmd = (self.register(app_secrets.is_password_input_char), "%P")
         for _e in (self._pw_entry, self._own_entry):
             _e.configure(validate="key", validatecommand=_vcmd)
-        self._own_show = kit.check(pwcard, p, "Показать пароль", command=self._toggle_own_show)
+        self._own_show = kit.check(pwcard, p, _("Показать пароль"), command=self._toggle_own_show)
         self._own_show.grid(row=6, column=0, columnspan=2, padx=(40, 16), pady=(0, 4), sticky="w")
 
         ctk.CTkLabel(
             pwcard,
-            text="Любой пароль — сгенерированный или ваш — сохраняется в хранилище Windows "
-            "(Credential Manager) и доступен в разделе «Безопасность».",
+            text=_("Любой пароль — сгенерированный или ваш — сохраняется в хранилище Windows "
+            "(Credential Manager) и доступен в разделе «Безопасность»."),
             font=fonts.small(), text_color=p.text_muted, wraplength=600, justify="left",
         ).grid(row=7, column=0, columnspan=2, padx=16, pady=(2, 14), sticky="w")
 
@@ -152,17 +154,17 @@ class FirstRunScreen(ctk.CTkFrame):
         self._status.grid(row=row, column=0, padx=28, pady=(0, 10), sticky="w")
 
     def _setup_footer(self) -> None:
-        self._apply_btn = self._sc.footer.set_primary("Применить", self._apply)
+        self._apply_btn = self._sc.footer.set_primary(_("Применить"), self._apply)
         if self._on_back is not None:
-            self._sc.footer.set_link("← Назад", self._on_back)
+            self._sc.footer.set_link(_("← Назад"), self._on_back)
 
     def _on_remember(self) -> None:
         if self._remember.get() == "1":
             self._remember_note.configure(text="")
         else:
             self._remember_note.configure(
-                text="Без ключа каждое подключение будет запрашивать пароль root "
-                     "(он сохранится в хранилище — посмотреть можно в разделе «Безопасность»).")
+                text=_("Без ключа каждое подключение будет запрашивать пароль root "
+                     "(он сохранится в хранилище — посмотреть можно в разделе «Безопасность»)."))
 
     # ----- password mode ------------------------------------------------
 
@@ -190,7 +192,7 @@ class FirstRunScreen(ctk.CTkFrame):
     def _copy_pw(self) -> None:
         self.clipboard_clear()
         self.clipboard_append(self._pw_entry.get())
-        self._set_status("Пароль скопирован в буфер обмена.", "muted")
+        self._set_status(_("Пароль скопирован в буфер обмена."), "muted")
 
     # ----- apply --------------------------------------------------------
 
@@ -205,8 +207,8 @@ class FirstRunScreen(ctk.CTkFrame):
         install_key = self._remember.get() == "1"
         if not install_key and not self._has_pw_card:
             # Nothing to do: no key, and the password already exists / isn't changed.
-            self._set_status("Ничего менять не нужно — ключ не ставим, пароль уже задан.", "warn")
-            self._apply_btn.configure(text="Далее →", fg_color=self.p.ok,
+            self._set_status(_("Ничего менять не нужно — ключ не ставим, пароль уже задан."), "warn")
+            self._apply_btn.configure(text=_("Далее →"), fg_color=self.p.ok,
                                       hover_color=self.p.accent_hover,
                                       command=lambda: self._on_done(self._client, self._state))
             return
@@ -214,10 +216,10 @@ class FirstRunScreen(ctk.CTkFrame):
             own_mode = self._pw_mode.get() == "own"
             password = (self._own_entry if own_mode else self._pw_entry).get().strip()
             if not password:
-                self._set_status("Введите пароль или выберите генерацию.", "fail")
+                self._set_status(_("Введите пароль или выберите генерацию."), "fail")
                 return
             if len(password) < 8:
-                self._set_status("Пароль слишком короткий (минимум 8 символов).", "fail")
+                self._set_status(_("Пароль слишком короткий (минимум 8 символов)."), "fail")
                 return
             problem = app_secrets.password_problem(password)
             if problem:
@@ -232,8 +234,8 @@ class FirstRunScreen(ctk.CTkFrame):
             plan = FirstRunPlan(install_key=install_key, set_password=False, password="",
                                 store_in_keychain=False)
         self._busy = True
-        self._apply_btn.configure(state="disabled", text="Применяю…")
-        self._set_status("Устанавливаю ключ и пароль…", "muted")
+        self._apply_btn.configure(state="disabled", text=_("Применяю…"))
+        self._set_status(_("Устанавливаю ключ и пароль…"), "muted")
 
         client, state = self._client, self._state
 
@@ -244,24 +246,24 @@ class FirstRunScreen(ctk.CTkFrame):
 
     def _on_error(self, exc: BaseException) -> None:
         self._busy = False
-        self._apply_btn.configure(state="normal", text="Применить")
-        self._set_status(f"Ошибка: {exc}", "fail")
+        self._apply_btn.configure(state="normal", text=_("Применить"))
+        self._set_status(_("Ошибка: {0}").format(exc), "fail")
 
     def _on_result(self, result: FirstRunResult) -> None:
         self._busy = False
-        self._apply_btn.configure(state="normal", text="Применить")
+        self._apply_btn.configure(state="normal", text=_("Применить"))
         if not result.ok:
-            self._set_status(result.error or "Не удалось завершить настройку.", "fail")
+            self._set_status(result.error or _("Не удалось завершить настройку."), "fail")
             return
-        bits = ["ключ установлен"] if result.key_installed else ["без постоянного ключа"]
+        bits = [_("ключ установлен")] if result.key_installed else [_("без постоянного ключа")]
         if result.password_set:
-            bits.append("пароль изменён")
+            bits.append(_("пароль изменён"))
         if result.password_stored:
-            bits.append("сохранён в хранилище")
-        self._set_status("Готово: " + ", ".join(bits) + ".", "ok")
+            bits.append(_("сохранён в хранилище"))
+        self._set_status(_("Готово: ") + ", ".join(bits) + ".", "ok")
         # Switch from the blue "Применить" action to a GREEN "Далее →" — matches the
         # proceed button on the other wizard steps (software/wifi/rules/connect use
         # palette.ok), so a completed step reads as done rather than another action.
-        self._apply_btn.configure(text="Далее →", fg_color=self.p.ok,
+        self._apply_btn.configure(text=_("Далее →"), fg_color=self.p.ok,
                                   hover_color=self.p.accent_hover, state="normal",
                                   command=lambda: self._on_done(self._client, self._state))

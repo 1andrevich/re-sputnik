@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Phase 1 — first-run setup actions, in a deliberately safe order.
 
 Order matters for lock-out safety:
@@ -25,6 +26,7 @@ import paramiko
 from ..router import RouterClient, RouterError, root_has_password
 from .. import secrets as app_secrets
 from . import key_lease
+from ..i18n import _
 
 LogCallback = Callable[[str], None]
 
@@ -75,7 +77,7 @@ def _set_root_password(client: RouterClient, password: str) -> None:
     # Verify it actually took: passwd can exit 0 yet leave the hash unset on some
     # busybox builds. Never report success on a still-empty password.
     if not root_has_password(client):
-        raise RouterError("пароль не сохранился на роутере (passwd не применил его)")
+        raise RouterError(_("пароль не сохранился на роутере (passwd не применил его)"))
 
 
 def apply_firstrun(
@@ -103,7 +105,7 @@ def apply_firstrun(
             return result
 
         try:
-            step("Устанавливаю SSH-ключ приложения…")
+            step(_("Устанавливаю SSH-ключ приложения…"))
             client.install_public_key(identity.public_line)
             result.key_installed = True
         except RouterError as exc:
@@ -111,29 +113,29 @@ def apply_firstrun(
             return result
 
         # Verify key auth from a fresh connection BEFORE changing the password.
-        step("Проверяю вход по ключу…")
+        step(_("Проверяю вход по ключу…"))
         if not _verify_key_auth(client, identity.pkey):
-            result.error = "ключ установлен, но вход по нему не подтвердился — пароль не меняю"
+            result.error = _("ключ установлен, но вход по нему не подтвердился — пароль не меняю")
             return result
         result.key_verified = True
-        step("Вход по ключу работает.")
+        step(_("Вход по ключу работает."))
 
         # Arm the renewable 1-year lease: a router-side cron prunes this key if
         # the app stops connecting (dead-man's-switch). Best-effort — a failure
         # here must not abort setup, so we don't touch result.error.
         key_lease.arm(client, identity.public_line)
     else:
-        step("Постоянный ключ не устанавливается (по выбору). "
-             "Для будущих подключений потребуется пароль.")
+        step(_("Постоянный ключ не устанавливается (по выбору). "
+             "Для будущих подключений потребуется пароль."))
 
     # 3. Root password (safe now: key access is guaranteed).
     #    Never overwrite a password the user already set — skip if one exists.
     if plan.set_password and plan.password:
         if root_has_password(client):
-            step("У роутера уже задан пароль — оставляю без изменений.")
+            step(_("У роутера уже задан пароль — оставляю без изменений."))
         else:
             try:
-                step("Устанавливаю root-пароль…")
+                step(_("Устанавливаю root-пароль…"))
                 _set_root_password(client, plan.password)
                 result.password_set = True
             except RouterError as exc:
@@ -145,12 +147,12 @@ def apply_firstrun(
             try:
                 app_secrets.store_router_password(client.host, plan.password)
                 result.password_stored = True
-                step("Пароль сохранён в хранилище Windows.")
+                step(_("Пароль сохранён в хранилище Windows."))
             except app_secrets.SecretsError as exc:
                 # Non-fatal: password is set on the router, just not persisted.
                 step(f"Пароль установлен, но не сохранён в хранилище: {exc}")
 
-    step("Первичная настройка завершена.")
+    step(_("Первичная настройка завершена."))
     return result
 
 

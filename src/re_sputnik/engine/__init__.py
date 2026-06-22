@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """The engine: deterministic orchestration over executors, behind one gate."""
 
 from .executor import Executor, ExecResult, Requirement, ShellExecutor

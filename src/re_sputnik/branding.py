@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Re:Sputnik brand assets — loader for the shipped logo/icon files.
 
 The artwork is the approved "Sputnik '57" design (the 1957 satellite climbing

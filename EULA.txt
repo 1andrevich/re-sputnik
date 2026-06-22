@@ -1,0 +1,129 @@
+END-USER LICENSE AGREEMENT (EULA) — Re:Sputnik
+================================================
+
+Last updated: 2026-06-22
+
+PLEASE READ THIS AGREEMENT CAREFULLY. By installing, copying, or using
+Re:Sputnik (the "Software"), you agree to be bound by the terms below. If
+you do not agree, do not install or use the Software.
+
+1. LICENSE GRANT
+----------------
+The author ("Licensor") grants you a personal, worldwide, royalty-free,
+non-exclusive, non-transferable license to install and use the Software, free
+of charge, for your own personal or internal business purposes, subject to
+this Agreement.
+
+
+2. RESERVATION OF RIGHTS / RESTRICTIONS
+---------------------------------------
+The Software is licensed, not sold. The Licensor retains all rights, title,
+and interest in the Software, including its source code, which is NOT provided
+under this Agreement. Except to the extent applicable law expressly permits
+despite this limitation, you may not:
+
+  (a) sell, rent, lease, sublicense, or otherwise commercially redistribute
+      the Software for a fee;
+  (b) modify, adapt, or create derivative works of the Software, or
+      reverse-engineer, decompile, or disassemble it;
+  (c) remove or alter any copyright, trademark, or attribution notices,
+      including the accompanying NOTICE file.
+
+Sharing the Software, unmodified and free of charge, for the purpose of
+helping others set up their own equipment is permitted, provided this
+Agreement and the NOTICE file travel with it.
+
+
+3. WHAT THE SOFTWARE DOES — USE AT YOUR OWN RISK
+------------------------------------------------
+The Software connects to network equipment you control (such as a router)
+over Secure Shell Protocol (SSH Protocol) and can CHANGE ITS CONFIGURATION, including installing software,
+changing administrator passwords, altering network addresses, and modifying
+routing and firewall settings. Such changes can interrupt your network
+connectivity, change how you reach your device, or, in adverse conditions,
+require you to recover the device manually (for example, a factory reset).
+
+YOU USE THE SOFTWARE ENTIRELY AT YOUR OWN RISK. You are responsible for
+understanding the changes you authorize, for keeping recovery access to your
+equipment, and for any consequences of operating proxy or network software in
+your jurisdiction.
+
+
+4. THIRD-PARTY COMPONENTS
+-------------------------
+The Software uses third-party open-source components and icons, listed in the
+accompanying NOTICE file, under their own licenses. Those terms apply to those
+components. Brand names and logos are trademarks of their respective owners
+and are used only to identify services.
+
+
+5. DISCLAIMER OF WARRANTY
+-------------------------
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+THE LICENSOR DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE, SECURE,
+OR UNINTERRUPTED, OR THAT IT WILL WORK WITH ANY PARTICULAR DEVICE, FIRMWARE,
+OR NETWORK.
+
+
+6. LIMITATION OF LIABILITY
+--------------------------
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL THE
+LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR
+PUNITIVE DAMAGES, OR FOR ANY LOSS OF DATA, CONNECTIVITY, PROFITS, OR DEVICE
+FUNCTION, ARISING OUT OF OR RELATED TO YOUR USE OF OR INABILITY TO USE THE
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. BECAUSE THE
+SOFTWARE IS PROVIDED FREE OF CHARGE, THE LICENSOR'S TOTAL AGGREGATE LIABILITY
+UNDER THIS AGREEMENT WILL NOT EXCEED ZERO.
+
+Some jurisdictions do not allow certain exclusions; in those, the above
+applies to the greatest extent permitted, and nothing here limits liability
+that cannot be limited by law.
+
+
+7. NO SUPPORT OBLIGATION
+------------------------
+The Software is provided without any obligation of support, maintenance,
+updates, or bug fixes. Any such provision is at the Licensor's sole
+discretion.
+
+
+8. PRIVACY
+----------
+The Software runs locally on your computer. It does not send your data to the Licensor and contains no analytics or telemetry.
+ It communicates only with:
+(a) the network equipment you connect it to;
+(b) any subscription or update URLs you explicitly provide;
+and (c) official package sources (such as the OpenWrt download servers and the project release pages on GitHub)
+from which it downloads software when you initiate installation or pre-staging of packages.
+These sources are operated by third parties and, as with any download,
+see your IP address and the request itself as part of serving the file.
+The Software does not attach any of your personal data to these requests.
+Credentials (such as router passwords and the application's SSH key) 
+are stored in your operating system's secure keychain on your own machine.
+
+
+9. TERMINATION
+--------------
+This license terminates automatically if you breach its terms. On termination
+you must stop using and delete the Software. Sections 2, 5, 6, and 8 survive
+termination.
+
+
+10. GOVERNING LAW
+-----------------
+This Agreement does not designate a specific governing jurisdiction. To the
+extent permitted by applicable law, it is governed by the laws of the
+jurisdiction in which you reside, without regard to conflict-of-law rules.
+Nothing in this Agreement deprives you of the protection of mandatory
+consumer-protection provisions of the law of your place of residence.
+
+
+11. ENTIRE AGREEMENT
+--------------------
+This Agreement, together with the NOTICE file, is the entire agreement between
+you and the Licensor regarding the Software and supersedes any prior
+understanding on its subject matter.
+
+© 2026 1andrevich. All rights reserved.

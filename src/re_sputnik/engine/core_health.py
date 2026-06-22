@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Why won't the core start? — turn a sing-box/hiddify config FATAL into a
 human-readable cause the user can act on.
 
@@ -18,6 +19,7 @@ from typing import Optional
 
 from ..router import RouterClient
 from . import nodes as nodes_engine
+from ..i18n import _, N_
 
 # sing-box logs colour codes (\x1b[31mFATAL…); strip them so displayed text is clean.
 _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
@@ -31,12 +33,12 @@ _CONFIG_PATH = "/var/run/homeproxy/hiddify-c.json"
 # A few common sing-box errors phrased for a non-technical user. Unknown ones fall
 # back to the raw reason (still shown verbatim so nothing is hidden).
 _FRIENDLY = (
-    ("utls is required by reality", "сервер использует Reality, но в ссылке нет uTLS-отпечатка"),
-    ("missing tls", "у сервера не настроен TLS"),
-    ("unknown method", "неподдерживаемый метод шифрования"),
-    ("unknown cipher", "неподдерживаемый шифр"),
-    ("invalid uuid", "неверный UUID в ссылке"),
-    ("parse", "не удалось разобрать параметры сервера"),
+    ("utls is required by reality", N_("сервер использует Reality, но в ссылке нет uTLS-отпечатка")),
+    ("missing tls", N_("у сервера не настроен TLS")),
+    ("unknown method", N_("неподдерживаемый метод шифрования")),
+    ("unknown cipher", N_("неподдерживаемый шифр")),
+    ("invalid uuid", N_("неверный UUID в ссылке")),
+    ("parse", N_("не удалось разобрать параметры сервера")),
 )
 
 
@@ -55,7 +57,7 @@ class CoreFailure:
         low = self.reason.lower()
         for needle, phrase in _FRIENDLY:
             if needle in low:
-                return phrase
+                return _(phrase)
         return self.reason
 
 
@@ -132,20 +134,21 @@ def _label_for(client: RouterClient, section: str) -> Optional[str]:
 def failure_message(f: CoreFailure) -> tuple[str, list[str]]:
     """(headline, steps) — consistent Russian wording for any of the 3 screens."""
     if f.node_name:
-        head = (f"Ядро не запускается из-за сервера «{f.node_name}»: {f.friendly_reason}. "
-                "Это не поломка ядра — оно не может загрузить конфигурацию из-за одного сервера.")
+        head = _("Ядро не запускается из-за сервера «{0}»: {1}. "
+                 "Это не поломка ядра — оно не может загрузить конфигурацию из-за одного сервера.").format(
+            f.node_name, f.friendly_reason)
         steps = [
-            f"Уберите сервер «{f.node_name}» из пула URLTest (или выберите другой основной сервер).",
-            "Перезапустите сервис — ядро запустится с остальными серверами.",
+            _("Уберите сервер «{0}» из пула URLTest (или выберите другой основной сервер).").format(f.node_name),
+            _("Перезапустите сервис — ядро запустится с остальными серверами."),
         ]
     elif f.reason:
-        head = (f"Ядро не запускается из-за ошибки в конфигурации: {f.friendly_reason}. "
-                "Это не поломка ядра.")
+        head = _("Ядро не запускается из-за ошибки в конфигурации: {0}. "
+                 "Это не поломка ядра.").format(f.friendly_reason)
         steps = [
-            "Уберите недавно добавленный / проблемный сервер из пула или выберите другой основной.",
-            "Перезапустите сервис.",
+            _("Уберите недавно добавленный / проблемный сервер из пула или выберите другой основной."),
+            _("Перезапустите сервис."),
         ]
     else:
-        head = "Ядро не запускается из-за ошибки в конфигурации (это не поломка ядра)."
-        steps = ["Проверьте список серверов и выберите другой основной сервер, затем перезапустите."]
+        head = _("Ядро не запускается из-за ошибки в конфигурации (это не поломка ядра).")
+        steps = [_("Проверьте список серверов и выберите другой основной сервер, затем перезапустите.")]
     return head, steps

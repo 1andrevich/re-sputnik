@@ -10,19 +10,34 @@ attribution requirements of the licenses listed below.
 1. Third-Party Software Dependencies
 ------------------------------------
 
-Re:Sputnik depends on the following Python packages. They are not
-modified and are fetched at install time from PyPI; their licenses apply
-to those packages, not to Re:Sputnik's own source.
+Re:Sputnik depends on the following Python packages (installed from PyPI
+when running from source, and bundled unmodified inside the distributed
+binary builds). They are not modified; their licenses apply to those
+packages, not to Re:Sputnik's own source.
 
   paramiko        — LGPL-2.1     — https://github.com/paramiko/paramiko
   customtkinter   — MIT          — https://github.com/TomSchimansky/CustomTkinter
   Pillow          — HPND (PIL)   — https://github.com/python-pillow/Pillow
+  keyring         — MIT          — https://github.com/jaraco/keyring
+  PyYAML          — MIT          — https://github.com/yaml/pyyaml
   qrcode          — BSD-3-Clause — https://github.com/lincolnloop/python-qrcode
+  certifi         — MPL-2.0      — https://github.com/certifi/python-certifi
+  SecretStorage   — BSD-3-Clause — https://github.com/mitya57/secretstorage  (Linux only)
+  jeepney         — MIT          — https://gitlab.com/takluyver/jeepney        (Linux only)
 
 paramiko is licensed under the GNU Lesser General Public License v2.1.
 LGPL components are used as dynamically-available libraries; users may
 replace them with compatible versions. A copy of the LGPL-2.1 text is
 available at https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+certifi (the CA-certificate bundle) is licensed under the Mozilla Public
+License 2.0. Its source is available unmodified at the URL above; a copy of
+the MPL-2.0 text is at https://www.mozilla.org/MPL/2.0/. The MIT, BSD, and
+HPND components above permit redistribution in binary form provided their
+copyright and permission notices are retained, which this file does.
+
+Full license texts for the redistributed components are included in the
+THIRD_PARTY_LICENSES/ directory of the distribution.
 
 
 2. Icons and Brand Logos
@@ -30,6 +45,17 @@ available at https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 
 Re:Sputnik's routing screens display small icons to help the user
 identify the service, network, or list that a routing rule applies to.
+
+The application's user-interface line icons are sourced from Lucide
+(https://lucide.dev, ISC License — some icons derived from Feather, MIT)
+and Phosphor Icons (https://phosphoricons.com, MIT License). The SVGs are
+rasterized to PNG at build time and are otherwise unmodified. Copies of the
+ISC and MIT license texts are included in the THIRD_PARTY_LICENSES/ directory
+(Lucide-ISC.txt, Phosphor-MIT.txt); the required copyright and permission
+notices are reproduced there.
+
+  Lucide          — ISC (+ Feather MIT) — https://github.com/lucide-icons/lucide
+  Phosphor Icons  — MIT                 — https://github.com/phosphor-icons/core
 
 Most brand icons are sourced from Simple Icons (https://simpleicons.org),
 whose icon artwork is released under the Creative Commons Zero v1.0
@@ -122,8 +148,8 @@ projects:
     (https://github.com/hufrea/byedpi). OpenWrt packages by 1andrevich
     (https://github.com/1andrevich/ByeDPI-OpenWrt).
 
-  - zapret / nfqws2 / blockcheck2 — packet-level DPI bypass by bol-van
-    (https://github.com/bol-van/zapret). OpenWrt packages by 1andrevich
+  - zapret2 / nfqws2 / blockcheck2 — packet-level DPI bypass by bol-van
+    (https://github.com/bol-van/zapret2). OpenWrt packages by 1andrevich
     (https://github.com/1andrevich/zapret2-openwrt). Some bundled strategy
     presets were adapted from flowseal/zapret-discord-youtube
     (https://github.com/flowseal/zapret-discord-youtube), MIT-licensed.

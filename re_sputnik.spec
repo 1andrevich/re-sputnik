@@ -62,13 +62,25 @@ datas += ce_datas
 binaries += ce_binaries
 hiddenimports += ce_hidden
 
-# App data: the whole resources/ + assets/ trees, plus the NOTICE the About
-# screen reads (bundled into resources so its lookup finds it in the freeze).
+# App data: the whole resources/ + assets/ trees, plus the legal files the About
+# screen / EULA prompt read (bundled into resources so their lookup finds them in
+# the freeze). EULA.txt and the THIRD_PARTY_LICENSES texts must ship with the
+# closed-source binary so users can read the terms and dependency licenses offline.
 datas += [
     (os.path.join(SRC, "resources"), "re_sputnik/resources"),
     (os.path.join(SRC, "assets"), "re_sputnik/assets"),
     (os.path.join(PROJ, "NOTICE"), "re_sputnik/resources"),
+    (os.path.join(PROJ, "EULA.txt"), "re_sputnik/resources"),
+    (os.path.join(PROJ, "EULA.ru.txt"), "re_sputnik/resources"),
+    (os.path.join(PROJ, "THIRD_PARTY_LICENSES"), "re_sputnik/resources/THIRD_PARTY_LICENSES"),
 ]
+
+# Compiled gettext catalogs (.mo) for the UI languages. i18n._locale_dir() looks
+# under _MEIPASS/re_sputnik/locale in the freeze, so mirror that layout. Only the
+# .mo files are needed at runtime; the .po sources can stay out of the bundle.
+_locale = os.path.join(SRC, "locale")
+if os.path.isdir(_locale):
+    datas += [(_locale, "re_sputnik/locale")]
 
 # Window/app icon: .icns for the macOS bundle, .ico for the Windows exe. Either
 # may be absent (CI generates the .icns) → fall back to None so the build still
@@ -124,6 +136,6 @@ if IS_MAC:
             "CFBundleVersion": "0.1.0",
             "NSHighResolutionCapable": True,
             "LSMinimumSystemVersion": "11.0",
-            "NSHumanReadableCopyright": "© 1andrevich. GPL-2.0-only.",
+            "NSHumanReadableCopyright": "© 2026 1andrevich. All rights reserved.",
         },
     )

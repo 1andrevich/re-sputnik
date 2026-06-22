@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Overview / dashboard — the default page of advanced mode, mirroring LuCI's main
 status view: system header (host/uptime/IP), CPU & RAM, the active URLTest node
 with latency colouring, an editable Main-Node / URLTest pool, DNS test results,
@@ -27,6 +28,7 @@ from . import icons
 from . import kit
 from .theme import Palette, fonts
 from .worker import post_to, run_async
+from ..i18n import N_, _
 
 # Latency colour thresholds — identical scheme to the diagnostics screen and the
 # LuCI status/client/diagnostics views (see reference_urltest_timeout_sentinel):
@@ -34,16 +36,16 @@ from .worker import post_to, run_async
 _SLOW_MS = 3000
 _NODE_TIMEOUT_MS = 65535
 
-_URLTEST_LABEL = "Автоматическая смена — по доступности и задержке (мс)"
+_URLTEST_LABEL = N_("Автоматическая смена — по доступности и задержке (мс)")
 _MAX_DEVICES = 40
 # uplink proto (uci) → human label for the internet-connection card.
 _PROTO_LABELS = {
     "dhcp": "DHCP", "dhcpv6": "DHCPv6", "pppoe": "PPPoE",
-    "static": "Статический IP", "wwan": "Wi-Fi",
+    "static": N_("Статический IP"), "wwan": "Wi-Fi",
 }
 _AUTO_MS = 2000  # auto-refresh cadence for the live cards (Система / Активный сервер)
 
-_DNS_HELP = (
+_DNS_HELP = N_(
     "DNS — это «справочник» интернета: превращает имена сайтов (mail.ru, youtube.com) "
     "в IP-адреса, по которым устройство к ним подключается.\n"
     "• «Россия» — DNS для российских сайтов: они открываются напрямую, быстро и без прокси.\n"
@@ -95,7 +97,7 @@ class OverviewScreen(ctk.CTkFrame):
         bar = ctk.CTkFrame(self, fg_color="transparent")
         bar.grid(row=0, column=0, padx=24, pady=(20, 4), sticky="ew")
         bar.grid_columnconfigure(0, weight=1)
-        self._host_lbl = ctk.CTkLabel(bar, text="Обзор", font=fonts.title(), text_color=p.text,
+        self._host_lbl = ctk.CTkLabel(bar, text=_("Обзор"), font=fonts.title(), text_color=p.text,
                                       image=kit.icon(kit._ICON_FOR["overview"], 26), compound="left",
                                       anchor="w")
         self._host_lbl.grid(row=0, column=0, sticky="w")
@@ -105,7 +107,7 @@ class OverviewScreen(ctk.CTkFrame):
         self._auto_box.grid(row=0, column=1, padx=(8, 0))
         self._auto_dot = ctk.CTkLabel(self._auto_box, text="●", font=fonts.body(), text_color=p.ok)
         self._auto_dot.grid(row=0, column=0, padx=(10, 6), pady=6)
-        self._auto_txt = ctk.CTkLabel(self._auto_box, text="Авто-обновление страницы",
+        self._auto_txt = ctk.CTkLabel(self._auto_box, text=_("Авто-обновление страницы"),
                                       font=fonts.small(), text_color=p.text)
         self._auto_txt.grid(row=0, column=1, padx=(0, 12), pady=6)
         for w in (self._auto_box, self._auto_dot, self._auto_txt):
@@ -123,7 +125,7 @@ class OverviewScreen(ctk.CTkFrame):
         if self._inflight:
             return
         self._inflight = True
-        self._sub_lbl.configure(text="Собираю данные…", text_color=self.p.text_muted)
+        self._sub_lbl.configure(text=_("Собираю данные…"), text_color=self.p.text_muted)
         client = self._client
         run_async(self, lambda: self._gather(client), self._render_full, self._on_error)
 
@@ -175,7 +177,7 @@ class OverviewScreen(ctk.CTkFrame):
 
     def _on_error(self, exc: BaseException) -> None:
         self._inflight = False
-        self._sub_lbl.configure(text=f"Ошибка: {exc}", text_color=self.p.fail)
+        self._sub_lbl.configure(text=_("Ошибка: {0}").format(exc), text_color=self.p.fail)
         self._schedule_auto()
 
     # ----- auto-refresh (live cards only) ------------------------------
@@ -285,12 +287,12 @@ class OverviewScreen(ctk.CTkFrame):
 
     def _update_header(self, sys_info: "ov_engine.SystemInfo") -> None:
         p = self.p
-        self._host_lbl.configure(text=sys_info.hostname or "Обзор")
+        self._host_lbl.configure(text=sys_info.hostname or _("Обзор"))
         sub = []
         if sys_info.model:
             sub.append(sys_info.model)
-        sub.append(f"аптайм {ov_engine.format_uptime(sys_info.uptime_s)}")
-        sub.append(f"IP роутера {sys_info.lan_ip}")
+        sub.append(_("аптайм {0}").format(ov_engine.format_uptime(sys_info.uptime_s)))
+        sub.append(_("IP роутера {0}").format(sys_info.lan_ip))
         self._sub_lbl.configure(text="  ·  ".join(sub), text_color=p.text_muted)
 
     def _card(self, title: str, row: int, parent: Optional[ctk.CTkBaseClass] = None) -> ctk.CTkFrame:
@@ -309,17 +311,17 @@ class OverviewScreen(ctk.CTkFrame):
         # so invert it for both the number and the bar length.
         free_pct = max(0, 100 - s.mem_pct)
         free_mb = max(0, s.mem_total_mb - s.mem_used_mb)
-        mem_detail = (f"{free_pct}%  ·  свободно {free_mb} из {s.mem_total_mb} МБ"
+        mem_detail = (_("{0}%  ·  свободно {1} из {2} МБ").format(free_pct, free_mb, s.mem_total_mb)
                       if s.mem_total_mb else f"{free_pct}%")
         if not self._sys_built:
-            card = self._card("Система", 0, parent=self._sys_host)
+            card = self._card(_("Система"), 0, parent=self._sys_host)
             inner = ctk.CTkFrame(card, fg_color="transparent")
             inner.grid(row=1, column=0, padx=16, pady=(0, 12), sticky="ew")
             inner.grid_columnconfigure(0, weight=1)
             self._cpu_detail, self._cpu_bar = self._meter(
-                inner, 0, "Загрузка процессора", s.cpu_pct, f"{s.cpu_pct}%")
+                inner, 0, _("Загрузка процессора"), s.cpu_pct, f"{s.cpu_pct}%")
             self._mem_detail, self._mem_bar = self._meter(
-                inner, 1, "Свободно ОЗУ", free_pct, mem_detail, invert_color=True)
+                inner, 1, _("Свободно ОЗУ"), free_pct, mem_detail, invert_color=True)
             self._sys_built = True
         else:  # update existing widgets in place — no flicker
             self._update_meter(self._cpu_detail, self._cpu_bar, s.cpu_pct, f"{s.cpu_pct}%")
@@ -363,31 +365,31 @@ class OverviewScreen(ctk.CTkFrame):
         p = self.p
         info = d.get("uplink")
         if info is None or not getattr(info, "present", False):
-            main = "Не удалось определить интерфейс выхода в интернет."
+            main = _("Не удалось определить интерфейс выхода в интернет.")
             detail, dot = "", p.warn
         else:
             if info.kind == "wifi":
-                parts = [f"Wi-Fi «{info.wifi_ssid}»" if info.wifi_ssid else "Wi-Fi (клиент)"]
+                parts = [f"Wi-Fi «{info.wifi_ssid}»" if info.wifi_ssid else _("Wi-Fi (клиент)")]
                 if info.wifi_band:
-                    parts.append(info.wifi_band.replace(".", ",") + " ГГц")
+                    parts.append(info.wifi_band.replace(".", ",") + _(" ГГц"))
                 if info.wifi_rate_mbps:
-                    parts.append(f"{info.wifi_rate_mbps} Мбит/с")
+                    parts.append(_("{0} Мбит/с").format(info.wifi_rate_mbps))
             else:
-                parts = ["Кабель"]
+                parts = [_("Кабель")]
                 sp = net_engine.link_speed_label(info.link_speed_mbps)
                 if sp:
                     parts.append(sp)
-            parts.append(_PROTO_LABELS.get(info.proto, (info.proto or "").upper() or "—"))
+            parts.append(_(_PROTO_LABELS.get(info.proto, (info.proto or "").upper() or "—")))
             if info.ip:
                 parts.append(info.ip)
             main = "   ·   ".join(parts)
             if info.internet:
-                detail, dot = "Есть подключение к интернету", p.ok
+                detail, dot = _("Есть подключение к интернету"), p.ok
             else:
-                detail, dot = "Нет подключения к интернету", p.fail
+                detail, dot = _("Нет подключения к интернету"), p.fail
 
         if not self._uplink_built:
-            card = self._card("Подключение к интернету", 0, parent=self._uplink_host)
+            card = self._card(_("Подключение к интернету"), 0, parent=self._uplink_host)
             # WAN info is loaded once (not auto-polled) — a small button refreshes
             # just this card on demand.
             self._up_refresh_btn = ctk.CTkButton(
@@ -411,7 +413,7 @@ class OverviewScreen(ctk.CTkFrame):
         if not self.winfo_exists() or not self._uplink_built:
             return
         self._up_refresh_btn.configure(state="disabled")
-        self._up_detail.configure(text="Обновляю…", text_color=self.p.text_muted)
+        self._up_detail.configure(text=_("Обновляю…"), text_color=self.p.text_muted)
         client = self._client
 
         def done(info: Any) -> None:
@@ -421,7 +423,7 @@ class OverviewScreen(ctk.CTkFrame):
 
         def err(e: BaseException) -> None:
             if self.winfo_exists():
-                self._up_detail.configure(text=f"Ошибка: {e}", text_color=self.p.fail)
+                self._up_detail.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail)
                 self._up_refresh_btn.configure(state="normal")
 
         run_async(self, lambda: net_engine.uplink_info(client), done, err)
@@ -432,9 +434,9 @@ class OverviewScreen(ctk.CTkFrame):
         """(text, colour) for a latency, same epistemics as everywhere else."""
         p = self.p
         if delay == _NODE_TIMEOUT_MS:
-            return f"{delay} ms (таймаут)", p.fail
+            return _("{0} ms (таймаут)").format(delay), p.fail
         if not delay:
-            return "нет данных", p.text_muted
+            return _("нет данных"), p.text_muted
         if delay >= _SLOW_MS:
             return f"{delay} ms", p.warn
         return f"{delay} ms", p.ok
@@ -465,14 +467,14 @@ class OverviewScreen(ctk.CTkFrame):
         if not isinstance(node, dict) or "error" in node or not node.get("node"):
             core_running = isinstance(core, dict) and bool(core.get("running"))
             if core_running:
-                main_text = "Сервис ещё запускается — активный сервер появится через несколько секунд."
+                main_text = _("Сервис ещё запускается — активный сервер появится через несколько секунд.")
                 main_dot = p.text_muted
             else:
-                main_text = "Прокси-сервис не запущен — активного сервера пока нет."
+                main_text = _("Прокси-сервис не запущен — активного сервера пока нет.")
                 main_dot = p.warn
         else:
             delay_s, main_dot = self._delay_display(node.get("delay"))
-            grp = (f"   ·   группа: {node.get('group')} ({node.get('group_type')})"
+            grp = (_("   ·   группа: {0} ({1})").format(node.get('group'), node.get('group_type'))
                    if node.get("group") else "")
             name = self._resolve_node_name(node.get("node"), d.get("nodes", []))
             main_text = f"{name}   ·   {node.get('type') or '—'}   ·   {delay_s}{grp}"
@@ -480,7 +482,7 @@ class OverviewScreen(ctk.CTkFrame):
         core_txt, core_color, bd_txt, bd_color, zp_txt, zp_color = self._core_status(core)
 
         if not self._active_built:
-            card = self._card("Активный сервер", 0, parent=self._active_host)
+            card = self._card(_("Активный сервер"), 0, parent=self._active_host)
             inner = ctk.CTkFrame(card, fg_color="transparent")
             inner.grid(row=1, column=0, padx=16, pady=(0, 12), sticky="w")
             self._act_dot, self._act_txt = self._status_row(inner, 0, big=True)
@@ -553,25 +555,25 @@ class OverviewScreen(ctk.CTkFrame):
         ver = self._clean_version(core.get("version") or "")
         if not name:
             # No core installed at all — say so plainly instead of "Ядро: ядро · остановлено".
-            core_txt = "Ядро: не установлено"
+            core_txt = _("Ядро: не установлено")
         else:
-            core_txt = f"Ядро: {name}" + (f" {ver}" if ver else "")
-            core_txt += "   ·   запущено" if running else "   ·   остановлено"
+            core_txt = _("Ядро: {0}").format(name) + (f" {ver}" if ver else "")
+            core_txt += _("   ·   запущено") if running else _("   ·   остановлено")
         core_color = p.ok if running else p.fail
         # ByeDPI runs independently of the core; show it whatever its state.
         if not core.get("byedpi_installed"):
-            bd_txt, bd_color = "ByeDPI: не установлен", p.text_muted
+            bd_txt, bd_color = _("ByeDPI: не установлен"), p.text_muted
         elif core.get("byedpi_running"):
-            bd_txt, bd_color = "ByeDPI: запущен", p.ok
+            bd_txt, bd_color = _("ByeDPI: запущен"), p.ok
         else:
-            bd_txt, bd_color = "ByeDPI: установлен, остановлен", p.warn
+            bd_txt, bd_color = _("ByeDPI: установлен, остановлен"), p.warn
         # Zapret (nfqws2) runs independently of the core too — show it like ByeDPI.
         if not core.get("zapret_installed"):
-            zp_txt, zp_color = "Zapret: не установлен", p.text_muted
+            zp_txt, zp_color = _("Zapret: не установлен"), p.text_muted
         elif core.get("zapret_running"):
-            zp_txt, zp_color = "Zapret: запущен", p.ok
+            zp_txt, zp_color = _("Zapret: запущен"), p.ok
         else:
-            zp_txt, zp_color = "Zapret: установлен, остановлен", p.warn
+            zp_txt, zp_color = _("Zapret: установлен, остановлен"), p.warn
         return core_txt, core_color, bd_txt, bd_color, zp_txt, zp_color
 
     # ----- main node / URLTest pool (interactive) -----------------------
@@ -581,11 +583,11 @@ class OverviewScreen(ctk.CTkFrame):
         nodes: list[nodes_engine.Node] = d.get("nodes", [])
         main = d.get("main", "")
         pool = set(d.get("pool", []))
-        card = self._card("Пул серверов", row)
+        card = self._card(_("Пул серверов"), row)
 
         # section <-> label maps; URLTest is a synthetic choice.
-        self._label_to_section = {_URLTEST_LABEL: "urltest"}
-        values = [_URLTEST_LABEL]
+        self._label_to_section = {_(_URLTEST_LABEL): "urltest"}
+        values = [_(_URLTEST_LABEL)]
         for n in nodes:
             lbl = f"{n.label or n.section} ({n.type})"
             # de-dup labels defensively
@@ -594,12 +596,12 @@ class OverviewScreen(ctk.CTkFrame):
             self._label_to_section[lbl] = n.section
             values.append(lbl)
         cur_label = next((lbl for lbl, sec in self._label_to_section.items()
-                          if sec == main), _URLTEST_LABEL if main == "urltest" else values[0])
+                          if sec == main), _(_URLTEST_LABEL) if main == "urltest" else values[0])
 
         sel = ctk.CTkFrame(card, fg_color="transparent")
         sel.grid(row=1, column=0, padx=16, pady=(0, 6), sticky="ew")
         sel.grid_columnconfigure(1, weight=1)
-        ctk.CTkLabel(sel, text="Сервер", font=fonts.body(), text_color=p.text_muted).grid(
+        ctk.CTkLabel(sel, text=_("Сервер"), font=fonts.body(), text_color=p.text_muted).grid(
             row=0, column=0, padx=(0, 10), sticky="w")
         self._main_menu = ctk.CTkOptionMenu(sel, values=values, font=fonts.body(),
                                             fg_color=p.surface_hover, button_color=p.accent,
@@ -617,7 +619,7 @@ class OverviewScreen(ctk.CTkFrame):
         self._pool_frame = ctk.CTkFrame(card, fg_color="transparent")
         self._pool_frame.grid(row=2, column=0, padx=16, pady=(2, 6), sticky="ew")
         self._pool_frame.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(self._pool_frame, text="Серверы в пуле", font=fonts.small(),
+        ctk.CTkLabel(self._pool_frame, text=_("Серверы в пуле"), font=fonts.small(),
                      text_color=p.text_muted, anchor="w").grid(row=0, column=0, sticky="w", pady=(0, 2))
         self._pool_list = ctk.CTkScrollableFrame(self._pool_frame, fg_color=p.bg, height=160)
         self._pool_list.grid(row=1, column=0, sticky="ew")
@@ -629,14 +631,14 @@ class OverviewScreen(ctk.CTkFrame):
         tune.grid(row=3, column=0, padx=16, pady=(0, 6), sticky="ew")
         tune.grid_columnconfigure(0, weight=1)
         self._interval_entry = self._tuning_field(
-            tune, 0, "Интервал проверки (с)", str(d.get("interval", "180")),
-            "Время в секундах: меньше = серверы тестируются чаще, больше = реже тесты — меньше нагрузки.")
+            tune, 0, _("Интервал проверки (с)"), str(d.get("interval", "180")),
+            _("Время в секундах: меньше = серверы тестируются чаще, больше = реже тесты — меньше нагрузки."))
         self._tol_entry = self._tuning_field(
-            tune, 2, "Допуск (мс)", str(d.get("tolerance", "150")),
-            "Минимальная разница задержек (мс) для переключения на более быстрый сервер — "
-            "предотвращает постоянное переключение между серверами с близкой задержкой.")
+            tune, 2, _("Допуск (мс)"), str(d.get("tolerance", "150")),
+            _("Минимальная разница задержек (мс) для переключения на более быстрый сервер — "
+            "предотвращает постоянное переключение между серверами с близкой задержкой."))
 
-        self._apply_btn = ctk.CTkButton(card, text="Применить изменения", font=fonts.body(),
+        self._apply_btn = ctk.CTkButton(card, text=_("Применить изменения"), font=fonts.body(),
                                         width=200, fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
                                         command=self._apply_mainnode)
         self._apply_btn.grid(row=4, column=0, padx=16, pady=(2, 12), sticky="w")
@@ -725,15 +727,15 @@ class OverviewScreen(ctk.CTkFrame):
         interval = self._interval_entry.get().strip() or "180"
         tolerance = self._tol_entry.get().strip() or "150"
         if value == "urltest" and not pool:
-            self._mn_status.configure(text="Выберите хотя бы один сервер для пула URLTest.",
+            self._mn_status.configure(text=_("Выберите хотя бы один сервер для пула URLTest."),
                                       text_color=self.p.warn)
             return
         if not (interval.isdigit() and tolerance.isdigit()):
-            self._mn_status.configure(text="Интервал и допуск должны быть числами.",
+            self._mn_status.configure(text=_("Интервал и допуск должны быть числами."),
                                       text_color=self.p.warn)
             return
-        self._apply_btn.configure(state="disabled", text="Применяю…")
-        self._mn_status.configure(text="Применяю изменения…", text_color=self.p.text_muted)
+        self._apply_btn.configure(state="disabled", text=_("Применяю…"))
+        self._mn_status.configure(text=_("Применяю изменения…"), text_color=self.p.text_muted)
         client = self._client
 
         def task() -> bool:
@@ -747,16 +749,16 @@ class OverviewScreen(ctk.CTkFrame):
         run_async(self, task, self._after_apply, self._apply_err)
 
     def _after_apply(self, ok: bool) -> None:
-        self._apply_btn.configure(state="normal", text="Применить изменения")
+        self._apply_btn.configure(state="normal", text=_("Применить изменения"))
         if ok:
-            self._mn_status.configure(text="Изменения применены.", text_color=self.p.ok)
+            self._mn_status.configure(text=_("Изменения применены."), text_color=self.p.ok)
             post_to(self, self.refresh)
         else:
-            self._mn_status.configure(text="Не удалось применить изменения.", text_color=self.p.fail)
+            self._mn_status.configure(text=_("Не удалось применить изменения."), text_color=self.p.fail)
 
     def _apply_err(self, exc: BaseException) -> None:
-        self._apply_btn.configure(state="normal", text="Применить изменения")
-        self._mn_status.configure(text=f"Ошибка: {exc}", text_color=self.p.fail)
+        self._apply_btn.configure(state="normal", text=_("Применить изменения"))
+        self._mn_status.configure(text=_("Ошибка: {0}").format(exc), text_color=self.p.fail)
 
     # ----- DNS ----------------------------------------------------------
 
@@ -771,7 +773,7 @@ class OverviewScreen(ctk.CTkFrame):
                       font=fonts.small(), fg_color=p.surface_hover, hover_color=p.border,
                       text_color=p.text, command=self._toggle_dns_help).grid(
             row=0, column=1, padx=(0, 12), pady=(12, 6), sticky="e")
-        self._dns_help_lbl = ctk.CTkLabel(card, text=_DNS_HELP, font=fonts.small(),
+        self._dns_help_lbl = ctk.CTkLabel(card, text=_(_DNS_HELP), font=fonts.small(),
                                           text_color=p.text_muted, wraplength=560,
                                           justify="left", anchor="w")  # shown on demand
         self._dns_help_open = False
@@ -782,9 +784,9 @@ class OverviewScreen(ctk.CTkFrame):
             return row + 1
         inner = ctk.CTkFrame(card, fg_color="transparent")
         inner.grid(row=1, column=0, columnspan=2, padx=16, pady=(0, 12), sticky="ew")
-        self._dns_row(inner, 0, "Россия — протестировано на mail.ru",
+        self._dns_row(inner, 0, _("Россия — протестировано на mail.ru"),
                       dns.get("russia_ok"), dns.get("russia_server"))
-        self._dns_row(inner, 1, "Защищённый — протестировано на andrevi.ch",
+        self._dns_row(inner, 1, _("Защищённый — протестировано на andrevi.ch"),
                       dns.get("secure_ok"), dns.get("secure_server"))
         return row + 1
 
@@ -813,9 +815,9 @@ class OverviewScreen(ctk.CTkFrame):
         p = self.p
         rules: list[rules_engine.RuRule] = d.get("rules", [])
         nodes: list[nodes_engine.Node] = d.get("nodes", [])
-        card = self._card("Активные правила", row)
+        card = self._card(_("Активные правила"), row)
         if not rules:
-            ctk.CTkLabel(card, text="Правил нет — весь трафик идёт напрямую.", font=fonts.body(),
+            ctk.CTkLabel(card, text=_("Правил нет — весь трафик идёт напрямую."), font=fonts.body(),
                          text_color=p.text_muted, anchor="w").grid(
                 row=1, column=0, padx=16, pady=(0, 12), sticky="w")
             return row + 1
@@ -839,9 +841,9 @@ class OverviewScreen(ctk.CTkFrame):
     def _render_devices(self, d: dict[str, Any], row: int) -> int:
         p = self.p
         devices: list[access_engine.Device] = d.get("devices", [])
-        card = self._card(f"Устройства в сети ({len(devices)})", row)
+        card = self._card(_("Устройства в сети ({0})").format(len(devices)), row)
         if not devices:
-            ctk.CTkLabel(card, text="Нет активных аренд DHCP.", font=fonts.body(),
+            ctk.CTkLabel(card, text=_("Нет активных аренд DHCP."), font=fonts.body(),
                          text_color=p.text_muted, anchor="w").grid(
                 row=1, column=0, padx=16, pady=(0, 12), sticky="w")
             return row + 1
@@ -857,7 +859,7 @@ class OverviewScreen(ctk.CTkFrame):
             ctk.CTkLabel(line, text=dev.ip, font=fonts.small(), text_color=p.text_muted,
                          anchor="e").grid(row=0, column=1, padx=10, sticky="e")
         if len(devices) > _MAX_DEVICES:
-            ctk.CTkLabel(inner, text=f"… и ещё {len(devices) - _MAX_DEVICES} устройств",
+            ctk.CTkLabel(inner, text=_("… и ещё {0} устройств").format(len(devices) - _MAX_DEVICES),
                          font=fonts.small(), text_color=p.text_muted, anchor="w").grid(
                 row=_MAX_DEVICES, column=0, sticky="w", pady=(2, 0))
         return row + 1
@@ -867,9 +869,9 @@ class OverviewScreen(ctk.CTkFrame):
     def _render_wifi(self, d: dict[str, Any], row: int) -> int:
         p = self.p
         wifi: list[tuple[net_engine.ApCred, Any]] = d.get("wifi", [])
-        card = self._card("Wi-Fi сети роутера", row)
+        card = self._card(_("Wi-Fi сети роутера"), row)
         if not wifi:
-            ctk.CTkLabel(card, text="Точка доступа не настроена.", font=fonts.body(),
+            ctk.CTkLabel(card, text=_("Точка доступа не настроена."), font=fonts.body(),
                          text_color=p.text_muted, anchor="w").grid(
                 row=1, column=0, padx=16, pady=(0, 12), sticky="w")
             return row + 1
@@ -884,23 +886,23 @@ class OverviewScreen(ctk.CTkFrame):
             txt.grid(row=0, column=0, padx=12, pady=12, sticky="nw")
             ctk.CTkLabel(txt, text=ap.ssid, font=fonts.heading(), text_color=p.text,
                          anchor="w").grid(row=0, column=0, sticky="w")
-            band = f"{ap.band} ГГц" if ap.band and ap.band != "?" else ""
-            meta = "  ·  ".join(x for x in (band, "скрытая" if ap.hidden else "") if x)
+            band = _("{0} ГГц").format(ap.band) if ap.band and ap.band != "?" else ""
+            meta = "  ·  ".join(x for x in (band, _("скрытая") if ap.hidden else "") if x)
             if meta:
                 ctk.CTkLabel(txt, text=meta, font=fonts.small(), text_color=p.text_muted,
                              anchor="w").grid(row=1, column=0, sticky="w")
             if ap.key:
-                ctk.CTkLabel(txt, text=f"Пароль: {ap.key}",
+                ctk.CTkLabel(txt, text=_("Пароль: {0}").format(ap.key),
                              font=ctk.CTkFont(family="Consolas", size=13), text_color=p.text,
                              anchor="w").grid(row=2, column=0, sticky="w", pady=(4, 0))
             else:
-                ctk.CTkLabel(txt, text="Открытая сеть (без пароля)", font=fonts.small(),
+                ctk.CTkLabel(txt, text=_("Открытая сеть (без пароля)"), font=fonts.small(),
                              text_color=p.text_muted, anchor="w").grid(row=2, column=0, sticky="w")
             if qr_pil is not None:
                 img = ctk.CTkImage(light_image=qr_pil, dark_image=qr_pil, size=(150, 150))
                 self._qr_imgs.append(img)
                 qlbl = ctk.CTkLabel(box, image=img, text="")
                 qlbl.grid(row=0, column=1, padx=12, pady=12, sticky="e")
-                ctk.CTkLabel(box, text="Наведите камеру телефона", font=fonts.small(),
+                ctk.CTkLabel(box, text=_("Наведите камеру телефона"), font=fonts.small(),
                              text_color=p.text_muted).grid(row=1, column=1, padx=12, pady=(0, 10))
         return row + 1

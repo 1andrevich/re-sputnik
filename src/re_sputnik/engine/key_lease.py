@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Router-side lease for the app's SSH key — a renewable dead-man's-switch.
 
 Dropbear can't natively expire an ``authorized_keys`` entry (that's an OpenSSH

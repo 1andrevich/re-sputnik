@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Access control — per-device proxy policy (homeproxy.control.lan_*).
 
 HomeProxy's real model is ONE global filter mode plus THREE INDEPENDENT lists,

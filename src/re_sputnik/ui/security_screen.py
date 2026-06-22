@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Router admin security — who can log into the ROUTER.
 
 Lists the SSH keys in dropbear's authorized_keys (flagging the one belonging to
@@ -20,6 +21,7 @@ from ..router import RouterClient
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import _
 
 OnBack = Callable[[], None]
 
@@ -56,12 +58,12 @@ class SecurityScreen(ctk.CTkFrame):
         bar = ctk.CTkFrame(self, fg_color="transparent")
         bar.grid(row=0, column=0, padx=24, pady=(20, 4), sticky="ew")
         bar.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(bar, text="Безопасность", font=fonts.title(), text_color=p.text,
+        ctk.CTkLabel(bar, text=_("Безопасность"), font=fonts.title(), text_color=p.text,
                      image=kit.icon(kit._ICON_FOR["security"], 26), compound="left").grid(
             row=0, column=0, sticky="w"
         )
         self._refresh_btn = ctk.CTkButton(
-            bar, text=f"{kit.REFRESH_GLYPH} Обновить страницу", font=fonts.body(), width=180,
+            bar, text=_("{0} Обновить страницу").format(kit.REFRESH_GLYPH), font=fonts.body(), width=180,
             fg_color=p.surface, hover_color=p.surface_hover, command=self.refresh,
         )
         self._refresh_btn.grid(row=0, column=1)
@@ -77,7 +79,7 @@ class SecurityScreen(ctk.CTkFrame):
 
     def refresh(self) -> None:
         self._refresh_btn.configure(state="disabled", text="…")
-        self._set_status("Читаю ключи доступа на роутере…")
+        self._set_status(_("Читаю ключи доступа на роутере…"))
         client = self._client
         app_pub = app_secrets.existing_public_key()
 
@@ -87,14 +89,14 @@ class SecurityScreen(ctk.CTkFrame):
         run_async(self, task, self._render, self._on_error)
 
     def _on_error(self, exc: BaseException) -> None:
-        self._refresh_btn.configure(state="normal", text=f"{kit.REFRESH_GLYPH} Обновить страницу")
-        self._set_status(f"Ошибка: {exc}", self.p.fail)
+        self._refresh_btn.configure(state="normal", text=_("{0} Обновить страницу").format(kit.REFRESH_GLYPH))
+        self._set_status(_("Ошибка: {0}").format(exc), self.p.fail)
 
     # ----- rendering ----------------------------------------------------
 
     def _render(self, keys: list[rsec.AuthKey]) -> None:
         self._keys = keys
-        self._refresh_btn.configure(state="normal", text=f"{kit.REFRESH_GLYPH} Обновить страницу")
+        self._refresh_btn.configure(state="normal", text=_("{0} Обновить страницу").format(kit.REFRESH_GLYPH))
         self._set_status("")
         for w in self._body.winfo_children():
             w.destroy()
@@ -107,7 +109,7 @@ class SecurityScreen(ctk.CTkFrame):
 
         if self._on_back is not None:
             ctk.CTkButton(
-                self._body, text="← Назад", font=fonts.body(), fg_color="transparent",
+                self._body, text=_("← Назад"), font=fonts.body(), fg_color="transparent",
                 hover_color=self.p.surface_hover, width=90, command=self._on_back,
             ).grid(row=row, column=0, pady=(8, 8), sticky="w")
 
@@ -126,9 +128,9 @@ class SecurityScreen(ctk.CTkFrame):
         card.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(
             card,
-            text="Доступ к управлению роутером дают SSH-ключи и пароль root. "
+            text=_("Доступ к управлению роутером дают SSH-ключи и пароль root. "
                  "Чтобы полностью закрыть доступ, отзовите лишние ключи и смените "
-                 "пароль — иначе вход по паролю позволит прописать новый ключ.",
+                 "пароль — иначе вход по паролю позволит прописать новый ключ."),
             font=fonts.body(), text_color=self.p.text_muted, anchor="w",
             justify="left", wraplength=620,
         ).grid(row=0, column=0, sticky="ew")
@@ -137,9 +139,9 @@ class SecurityScreen(ctk.CTkFrame):
     # ----- keys ---------------------------------------------------------
 
     def _render_keys(self, row: int) -> int:
-        card = self._card("SSH-ключи доступа", row)
+        card = self._card(_("SSH-ключи доступа"), row)
         if not self._keys:
-            ctk.CTkLabel(card, text="Ключей нет — вход только по паролю.", font=fonts.body(),
+            ctk.CTkLabel(card, text=_("Ключей нет — вход только по паролю."), font=fonts.body(),
                          text_color=self.p.text_muted, anchor="w").grid(
                 row=1, column=0, padx=16, pady=(0, 12), sticky="w")
             return row + 1
@@ -152,7 +154,7 @@ class SecurityScreen(ctk.CTkFrame):
 
         # Revoke-all (two-click confirm).
         self._revoke_all_btn = ctk.CTkButton(
-            card, text="Отозвать все ключи", font=fonts.small(), width=160,
+            card, text=_("Отозвать все ключи"), font=fonts.small(), width=160,
             fg_color="transparent", hover_color=self.p.surface_hover,
             text_color=self.p.fail, command=self._on_revoke_all,
         )
@@ -176,13 +178,13 @@ class SecurityScreen(ctk.CTkFrame):
         ctk.CTkLabel(line, text=title, font=fonts.body(), text_color=self.p.text,
                      anchor="w").grid(row=0, column=0, sticky="w")
         if key.is_app:
-            ctk.CTkLabel(line, text="● это устройство", font=fonts.small(),
+            ctk.CTkLabel(line, text=_("● это устройство"), font=fonts.small(),
                          text_color=self.p.accent).grid(row=0, column=1, padx=(10, 0))
         ctk.CTkLabel(info, text=key.fingerprint, font=ctk.CTkFont(family="Consolas", size=11),
                      text_color=self.p.text_muted, anchor="w").grid(row=1, column=0, sticky="w")
 
         btn = ctk.CTkButton(
-            rowf, text="Отозвать", font=fonts.small(), width=90,
+            rowf, text=_("Отозвать"), font=fonts.small(), width=90,
             fg_color="transparent", hover_color=self.p.surface_hover, text_color=self.p.fail,
             command=lambda k=key: self._on_revoke_one(k),
         )
@@ -190,8 +192,8 @@ class SecurityScreen(ctk.CTkFrame):
 
     def _on_revoke_one(self, key: rsec.AuthKey) -> None:
         self._set_busy(True)
-        warn = "  Это ключ ТЕКУЩЕГО устройства — приложение потеряет доступ по ключу." if key.is_app else ""
-        self._set_status("Отзываю ключ…" + warn, self.p.warn if key.is_app else None)
+        warn = _("  Это ключ ТЕКУЩЕГО устройства — приложение потеряет доступ по ключу.") if key.is_app else ""
+        self._set_status(_("Отзываю ключ…") + warn, self.p.warn if key.is_app else None)
         client = self._client
         is_app = key.is_app
         line = key.line
@@ -210,23 +212,23 @@ class SecurityScreen(ctk.CTkFrame):
 
     def _after_revoke(self, removed: bool, was_app: bool) -> None:
         if removed and was_app:
-            self._set_status("Ключ устройства отозван — следующее подключение потребует пароль.",
+            self._set_status(_("Ключ устройства отозван — следующее подключение потребует пароль."),
                              self.p.warn)
         elif removed:
-            self._set_status("Ключ отозван.", self.p.ok)
+            self._set_status(_("Ключ отозван."), self.p.ok)
         else:
-            self._set_status("Ключ не найден (уже удалён?).", self.p.text_muted)
+            self._set_status(_("Ключ не найден (уже удалён?)."), self.p.text_muted)
         self.refresh()
 
     def _on_revoke_all(self) -> None:
         if not self._revoke_all_armed:
             self._revoke_all_armed = True
             self._revoke_all_btn.configure(
-                text="Точно? Ещё раз — будут удалены ВСЕ ключи, включая ключ этого устройства")
+                text=_("Точно? Ещё раз — будут удалены ВСЕ ключи, включая ключ этого устройства"))
             return
         self._revoke_all_armed = False
         self._set_busy(True)
-        self._set_status("Отзываю все ключи…", self.p.warn)
+        self._set_status(_("Отзываю все ключи…"), self.p.warn)
         client = self._client
 
         def task() -> int:
@@ -238,7 +240,7 @@ class SecurityScreen(ctk.CTkFrame):
 
     def _after_revoke_all(self, n: int) -> None:
         self._set_status(
-            f"Удалено ключей: {n}. Вход теперь только по паролю — убедитесь, что он надёжный.",
+            _("Удалено ключей: {0}. Вход теперь только по паролю — убедитесь, что он надёжный.").format(n),
             self.p.warn if n else self.p.text_muted)
         self.refresh()
 
@@ -254,8 +256,8 @@ class SecurityScreen(ctk.CTkFrame):
         p = self.p
         self._stored_pw = pw
         self._stored_visible = False
-        card = self._card("Текущий пароль root (сохранён приложением)", row)
-        ctk.CTkLabel(card, text="Если вы его забыли — откройте глазом и скопируйте.",
+        card = self._card(_("Текущий пароль root (сохранён приложением)"), row)
+        ctk.CTkLabel(card, text=_("Если вы его забыли — откройте глазом и скопируйте."),
                      font=fonts.small(), text_color=p.text_muted, anchor="w").grid(
             row=1, column=0, padx=16, pady=(0, 6), sticky="w")
         rowf = ctk.CTkFrame(card, fg_color="transparent")
@@ -267,7 +269,7 @@ class SecurityScreen(ctk.CTkFrame):
         self._stored_entry.grid(row=0, column=0, sticky="ew")
         ctk.CTkButton(rowf, text="👁", width=40, font=fonts.body(), fg_color=p.surface_hover,
                       hover_color=p.border, command=self._toggle_stored).grid(row=0, column=1, padx=(6, 0))
-        ctk.CTkButton(rowf, text="Копировать", width=110, font=fonts.small(), fg_color=p.surface_hover,
+        ctk.CTkButton(rowf, text=_("Копировать"), width=110, font=fonts.small(), fg_color=p.surface_hover,
                       hover_color=p.border, command=self._copy_stored).grid(row=0, column=2, padx=(6, 0))
         return row + 1
 
@@ -278,15 +280,15 @@ class SecurityScreen(ctk.CTkFrame):
     def _copy_stored(self) -> None:
         self.clipboard_clear()
         self.clipboard_append(self._stored_pw)
-        self._set_status("Пароль скопирован в буфер обмена.", self.p.ok)
+        self._set_status(_("Пароль скопирован в буфер обмена."), self.p.ok)
 
     # ----- root password ------------------------------------------------
 
     def _render_password(self, row: int) -> int:
         p = self.p
-        card = self._card("Пароль root", row)
+        card = self._card(_("Пароль root"), row)
         ctk.CTkLabel(
-            card, text="Задайте надёжный случайный пароль администратора роутера.",
+            card, text=_("Задайте надёжный случайный пароль администратора роутера."),
             font=fonts.small(), text_color=p.text_muted, anchor="w").grid(
             row=1, column=0, padx=16, pady=(0, 8), sticky="w")
 
@@ -294,7 +296,7 @@ class SecurityScreen(ctk.CTkFrame):
         rowf.grid(row=2, column=0, padx=16, pady=(0, 6), sticky="ew")
         rowf.grid_columnconfigure(0, weight=1)
         self._pw_entry = ctk.CTkEntry(rowf, font=fonts.body(), show="•",
-                                      placeholder_text="новый пароль root",
+                                      placeholder_text=_("новый пароль root"),
                                       validate="key",
                                       validatecommand=(self.register(
                                           app_secrets.is_password_input_char), "%P"))
@@ -303,16 +305,16 @@ class SecurityScreen(ctk.CTkFrame):
                                      fg_color=p.surface_hover, hover_color=p.border,
                                      command=self._toggle_pw)
         self._pw_eye.grid(row=0, column=1, padx=(6, 0))
-        ctk.CTkButton(rowf, text="Сгенерировать", font=fonts.small(), width=120,
+        ctk.CTkButton(rowf, text=_("Сгенерировать"), font=fonts.small(), width=120,
                       fg_color=p.surface_hover, hover_color=p.border,
                       command=self._gen_pw).grid(row=0, column=2, padx=(6, 0))
 
-        self._pw_store = ctk.CTkCheckBox(card, text="Сохранить в хранилище приложения",
+        self._pw_store = ctk.CTkCheckBox(card, text=_("Сохранить в хранилище приложения"),
                                          font=fonts.small(), text_color=p.text_muted)
         self._pw_store.select()
         self._pw_store.grid(row=3, column=0, padx=16, pady=(2, 8), sticky="w")
 
-        self._pw_btn = ctk.CTkButton(card, text="Установить пароль", font=fonts.body(), width=160,
+        self._pw_btn = ctk.CTkButton(card, text=_("Установить пароль"), font=fonts.body(), width=160,
                                      fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
                                      command=self._on_set_pw)
         self._pw_btn.grid(row=4, column=0, padx=16, pady=(0, 14), sticky="w")
@@ -332,15 +334,15 @@ class SecurityScreen(ctk.CTkFrame):
     def _on_set_pw(self) -> None:
         pw = self._pw_entry.get()
         if len(pw) < 8:
-            self._set_status("Пароль слишком короткий (минимум 8 символов).", self.p.fail)
+            self._set_status(_("Пароль слишком короткий (минимум 8 символов)."), self.p.fail)
             return
         problem = app_secrets.password_problem(pw)
         if problem:
             self._set_status(problem, self.p.fail)
             return
         self._set_busy(True)
-        self._pw_btn.configure(state="disabled", text="Устанавливаю…")
-        self._set_status("Меняю пароль root…")
+        self._pw_btn.configure(state="disabled", text=_("Устанавливаю…"))
+        self._set_status(_("Меняю пароль root…"))
         client = self._client
         store = bool(self._pw_store.get())
 
@@ -352,16 +354,16 @@ class SecurityScreen(ctk.CTkFrame):
         run_async(self, task, lambda _r: self._after_set_pw(store), self._pw_err)
 
     def _after_set_pw(self, stored: bool) -> None:
-        self._pw_btn.configure(state="normal", text="Установить пароль")
+        self._pw_btn.configure(state="normal", text=_("Установить пароль"))
         self._pw_entry.delete(0, "end")
         if self._pw_visible:
             self._toggle_pw()
-        tail = " и сохранён в приложении." if stored else "."
-        self._set_status("Пароль root изменён" + tail, self.p.ok)
+        tail = _(" и сохранён в приложении.") if stored else "."
+        self._set_status(_("Пароль root изменён") + tail, self.p.ok)
 
     def _pw_err(self, exc: BaseException) -> None:
-        self._pw_btn.configure(state="normal", text="Установить пароль")
-        self._set_status(f"Не удалось сменить пароль: {exc}", self.p.fail)
+        self._pw_btn.configure(state="normal", text=_("Установить пароль"))
+        self._set_status(_("Не удалось сменить пароль: {0}").format(exc), self.p.fail)
 
     # ----- shared -------------------------------------------------------
 
@@ -369,5 +371,5 @@ class SecurityScreen(ctk.CTkFrame):
         self._refresh_btn.configure(state="disabled" if busy else "normal")
 
     def _action_err(self, exc: BaseException) -> None:
-        self._set_status(f"Ошибка: {exc}", self.p.fail)
+        self._set_status(_("Ошибка: {0}").format(exc), self.p.fail)
         self.refresh()

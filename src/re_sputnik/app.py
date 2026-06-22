@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Main application window and screen navigation.
 
 The window hosts one swappable content area. The mode picker (Quick Setup vs
@@ -13,7 +14,17 @@ from typing import Callable
 import customtkinter as ctk
 
 from . import APP_NAME, __version__
+from . import legal
 from . import secrets as app_secrets
+from . import settings as app_settings
+from .i18n import (
+    AVAILABLE,
+    LANG_NAMES,
+    current_language,
+    install_language,
+    is_machine_translated,
+)
+from .i18n import _, N_
 from .router import RouterClient, RouterState
 from .ui import scrollpatch
 from .ui.theme import Palette, apply_theme, fonts
@@ -24,7 +35,7 @@ scrollpatch.apply()
 # Mandatory disclaimer — mirrors the SETUP_AGENT one, adapted for a program
 # (not an AI agent): "as is", no warranty, no liability, your own risk, comply
 # with your country's VPN/proxy laws.
-DISCLAIMER_RU = (
+_DISCLAIMER = N_(
     "⚠️ Важно, прочитайте перед началом.\n\n"
     "Настройку выполняет программа Re:Sputnik, которая может содержать ошибки. "
     "Всё программное обеспечение и конфигурации предоставляются «как есть», без "
@@ -246,42 +257,217 @@ class App(ctk.CTk):
 
         self._content: ctk.CTkBaseClass | None = None
         self._mode = "advanced"  # quick | advanced | preinstall
-        # Show the mandatory disclaimer first (once), like SETUP_AGENT does.
+        # Mandatory first-run acceptance (once): step 1 EULA → step 2 disclaimer.
         if app_secrets.disclaimer_accepted():
             self.show_mode_picker()
         else:
-            self.show_disclaimer()
+            self.show_eula()
 
-    def show_disclaimer(self, *, on_accept: Callable[[], None] | None = None) -> None:
+    # First-run acceptance is two steps: (1) the full formal License Agreement
+    # (the binding document, shown verbatim — Russian for a Russian UI, English
+    # otherwise, since only RU/EN are author-verified), then (2) a plain-language
+    # disclaimer with the third-party credits. Acceptance is recorded only after
+    # step 2. The footer "Дисклеймер" link re-opens step 2 in read-only review.
+
+    def show_eula(self, *, on_accept: Callable[[], None] | None = None) -> None:
+        """Step 1/2: the full formal EULA, accepted via a ticked checkbox."""
         p = self.palette
         frame = ctk.CTkFrame(self, fg_color="transparent")
         frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(1, weight=1)
+        frame.grid_rowconfigure(2, weight=1)  # EULA box grows/scrolls
 
-        ctk.CTkLabel(frame, text="Re:Sputnik", font=fonts.title(), text_color=p.text).grid(
-            row=0, column=0, pady=(40, 10))
-        card = ctk.CTkFrame(frame, fg_color=p.surface, corner_radius=14, border_width=1,
-                            border_color=p.border)
-        card.grid(row=1, column=0, padx=40, pady=8, sticky="n")
-        card.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(card, text=DISCLAIMER_RU, font=fonts.body(), text_color=p.text,
-                     wraplength=640, justify="left").grid(row=0, column=0, padx=24, pady=(20, 14))
+        # Language picker on the gate itself: a first-run user reaches acceptance
+        # BEFORE the mode-picker footer, so this is their only chance to read the
+        # EULA + disclaimer in their language. Switching re-renders this step.
+        self._build_lang_picker(
+            frame, on_change=lambda: self.show_eula(on_accept=on_accept),
+        ).place(relx=1.0, rely=0.0, x=-24, y=16, anchor="ne")
+
+        ctk.CTkLabel(frame, text=_("Лицензионное соглашение"), font=fonts.title(),
+                     text_color=p.text).grid(row=0, column=0, pady=(26, 2))
+        ctk.CTkLabel(frame, text=_("Пожалуйста, прочитайте лицензионное соглашение."),
+                     font=fonts.small(), text_color=p.text_muted).grid(row=1, column=0, pady=(0, 8))
+
+        box = ctk.CTkTextbox(frame, font=fonts.small(), fg_color=p.surface, text_color=p.text,
+                             wrap="word", corner_radius=12, border_width=1, border_color=p.border)
+        box.grid(row=2, column=0, padx=40, pady=(0, 8), sticky="nsew")
+        box.insert("1.0", legal.load_eula(current_language()))
+        box.configure(state="disabled")
 
         btns = ctk.CTkFrame(frame, fg_color="transparent")
-        btns.grid(row=2, column=0, pady=(6, 20))
-        # Re-view mode (from the footer link): just a Close button, no re-accept.
-        if on_accept is None and app_secrets.disclaimer_accepted():
-            ctk.CTkButton(btns, text="Закрыть", font=fonts.heading(), height=42, width=200,
+        btns.grid(row=4, column=0, pady=(4, 18))
+        next_btn = ctk.CTkButton(
+            btns, text=_("Далее"), font=fonts.heading(), height=42, width=200,
+            fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover, state="disabled",
+            command=lambda: self.show_disclaimer(
+                on_accept=on_accept, on_back=lambda: self.show_eula(on_accept=on_accept)))
+        agree = ctk.CTkCheckBox(
+            frame, text=_("Я прочитал(а) и принимаю условия Лицензионного соглашения"),
+            font=fonts.body(), text_color=p.text, fg_color=p.accent, hover_color=p.accent_hover,
+            command=lambda: next_btn.configure(state="normal" if agree.get() else "disabled"))
+        agree.grid(row=3, column=0, pady=(2, 6))
+        ctk.CTkButton(btns, text=_("Выход"), font=fonts.body(), height=42, width=140,
+                      fg_color="transparent", hover_color=p.surface_hover,
+                      command=self.destroy).grid(row=0, column=0, padx=(0, 10))
+        next_btn.grid(row=0, column=1)
+        self._swap(frame)
+
+    def show_disclaimer(
+        self, *, on_accept: Callable[[], None] | None = None,
+        on_back: Callable[[], None] | None = None,
+    ) -> None:
+        """Step 2/2: plain-language disclaimer + third-party credits.
+
+        Re-view mode (footer link, already accepted, no on_accept): shows the same
+        text with a single Close button and no re-accept checkbox.
+        """
+        p = self.palette
+        review = on_accept is None and app_secrets.disclaimer_accepted()
+
+        frame = ctk.CTkFrame(self, fg_color="transparent")
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_rowconfigure(2, weight=1)  # the disclaimer box grows/scrolls
+
+        # Same gate-level language picker as step 1, so the disclaimer can be read
+        # (and re-read) in the user's language. Re-renders this step with its params.
+        self._build_lang_picker(
+            frame, on_change=lambda: self.show_disclaimer(on_accept=on_accept, on_back=on_back),
+        ).place(relx=1.0, rely=0.0, x=-24, y=16, anchor="ne")
+
+        ctk.CTkLabel(frame, text="Re:Sputnik", font=fonts.title(), text_color=p.text).grid(
+            row=0, column=0, pady=(28, 2))
+        ctk.CTkLabel(frame, text=_("Перед началом"), font=fonts.heading(),
+                     text_color=p.text_muted).grid(row=1, column=0, pady=(0, 8))
+
+        # The warranty/responsibility disclaimer in a read-only scrolling box, so the
+        # full text always fits the fixed window regardless of language length.
+        box = ctk.CTkTextbox(frame, font=fonts.body(), fg_color=p.surface, text_color=p.text,
+                             wrap="word", corner_radius=12, border_width=1, border_color=p.border)
+        box.grid(row=2, column=0, padx=40, pady=(0, 8), sticky="nsew")
+        box.insert("1.0", _(_DISCLAIMER))
+        box.configure(state="disabled")
+
+        # Third-party crediting is a core purpose of the licensing — surface it here,
+        # with buttons to re-read the full agreement and the dependency NOTICE.
+        ctk.CTkLabel(
+            frame,
+            text=_("Re:Sputnik — закрытое бесплатное ПО. Сторонние проекты, которые оно "
+                   "использует, и их лицензии перечислены в уведомлении о компонентах."),
+            font=fonts.small(), text_color=p.text_muted, wraplength=680, justify="center",
+        ).grid(row=3, column=0, padx=40, pady=(2, 6))
+
+        links = ctk.CTkFrame(frame, fg_color="transparent")
+        links.grid(row=4, column=0, pady=(0, 6))
+        ctk.CTkButton(
+            links, text=_("Полный текст соглашения"), font=fonts.small(), height=34, width=220,
+            fg_color=p.surface, hover_color=p.surface_hover, text_color=p.text,
+            command=lambda: self._show_legal_text(
+                _("Лицензионное соглашение"), legal.load_eula(current_language())),
+        ).grid(row=0, column=0, padx=6)
+        ctk.CTkButton(
+            links, text=_("Сторонние компоненты и лицензии"), font=fonts.small(), height=34, width=260,
+            fg_color=p.surface, hover_color=p.surface_hover, text_color=p.text,
+            command=self.show_licenses_browser,
+        ).grid(row=0, column=1, padx=6)
+
+        btns = ctk.CTkFrame(frame, fg_color="transparent")
+        btns.grid(row=6, column=0, pady=(4, 18))
+        if review:
+            ctk.CTkButton(btns, text=_("Закрыть"), font=fonts.heading(), height=42, width=200,
                           fg_color=p.surface, hover_color=p.surface_hover,
                           command=self.show_mode_picker).grid(row=0, column=0)
         else:
-            ctk.CTkButton(btns, text="Выход", font=fonts.body(), height=42, width=140,
+            # Acceptance requires an explicit, ticked checkbox before the button enables.
+            accept_btn = ctk.CTkButton(
+                btns, text=_("Принимаю и продолжаю"), font=fonts.heading(), height=42, width=260,
+                fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
+                state="disabled",
+                command=lambda: self._accept_disclaimer(on_accept))
+            agree = ctk.CTkCheckBox(
+                frame, text=_("Я понимаю и принимаю условия использования"),
+                font=fonts.body(), text_color=p.text, fg_color=p.accent, hover_color=p.accent_hover,
+                command=lambda: accept_btn.configure(
+                    state="normal" if agree.get() else "disabled"))
+            agree.grid(row=5, column=0, pady=(2, 6))
+            back_cmd = on_back or self.show_mode_picker
+            ctk.CTkButton(btns, text=_("Назад"), font=fonts.body(), height=42, width=140,
                           fg_color="transparent", hover_color=p.surface_hover,
-                          command=self.destroy).grid(row=0, column=0, padx=(0, 10))
-            ctk.CTkButton(btns, text="Принимаю и продолжаю", font=fonts.heading(), height=42,
-                          width=260, fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
-                          command=lambda: self._accept_disclaimer(on_accept)).grid(row=0, column=1)
+                          command=back_cmd).grid(row=0, column=0, padx=(0, 10))
+            accept_btn.grid(row=0, column=1)
         self._swap(frame)
+
+    def _show_legal_text(self, title: str, text: str) -> None:
+        """Modal, read-only viewer for a full legal document (EULA / NOTICE)."""
+        p = self.palette
+        top = ctk.CTkToplevel(self)
+        top.title(title)
+        top.configure(fg_color=p.bg)
+        top.geometry("720x560")
+        top.transient(self)
+        top.grid_columnconfigure(0, weight=1)
+        top.grid_rowconfigure(0, weight=1)
+        box = ctk.CTkTextbox(top, font=fonts.small(), fg_color=p.surface, text_color=p.text,
+                             wrap="word", corner_radius=10)
+        box.grid(row=0, column=0, padx=16, pady=16, sticky="nsew")
+        box.insert("1.0", text)
+        box.configure(state="disabled")
+        ctk.CTkButton(top, text=_("Закрыть"), font=fonts.body(), height=38, width=160,
+                      fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
+                      command=top.destroy).grid(row=1, column=0, pady=(0, 16))
+        # grab_set() raises if the window isn't viewable yet → defer it (best-effort modal).
+        top.after(200, lambda: self._safe_grab(top))
+
+    @staticmethod
+    def _safe_grab(win: "ctk.CTkToplevel") -> None:
+        try:
+            win.grab_set()
+            win.focus()
+        except Exception:  # noqa: BLE001 — modality is a nicety, never fatal
+            pass
+
+    def show_licenses_browser(self) -> None:
+        """Modal browser over the NOTICE + every bundled third-party license text.
+
+        Lets the recipient read each full license (LGPL/MPL/MIT/ISC/BSD/HPND) from
+        within the app — satisfying licenses that require delivering their text.
+        """
+        p = self.palette
+        docs = legal.list_license_docs()
+        top = ctk.CTkToplevel(self)
+        top.title(_("Сторонние компоненты и лицензии"))
+        top.configure(fg_color=p.bg)
+        top.geometry("840x600")
+        top.transient(self)
+        top.grid_columnconfigure(1, weight=1)
+        top.grid_rowconfigure(0, weight=1)
+
+        # Left: one selectable entry per document. Right: the selected text.
+        side = ctk.CTkScrollableFrame(top, width=250, fg_color=p.surface, corner_radius=10,
+                                      label_text=_("Документы"))
+        side.grid(row=0, column=0, padx=(16, 8), pady=16, sticky="nsew")
+        box = ctk.CTkTextbox(top, font=fonts.small(), fg_color=p.surface, text_color=p.text,
+                             wrap="word", corner_radius=10)
+        box.grid(row=0, column=1, padx=(8, 16), pady=16, sticky="nsew")
+
+        def show(text: str) -> None:
+            box.configure(state="normal")
+            box.delete("1.0", "end")
+            box.insert("1.0", text)
+            box.configure(state="disabled")
+
+        for i, (title, text) in enumerate(docs):
+            ctk.CTkButton(
+                side, text=title, font=fonts.small(), anchor="w", height=30,
+                fg_color="transparent", hover_color=p.surface_hover, text_color=p.text,
+                command=lambda t=text: show(t),
+            ).grid(row=i, column=0, sticky="ew", pady=2, padx=4)
+        if docs:
+            show(docs[0][1])
+
+        ctk.CTkButton(top, text=_("Закрыть"), font=fonts.body(), height=38, width=160,
+                      fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
+                      command=top.destroy).grid(row=1, column=0, columnspan=2, pady=(0, 16))
+        top.after(200, lambda: self._safe_grab(top))
 
     def _accept_disclaimer(self, on_accept: Callable[[], None] | None) -> None:
         app_secrets.accept_disclaimer()
@@ -311,8 +497,15 @@ class App(ctk.CTk):
 
             from PIL import Image
 
-            bpath = os.path.join(os.path.dirname(__file__), "resources", "branding", "banner.png")
-            if os.path.exists(bpath):
+            # Localized hero banner (text baked into the image) → fall back to the
+            # generic banner, then to the plain text header below.
+            _bdir = os.path.join(os.path.dirname(__file__), "resources", "branding")
+            _bcode = {"zh_Hans": "zh"}.get(current_language(), current_language())
+            bpath = next(
+                (p for p in (os.path.join(_bdir, f"banner_{_bcode}.png"),
+                             os.path.join(_bdir, "banner.png"))
+                 if os.path.exists(p)), "")
+            if bpath:
                 bimg = Image.open(bpath)
                 bw, bh = bimg.size
                 disp_w = 720
@@ -327,7 +520,7 @@ class App(ctk.CTk):
             ctk.CTkLabel(frame, text="Re:Sputnik", font=fonts.title(), text_color=p.text).grid(
                 row=0, column=0, pady=(40, 2))
             ctk.CTkLabel(
-                frame, text="Настройка Re:HomeProxy на роутере OpenWRT",
+                frame, text=_("Настройка Re:HomeProxy на роутере OpenWRT"),
                 font=fonts.body(), text_color=p.text_muted).grid(row=1, column=0, pady=(0, 26))
 
         cards = ctk.CTkFrame(frame, fg_color="transparent")
@@ -339,8 +532,8 @@ class App(ctk.CTk):
             icon="⚡",
             icon_name="mode_guided",
             icon_color="#FBBF24",  # amber — speed / quick (emoji fallback)
-            title="Пошаговая настройка",
-            subtitle="Приложение ведёт за руку: интернет, установка, серверы, проверка",
+            title=_("Пошаговая настройка"),
+            subtitle=_("Приложение ведёт за руку: интернет, установка, серверы, проверка"),
             command=self.show_quick_setup,
         ).grid(row=0, column=0, padx=10, sticky="nsew")
         ModeCard(
@@ -348,8 +541,8 @@ class App(ctk.CTk):
             icon="⚙",
             icon_name="mode_advanced",
             icon_color="#38BDF8",  # cyan accent — the app's color (emoji fallback)
-            title="Расширенный",
-            subtitle="Свободная навигация по разделам: Серверы, Правила, Диагностика…",
+            title=_("Расширенный"),
+            subtitle=_("Свободная навигация по разделам: Серверы, Правила, Диагностика…"),
             command=self.show_advanced,
         ).grid(row=0, column=1, padx=10, sticky="nsew")
         ModeCard(
@@ -357,14 +550,14 @@ class App(ctk.CTk):
             icon="📦",
             icon_name="mode_preinstall",
             icon_color="#34D399",  # emerald — packages / install (emoji fallback)
-            title="Предустановить пакеты",
-            subtitle="Скачать на ПК и залить на роутер для установки без интернета",
+            title=_("Предустановить пакеты"),
+            subtitle=_("Скачать на ПК и залить на роутер для установки без интернета"),
             command=self.show_preinstall_connect,
         ).grid(row=0, column=2, padx=10, sticky="nsew")
 
         ctk.CTkLabel(
             frame,
-            text="Роутер уже настроен? Любой режим подхватит текущую конфигурацию, а не начнёт с нуля.",
+            text=_("Роутер уже настроен? Любой режим подхватит текущую конфигурацию, а не начнёт с нуля."),
             font=fonts.small(),
             text_color=p.text_muted,
         ).grid(row=3, column=0, pady=(20, 4))
@@ -372,10 +565,46 @@ class App(ctk.CTk):
         foot.grid(row=4, column=0, pady=(0, 12))
         ctk.CTkLabel(foot, text=f"v{__version__}", font=fonts.small(), text_color=p.text_muted).grid(
             row=0, column=0, padx=(0, 8))
-        ctk.CTkButton(foot, text="Дисклеймер", font=fonts.small(), width=90, fg_color="transparent",
+        ctk.CTkButton(foot, text=_("Дисклеймер"), font=fonts.small(), width=90, fg_color="transparent",
                       hover_color=p.surface_hover, text_color=p.text_muted,
                       command=lambda: self.show_disclaimer()).grid(row=0, column=1)
+        self._build_lang_picker(foot).grid(row=0, column=2, padx=(8, 0))
+
+        # Machine-translation notice (zh/fa are auto-translated; invite corrections).
+        if is_machine_translated():
+            ctk.CTkLabel(
+                frame,
+                text=_("Перевод на этот язык машинный — будем рады исправлениям."),
+                font=fonts.small(), text_color=p.text_muted,
+            ).grid(row=5, column=0, pady=(0, 10))
         self._swap(frame)
+
+    def _build_lang_picker(
+        self, parent: ctk.CTkBaseClass, on_change: Callable[[], None] | None = None,
+    ) -> ctk.CTkOptionMenu:
+        """Compact language dropdown; switching re-renders ``on_change`` (default:
+        the mode picker) so the new catalog applies to the visible screen."""
+        p = self.palette
+        names = [LANG_NAMES[c] for c in AVAILABLE]
+        name_to_code = {LANG_NAMES[c]: c for c in AVAILABLE}
+        menu = ctk.CTkOptionMenu(
+            parent, values=names, width=130, font=fonts.small(),
+            fg_color=p.surface, button_color=p.surface, button_hover_color=p.surface_hover,
+            text_color=p.text_muted, dropdown_font=fonts.small(),
+            command=lambda name: self._change_language(
+                name_to_code.get(name, current_language()), on_change),
+        )
+        menu.set(LANG_NAMES.get(current_language(), LANG_NAMES["ru"]))
+        return menu
+
+    def _change_language(self, code: str, on_change: Callable[[], None] | None = None) -> None:
+        if code == current_language():
+            return
+        app_settings.set_language(code)
+        install_language(code)
+        # Rebuild the visible screen so the new catalog (and any language-specific
+        # document, like the localized EULA) is applied immediately.
+        (on_change or self.show_mode_picker)()
 
     def _connect_for(self, mode: str) -> None:
         from .ui.connect_screen import ConnectScreen
@@ -549,4 +778,9 @@ class App(ctk.CTk):
 
 
 def run() -> None:
+    # Pick the UI language before any screen is built: saved choice wins, else
+    # guess from the system locale (falls back to Russian source if unbuilt).
+    from . import i18n, settings
+
+    i18n.install_language(settings.get_language() or i18n.detect_default())
     App().mainloop()

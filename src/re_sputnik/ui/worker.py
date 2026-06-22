@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Run blocking work (SSH, detection) off the Tk main thread — safely.
 
 Tk is single-threaded AND its ``after`` is not safe to call from other threads.

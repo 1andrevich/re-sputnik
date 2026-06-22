@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Firmware compatibility check — warn before things break.
 
 HomeProxy relies on firewall4/nftables + nft-tproxy. Several OpenWrt-derived
@@ -21,6 +22,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..router import RouterClient
+from ..i18n import _, N_
 
 BLOCK = "block"
 WARN = "warn"
@@ -71,20 +73,20 @@ def check_compat(client: RouterClient) -> CompatReport:
     if not has_nft:
         rep.issues.append(CompatIssue(
             BLOCK,
-            "Прошивка без поддержки nftables",
-            "В прошивке нет nftables (команды nft). HomeProxy использует nft-tproxy "
+            _("Прошивка без поддержки nftables"),
+            _("В прошивке нет nftables (команды nft). HomeProxy использует nft-tproxy "
             "и не сможет работать на этой сборке (например, некоторые кастомные сборки "
-            "собраны без firewall4/nftables).",
-            "Нужна прошивка OpenWrt с firewall4 (nftables)."))
+            "собраны без firewall4/nftables)."),
+            _("Нужна прошивка OpenWrt с firewall4 (nftables).")))
     else:
         nft_ok = client.run("nft list ruleset >/dev/null 2>&1 && echo OK").stdout.strip() == "OK"
         if not nft_ok:
             rep.issues.append(CompatIssue(
                 WARN,
-                "nftables не отвечает",
-                "Команда nft есть, но «nft list ruleset» завершилась с ошибкой — "
-                "возможно, активен firewall на iptables, а не firewall4.",
-                "Убедитесь, что используется firewall4 (nftables)."))
+                _("nftables не отвечает"),
+                _("Команда nft есть, но «nft list ruleset» завершилась с ошибкой — "
+                "возможно, активен firewall на iptables, а не firewall4."),
+                _("Убедитесь, что используется firewall4 (nftables).")))
 
     # --- 1b. firewall4/fw4 present (nft without fw4 ≈ iptables firewall) -------
     if has_nft:
@@ -92,10 +94,10 @@ def check_compat(client: RouterClient) -> CompatReport:
         if not has_fw4:
             rep.issues.append(CompatIssue(
                 WARN,
-                "Похоже, firewall не на nftables",
-                "nftables есть, но firewall4 (fw4) не найден — возможно, прошивка использует "
-                "firewall на iptables. HomeProxy рассчитан на firewall4 и nft-tproxy.",
-                "Используйте прошивку OpenWrt с firewall4 (nftables)."))
+                _("Похоже, firewall не на nftables"),
+                _("nftables есть, но firewall4 (fw4) не найден — возможно, прошивка использует "
+                "firewall на iptables. HomeProxy рассчитан на firewall4 и nft-tproxy."),
+                _("Используйте прошивку OpenWrt с firewall4 (nftables).")))
 
     # --- 2. FriendlyWrt: br_netfilter sends bridge traffic via iptables --------
     is_friendly = "friendlywrt" in ident or "friendlyelec" in ident
@@ -106,10 +108,10 @@ def check_compat(client: RouterClient) -> CompatReport:
     if is_friendly or brnf_hit:
         rep.issues.append(CompatIssue(
             WARN,
-            "FriendlyWrt: br-netfilter ломает nft-tproxy",
-            "Модуль br_netfilter направляет трафик моста через iptables, из-за чего "
-            "nft-tproxy не перехватывает соединения и прокси не работает.",
-            "Отключите bridge-nf-call-iptables (sysctl) или выгрузите модуль br_netfilter."))
+            _("FriendlyWrt: br-netfilter ломает nft-tproxy"),
+            _("Модуль br_netfilter направляет трафик моста через iptables, из-за чего "
+            "nft-tproxy не перехватывает соединения и прокси не работает."),
+            _("Отключите bridge-nf-call-iptables (sysctl) или выгрузите модуль br_netfilter.")))
 
     # --- 3. GL.iNet: built-in vpn-client adds conflicting nft marking ----------
     is_glinet = ("glinet" in ident or "gl.inet" in ident or "gl-inet" in ident
@@ -123,11 +125,11 @@ def check_compat(client: RouterClient) -> CompatReport:
         ).stdout.strip() == "EN"
         rep.issues.append(CompatIssue(
             WARN,
-            "GL.iNet: конфликт правил маркировки трафика",
-            "Встроенная служба vpn-client GL.iNet создаёт собственные правила маркировки "
-            "в nftables, из-за чего трафик не доходит до sing-box"
-            + (" (служба vpn-client сейчас включена)." if enabled else "."),
-            "Отключите GL.iNet VPN (vpn-client) перед использованием HomeProxy."))
+            _("GL.iNet: конфликт правил маркировки трафика"),
+            _("Встроенная служба vpn-client GL.iNet создаёт собственные правила маркировки "
+            "в nftables, из-за чего трафик не доходит до sing-box")
+            + (_(" (служба vpn-client сейчас включена).") if enabled else "."),
+            _("Отключите GL.iNet VPN (vpn-client) перед использованием HomeProxy.")))
 
     return rep
 
@@ -140,8 +142,8 @@ def check_compat(client: RouterClient) -> CompatReport:
 # get them (no matching package for its kernel), that's a real incompatibility,
 # not something an install can fix.
 REQUIRED_KMODS = [
-    ("nft_tproxy", "kmod-nft-tproxy", "перехват трафика (nft-tproxy)"),
-    ("tun", "kmod-tun", "режим TUN"),
+    ("nft_tproxy", "kmod-nft-tproxy", N_("перехват трафика (nft-tproxy)")),
+    ("tun", "kmod-tun", N_("режим TUN")),
 ]
 
 
@@ -193,8 +195,7 @@ def diagnose_kmods(client: RouterClient, pkg_manager: str) -> str:
             continue
         avail = _pkg_available(client, pkg_manager, pkg)
         if avail is False:
-            notes.append(f"{label}: пакет {pkg} недоступен для ядра этой прошивки — "
-                         f"прошивка несовместима")
+            notes.append(_("{0}: пакет {1} недоступен для ядра этой прошивки — прошивка несовместима").format(_(label), pkg))
         elif avail is None:
-            notes.append(f"{label}: пакет {pkg} не установился")
+            notes.append(_("{0}: пакет {1} не установился").format(_(label), pkg))
     return "; ".join(notes)

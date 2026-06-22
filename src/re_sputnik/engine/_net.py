@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """PC-side HTTP helper — one place for TLS trust + dead-proxy fallback.
 
 Two failure modes this centralises, both seen in the wild on Windows:

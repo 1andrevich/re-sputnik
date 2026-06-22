@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Capture a PNG of every app screen against a LIVE router connection.
 
 Unlike capture_screens.py (fake MagicMock client = empty pages), this connects

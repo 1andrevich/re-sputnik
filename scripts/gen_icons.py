@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Fetch + rasterize the two icons missing from resources/icons.
 
 Reliable, no native deps: SVGs come from free icon sets and are rasterized with

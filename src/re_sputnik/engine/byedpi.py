@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """ByeDPI — status, strategy config, and the multi-host strategy test.
 
 The strategy test is the live "eyes" for DPI bypass: it runs ciadpi with the
@@ -12,6 +13,7 @@ from __future__ import annotations
 from typing import Callable, Optional
 
 from ..router import RouterClient
+from ..i18n import _
 
 ENABLED_KEY = "homeproxy.config.byedpi_enabled"
 CMD_KEY = "homeproxy.config.byedpi_cmd_opts"
@@ -142,27 +144,27 @@ def install(client: RouterClient, progress: Optional[Callable[[str], None]] = No
         if progress:
             progress(m)
 
-    say("Проверяю требования…")
+    say(_("Проверяю требования…"))
     prep = client.ubus_homeproxy("byedpi_prepare_install", timeout=60)
     if prep.get("error") or not prep.get("dl_url"):
-        return False, prep.get("error") or "Не удалось подготовить установку (нет ссылки)."
+        return False, prep.get("error") or _("Не удалось подготовить установку (нет ссылки).")
 
     pm = prep.get("pkg_manager")
-    say("Устанавливаю curl (нужен тестеру)…")
+    say(_("Устанавливаю curl (нужен тестеру)…"))
     add = "apk add" if pm == "apk" else "opkg install"
     client.run(f"{add} curl 2>&1; true", timeout=120)
 
-    say("Скачиваю пакет…")
+    say(_("Скачиваю пакет…"))
     if not client.run(f"wget -qO {prep['tmp_path']} '{prep['dl_url']}'", timeout=300).ok:
-        return False, "Не удалось скачать пакет ByeDPI."
+        return False, _("Не удалось скачать пакет ByeDPI.")
 
-    say("Устанавливаю…")
+    say(_("Устанавливаю…"))
     inst = client.ubus_homeproxy(
         "byedpi_install_pkg",
         {"tmp_path": prep["tmp_path"], "pkg_manager": pm}, timeout=180)
     if not inst.get("result"):
-        return False, inst.get("error") or "Установка ByeDPI не удалась."
-    return True, "ByeDPI установлен."
+        return False, inst.get("error") or _("Установка ByeDPI не удалась.")
+    return True, _("ByeDPI установлен.")
 
 
 def remove(client: RouterClient) -> bool:

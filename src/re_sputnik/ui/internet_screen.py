@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Пошаговая настройка — phase «Интернет».
 
 Checks whether the router can reach the internet. If not, offers a wired WAN
@@ -19,6 +20,7 @@ from ..router import RouterClient
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import _
 
 OnDone = Callable[[], None]
 
@@ -54,14 +56,14 @@ class InternetScreen(ctk.CTkFrame):
         # "← Назад" link (fixed at the bottom, always reachable; this step is past
         # the irreversible firstrun, so back leaves the wizard to the connection
         # screen rather than re-entering step 1).
-        self._sc = kit.WizardScaffold(self, palette, step=step, label="Интернет",
+        self._sc = kit.WizardScaffold(self, palette, step=step, label=_("Интернет"),
                                       footer=on_back is not None)
         if on_back is not None and self._sc.footer is not None:
-            self._sc.footer.set_link("← Назад", on_back)
+            self._sc.footer.set_link(_("← Назад"), on_back)
         self._scroll = self._sc.content
         body = self._scroll
 
-        ctk.CTkLabel(body, text="Интернет", font=fonts.title(), text_color=palette.text).grid(
+        ctk.CTkLabel(body, text=_("Интернет"), font=fonts.title(), text_color=palette.text).grid(
             row=0, column=0, pady=(28, 4), padx=32, sticky="w")
         # Verdict + a manual re-check button side by side. Carrier/IP state isn't
         # pushed by the router, so after plugging a cable the user taps «Проверить»
@@ -69,12 +71,12 @@ class InternetScreen(ctk.CTkFrame):
         head = ctk.CTkFrame(body, fg_color="transparent")
         head.grid(row=1, column=0, padx=32, pady=(0, 6), sticky="ew")
         head.grid_columnconfigure(0, weight=1)
-        self._verdict = ctk.CTkLabel(head, text="Проверяю доступ в интернет…", font=fonts.heading(),
+        self._verdict = ctk.CTkLabel(head, text=_("Проверяю доступ в интернет…"), font=fonts.heading(),
                                      text_color=palette.text_muted, anchor="w", wraplength=480,
                                      justify="left")
         self._verdict.grid(row=0, column=0, sticky="w")
         self._check_btn = ctk.CTkButton(
-            head, text="Проверить", font=fonts.body(), width=110, height=34,
+            head, text=_("Проверить"), font=fonts.body(), width=110, height=34,
             fg_color="transparent", border_width=1, border_color=palette.border,
             text_color=palette.text, hover_color=palette.surface_hover, command=self.refresh)
         self._check_btn.grid(row=0, column=1, padx=(8, 0), sticky="ne")
@@ -88,7 +90,7 @@ class InternetScreen(ctk.CTkFrame):
         self._conflict: Optional[net.SubnetConflict] = None
 
         # Green "Далее →" to match the other wizard steps' proceed button (palette.ok).
-        self._next_btn = ctk.CTkButton(body, text="Далее →", font=fonts.heading(), height=42,
+        self._next_btn = ctk.CTkButton(body, text=_("Далее →"), font=fonts.heading(), height=42,
                                        fg_color=palette.ok, text_color=palette.accent_fg, hover_color=palette.accent_hover,
                                        command=on_done)
         self._next_btn.grid(row=3, column=0, padx=32, pady=(0, 8), sticky="ew")
@@ -105,8 +107,8 @@ class InternetScreen(ctk.CTkFrame):
     # ----- check --------------------------------------------------------
 
     def refresh(self) -> None:
-        self._verdict.configure(text="Проверяю доступ в интернет…", text_color=self.p.text_muted)
-        self._check_btn.configure(state="disabled", text="Проверяю…")
+        self._verdict.configure(text=_("Проверяю доступ в интернет…"), text_color=self.p.text_muted)
+        self._check_btn.configure(state="disabled", text=_("Проверяю…"))
         self._next_btn.grid_remove()
         self._sel = None
         for w in self._choices.winfo_children():
@@ -125,31 +127,31 @@ class InternetScreen(ctk.CTkFrame):
         run_async(self, task, self._render, self._err)
 
     def _err(self, e: BaseException) -> None:
-        self._verdict.configure(text=f"Ошибка проверки: {e}", text_color=self.p.fail)
-        self._check_btn.configure(state="normal", text="Проверить")
+        self._verdict.configure(text=_("Ошибка проверки: {0}").format(e), text_color=self.p.fail)
+        self._check_btn.configure(state="normal", text=_("Проверить"))
 
     def _render(self, d: dict[str, Any]) -> None:
         p = self.p
-        self._check_btn.configure(state="normal", text="Проверить")
+        self._check_btn.configure(state="normal", text=_("Проверить"))
         self._conflict = d.get("conflict")
         if d["ok"]:
-            self._verdict.configure(text="✓ Интернет есть — можно продолжать", text_color=p.ok)
-            self._next_btn.configure(text="Далее →")
+            self._verdict.configure(text=_("✓ Интернет есть — можно продолжать"), text_color=p.ok)
+            self._next_btn.configure(text=_("Далее →"))
             self._next_btn.grid()
         else:
             if self._allow_skip:
                 self._verdict.configure(
-                    text="Роутер пока без интернета. Можно заранее задать параметры подключения "
-                         "(они применятся, когда появится кабель) и продолжить.",
+                    text=_("Роутер пока без интернета. Можно заранее задать параметры подключения "
+                         "(они применятся, когда появится кабель) и продолжить."),
                     text_color=p.text_muted)
             else:
                 self._verdict.configure(
-                    text="✗ Роутер не в интернете. Выберите, как подключить:", text_color=p.warn)
+                    text=_("✗ Роутер не в интернете. Выберите, как подключить:"), text_color=p.warn)
             self._radios = d["radios"]
             self._wan = d["wan"]
             self._build_options()
             if self._allow_skip:
-                self._next_btn.configure(text="Продолжить без интернета →")
+                self._next_btn.configure(text=_("Продолжить без интернета →"))
                 self._next_btn.grid()
         self._render_conflict()
 
@@ -164,34 +166,27 @@ class InternetScreen(ctk.CTkFrame):
         card = ctk.CTkFrame(self._conflict_box, fg_color=p.surface, corner_radius=12)
         card.grid(row=0, column=0, sticky="ew")
         card.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(card, text="⚠ Конфликт адресов сети", font=fonts.heading(),
+        ctk.CTkLabel(card, text=_("⚠ Конфликт адресов сети"), font=fonts.heading(),
                      text_color=p.warn).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
         ctk.CTkLabel(
             card,
-            text=(f"Роутер провайдера выдал WAN адрес {c.wan_ip} из той же подсети "
-                  f"{c.wan_subnet}, что используется для домашней сети ({c.lan_ip}). "
-                  "Из-за наложения подсетей маршрутизация ломается и интернет через "
-                  "роутер работать не будет.\n\n"
-                  "Решение — перенести роутер на свободный адрес. Ниже предложен подходящий, "
-                  "при желании укажите свой (частный адрес из другой подсети)."),
+            text=(_("Роутер провайдера выдал WAN адрес {0} из той же подсети {1}, что используется для домашней сети ({2}). Из-за наложения подсетей маршрутизация ломается и интернет через роутер работать не будет.\n\nРешение — перенести роутер на свободный адрес. Ниже предложен подходящий, при желании укажите свой (частный адрес из другой подсети).").format(c.wan_ip, c.wan_subnet, c.lan_ip)),
             font=fonts.small(), text_color=p.text_muted, wraplength=520,
             justify="left").grid(row=1, column=0, padx=16, sticky="w")
         ctk.CTkLabel(
             card,
-            text=("ВАЖНО: после смены приложение потеряет связь с роутером — это нормально. "
-                  "Подождите 20–30 секунд (компьютер получит новый адрес) и переподключитесь "
-                  f"к роутеру по адресу {c.suggested_lan_ip}."),
+            text=(_("ВАЖНО: после смены приложение потеряет связь с роутером — это нормально. Подождите 20–30 секунд (компьютер получит новый адрес) и переподключитесь к роутеру по адресу {0}.").format(c.suggested_lan_ip)),
             font=fonts.small(), text_color=p.warn, wraplength=520, justify="left").grid(
             row=2, column=0, padx=16, pady=(6, 0), sticky="w")
         fixrow = ctk.CTkFrame(card, fg_color="transparent")
         fixrow.grid(row=3, column=0, padx=16, pady=(8, 12), sticky="w")
-        ctk.CTkLabel(fixrow, text="Новый адрес роутера:", font=fonts.small(),
+        ctk.CTkLabel(fixrow, text=_("Новый адрес роутера:"), font=fonts.small(),
                      text_color=p.text_muted).grid(row=0, column=0, padx=(0, 8), sticky="w")
         self._lan_entry = ctk.CTkEntry(fixrow, font=fonts.body(), width=150)
         self._lan_entry.insert(0, c.suggested_lan_ip)
         self._lan_entry.grid(row=0, column=1, padx=(0, 8))
         self._fix_btn = ctk.CTkButton(
-            fixrow, text="Сменить и переподключиться", font=fonts.body(),
+            fixrow, text=_("Сменить и переподключиться"), font=fonts.body(),
             fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover, command=self._fix_conflict)
         self._fix_btn.grid(row=0, column=2)
         self._conflict_box.grid()
@@ -207,14 +202,14 @@ class InternetScreen(ctk.CTkFrame):
         wired = ctk.CTkFrame(self._choices, fg_color=p.surface, corner_radius=12)
         wired.grid(row=0, column=0, padx=32, pady=(0, 10), sticky="ew")
         wired.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(wired, text="🔌  Кабельное подключение (рекомендуется)", font=fonts.heading(),
+        ctk.CTkLabel(wired, text=_("🔌  Кабельное подключение (рекомендуется)"), font=fonts.heading(),
                      text_color=p.text).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
         if wan.carrier:
-            cable_txt = ("Кабель в WAN-порту обнаружен, но интернета нет. Обычно подходит DHCP; "
-                         "если провайдер требует — выберите PPPoE (логин/пароль) или статический IP.")
+            cable_txt = (_("Кабель в WAN-порту обнаружен, но интернета нет. Обычно подходит DHCP; "
+                         "если провайдер требует — выберите PPPoE (логин/пароль) или статический IP."))
         else:
-            cable_txt = ("Кабель в WAN-порту не обнаружен. Можно заранее ввести данные провайдера "
-                         "(PPPoE/статический IP) — они применятся, как только вы вставите кабель в порт WAN.")
+            cable_txt = (_("Кабель в WAN-порту не обнаружен. Можно заранее ввести данные провайдера "
+                         "(PPPoE/статический IP) — они применятся, как только вы вставите кабель в порт WAN."))
         ctk.CTkLabel(wired, text=cable_txt, font=fonts.small(), text_color=p.text_muted,
                      wraplength=520, justify="left").grid(row=1, column=0, padx=16, sticky="w")
 
@@ -232,7 +227,7 @@ class InternetScreen(ctk.CTkFrame):
         self._wan_fields.grid(row=3, column=0, padx=16, pady=2, sticky="ew")
         self._wan_fields.grid_columnconfigure(0, weight=1)
         self._wan_entries: dict[str, ctk.CTkEntry] = {}
-        ctk.CTkButton(wired, text="Применить", font=fonts.body(), fg_color=p.accent, text_color=p.accent_fg,
+        ctk.CTkButton(wired, text=_("Применить"), font=fonts.body(), fg_color=p.accent, text_color=p.accent_fg,
                       hover_color=p.accent_hover, command=self._do_wan).grid(
             row=4, column=0, padx=16, pady=(6, 12), sticky="w")
         self._rebuild_wan_fields()
@@ -248,12 +243,12 @@ class InternetScreen(ctk.CTkFrame):
         self._wan_entries = {}
         spec: list[tuple[str, str, bool]] = []
         if proto == "pppoe":
-            spec = [("username", "Логин (PPPoE)", False), ("password", "Пароль (PPPoE)", True)]
+            spec = [("username", _("Логин (PPPoE)"), False), ("password", _("Пароль (PPPoE)"), True)]
         elif proto == "static":
-            spec = [("ipaddr", "IP-адрес, напр. 192.168.0.10", False),
-                    ("netmask", "Маска (255.255.255.0)", False),
-                    ("gateway", "Шлюз, напр. 192.168.0.1", False),
-                    ("dns", "DNS (через пробел), напр. 1.1.1.1", False)]
+            spec = [("ipaddr", _("IP-адрес, напр. 192.168.0.10"), False),
+                    ("netmask", _("Маска (255.255.255.0)"), False),
+                    ("gateway", _("Шлюз, напр. 192.168.0.1"), False),
+                    ("dns", _("DNS (через пробел), напр. 1.1.1.1"), False)]
         for i, (key, ph, secret) in enumerate(spec):
             e = ctk.CTkEntry(self._wan_fields, font=fonts.body(), placeholder_text=ph,
                              show="•" if secret else "")
@@ -266,20 +261,20 @@ class InternetScreen(ctk.CTkFrame):
         wifi = ctk.CTkFrame(self._choices, fg_color=p.surface, corner_radius=12)
         wifi.grid(row=1, column=0, padx=32, pady=(0, 10), sticky="ew")
         wifi.grid_columnconfigure(0, weight=1)
-        ctk.CTkLabel(wifi, text="📶  Wi-Fi-клиент (временно)", font=fonts.heading(),
+        ctk.CTkLabel(wifi, text=_("📶  Wi-Fi-клиент (временно)"), font=fonts.heading(),
                      text_color=p.text).grid(row=0, column=0, padx=16, pady=(12, 2), sticky="w")
-        ctk.CTkLabel(wifi, text="Подключение к существующей Wi-Fi-сети как временное решение. "
-                     "Для стабильной работы рекомендуется проводное подключение роутера к интернету.",
+        ctk.CTkLabel(wifi, text=_("Подключение к существующей Wi-Fi-сети как временное решение. "
+                     "Для стабильной работы рекомендуется проводное подключение роутера к интернету."),
                      font=fonts.small(), text_color=p.warn, wraplength=520, justify="left").grid(
             row=1, column=0, padx=16, sticky="w")
         # No Wi-Fi radio (e.g. a VM) — can't be a Wi-Fi client; say so and stop.
         if not self._radios:
-            ctk.CTkLabel(wifi, text="На этом устройстве нет Wi-Fi-радио — этот способ недоступен. "
-                         "Используйте кабель.", font=fonts.body(), text_color=p.text_muted,
+            ctk.CTkLabel(wifi, text=_("На этом устройстве нет Wi-Fi-радио — этот способ недоступен. "
+                         "Используйте кабель."), font=fonts.body(), text_color=p.text_muted,
                          wraplength=520, justify="left").grid(row=2, column=0, padx=16, pady=(6, 12),
                                                               sticky="w")
             return
-        self._scan_btn = ctk.CTkButton(wifi, text="Сканировать сети", font=fonts.body(),
+        self._scan_btn = ctk.CTkButton(wifi, text=_("Сканировать сети"), font=fonts.body(),
                                        fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
                                        command=self._do_scan)
         self._scan_btn.grid(row=2, column=0, padx=16, pady=(8, 4), sticky="w")
@@ -297,9 +292,9 @@ class InternetScreen(ctk.CTkFrame):
                                        text_color=p.text, anchor="w")
         self._sel_label.grid(row=0, column=0, sticky="w", pady=(2, 2))
         self._key = ctk.CTkEntry(self._connbox, font=fonts.body(), show="•",
-                                 placeholder_text="Пароль Wi-Fi")
+                                 placeholder_text=_("Пароль Wi-Fi"))
         self._key.grid(row=1, column=0, pady=4, sticky="ew")
-        self._conn_btn = ctk.CTkButton(self._connbox, text="Подключиться", font=fonts.body(),
+        self._conn_btn = ctk.CTkButton(self._connbox, text=_("Подключиться"), font=fonts.body(),
                                        fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover,
                                        command=self._do_wifi)
         self._conn_btn.grid(row=2, column=0, pady=(4, 0), sticky="w")
@@ -308,7 +303,7 @@ class InternetScreen(ctk.CTkFrame):
     # ----- scan ---------------------------------------------------------
 
     def _do_scan(self) -> None:
-        self._scan_btn.configure(state="disabled", text="Сканирую… (~10 сек)")
+        self._scan_btn.configure(state="disabled", text=_("Сканирую… (~10 сек)"))
         for w in self._netlist.winfo_children():
             w.destroy()
         self._connbox.grid_remove()
@@ -316,19 +311,19 @@ class InternetScreen(ctk.CTkFrame):
         run_async(self, lambda: net.scan_networks(client), self._show_nets, self._scan_err)
 
     def _scan_err(self, e: BaseException) -> None:
-        self._scan_btn.configure(state="normal", text="Сканировать сети")
-        self._status.configure(text=f"Скан не удался: {e}", text_color=self.p.fail)
+        self._scan_btn.configure(state="normal", text=_("Сканировать сети"))
+        self._status.configure(text=_("Скан не удался: {0}").format(e), text_color=self.p.fail)
 
     def _show_nets(self, nets: list[net.WifiNetwork]) -> None:
         p = self.p
-        self._scan_btn.configure(state="normal", text="Сканировать заново")
+        self._scan_btn.configure(state="normal", text=_("Сканировать заново"))
         if not nets:
-            ctk.CTkLabel(self._netlist, text="Сети не найдены. Попробуйте ещё раз.",
+            ctk.CTkLabel(self._netlist, text=_("Сети не найдены. Попробуйте ещё раз."),
                          font=fonts.small(), text_color=p.text_muted).grid(row=0, column=0, sticky="w")
             return
         for i, n in enumerate(nets):
             lock = "🔒" if not n.open else "🔓"
-            txt = f"{_signal_bars(n.signal)}  {n.ssid}    {n.band} ГГц  {lock}"
+            txt = _("{0}  {1}    {2} ГГц  {3}").format(_signal_bars(n.signal), n.ssid, n.band, lock)
             ctk.CTkButton(self._netlist, text=txt, font=fonts.body(), anchor="w",
                           fg_color=p.surface_hover, hover_color=p.accent_hover, text_color=p.text,
                           command=lambda net_=n: self._select(net_)).grid(
@@ -336,8 +331,8 @@ class InternetScreen(ctk.CTkFrame):
 
     def _select(self, n: net.WifiNetwork) -> None:
         self._sel = n
-        self._sel_label.configure(text=f"Сеть: {n.ssid} · {n.band} ГГц · "
-                                  + ("открытая" if n.open else n.encryption))
+        self._sel_label.configure(text=_("Сеть: {0} · {1} ГГц · ").format(n.ssid, n.band)
+                                  + (_("открытая") if n.open else n.encryption))
         if n.open:
             self._key.grid_remove()
         else:
@@ -351,12 +346,12 @@ class InternetScreen(ctk.CTkFrame):
         proto = self._proto_label[self._proto_menu.get()]
         vals = {k: e.get().strip() for k, e in self._wan_entries.items()}
         if proto == "pppoe" and not vals.get("username"):
-            self._status.configure(text="Введите логин PPPoE.", text_color=self.p.warn)
+            self._status.configure(text=_("Введите логин PPPoE."), text_color=self.p.warn)
             return
         if proto == "static" and not vals.get("ipaddr"):
-            self._status.configure(text="Введите IP-адрес.", text_color=self.p.warn)
+            self._status.configure(text=_("Введите IP-адрес."), text_color=self.p.warn)
             return
-        self._status.configure(text="Поднимаю кабельное подключение…", text_color=self.p.text_muted)
+        self._status.configure(text=_("Поднимаю кабельное подключение…"), text_color=self.p.text_muted)
         client = self._client
         run_async(self, lambda: net.configure_wan(
             client, proto=proto, username=vals.get("username", ""),
@@ -367,14 +362,14 @@ class InternetScreen(ctk.CTkFrame):
     def _do_wifi(self) -> None:
         n = self._sel
         if n is None:
-            self._status.configure(text="Выберите сеть из списка.", text_color=self.p.warn)
+            self._status.configure(text=_("Выберите сеть из списка."), text_color=self.p.warn)
             return
         key = "" if n.open else self._key.get()
         if not n.open and not key:
-            self._status.configure(text="Введите пароль Wi-Fi.", text_color=self.p.warn)
+            self._status.configure(text=_("Введите пароль Wi-Fi."), text_color=self.p.warn)
             return
         radio = net.radio_for_band(self._radios, n.band)
-        self._status.configure(text=f"Подключаюсь к «{n.ssid}» (до 10 сек)…",
+        self._status.configure(text=_("Подключаюсь к «{0}» (до 10 сек)…").format(n.ssid),
                                text_color=self.p.text_muted)
         client = self._client
         run_async(self, lambda: net.configure_wifi_sta(
@@ -392,7 +387,7 @@ class InternetScreen(ctk.CTkFrame):
             self.refresh()
         else:
             self._status.configure(
-                text="Пока без интернета. Проверьте кабель/пароль или попробуйте другой вариант.",
+                text=_("Пока без интернета. Проверьте кабель/пароль или попробуйте другой вариант."),
                 text_color=self.p.fail)
 
     def _fix_conflict(self) -> None:
@@ -407,16 +402,12 @@ class InternetScreen(ctk.CTkFrame):
         from tkinter import messagebox
 
         agreed = messagebox.askyesno(
-            "Сменить адрес роутера",
-            f"Адрес роутера будет изменён с {c.lan_ip} на {new_ip}, чтобы убрать "
-            f"конфликт с сетью провайдера ({c.wan_subnet}).\n\n"
-            "После смены приложение ПОТЕРЯЕТ связь с роутером — это нормально и ожидаемо. "
-            "Через 20–30 секунд компьютер получит новый адрес, и нужно будет переподключиться "
-            f"к роутеру по адресу {new_ip}.\n\nПродолжить?")
+            _("Сменить адрес роутера"),
+            _("Адрес роутера будет изменён с {0} на {1}, чтобы убрать конфликт с сетью провайдера ({2}).\n\nПосле смены приложение ПОТЕРЯЕТ связь с роутером — это нормально и ожидаемо. Через 20–30 секунд компьютер получит новый адрес, и нужно будет переподключиться к роутеру по адресу {3}.\n\nПродолжить?").format(c.lan_ip, new_ip, c.wan_subnet, new_ip))
         if not agreed:
             return
-        self._fix_btn.configure(state="disabled", text="Меняю адрес…")
-        self._status.configure(text="Меняю адрес роутера…", text_color=self.p.text_muted)
+        self._fix_btn.configure(state="disabled", text=_("Меняю адрес…"))
+        self._status.configure(text=_("Меняю адрес роутера…"), text_color=self.p.text_muted)
         client = self._client
         run_async(self, lambda: net.change_lan_ip(client, new_ip),
                   self._lan_changed, self._fix_err)
@@ -431,15 +422,12 @@ class InternetScreen(ctk.CTkFrame):
         self._conflict_box.grid_remove()
         self._status.configure(text="")
         self._verdict.configure(
-            text=(f"✓ Адрес роутера изменён на {new_ip}.\n\n"
-                  "Связь с роутером сейчас разорвётся — это нормально. Подождите 20–30 секунд, "
-                  "пока компьютер получит новый адрес, затем переподключитесь к роутеру по "
-                  f"адресу {new_ip} (заново откройте подключение в приложении)."),
+            text=(_("✓ Адрес роутера изменён на {0}.\n\nСвязь с роутером сейчас разорвётся — это нормально. Подождите 20–30 секунд, пока компьютер получит новый адрес, затем переподключитесь к роутеру по адресу {1} (заново откройте подключение в приложении).").format(new_ip, new_ip)),
             text_color=self.p.ok)
 
     def _fix_err(self, exc: BaseException) -> None:
-        self._fix_btn.configure(state="normal", text="Сменить и переподключиться")
-        self._status.configure(text=f"Не удалось сменить адрес: {exc}", text_color=self.p.fail)
+        self._fix_btn.configure(state="normal", text=_("Сменить и переподключиться"))
+        self._status.configure(text=_("Не удалось сменить адрес: {0}").format(exc), text_color=self.p.fail)
 
     def _scroll_to_top(self) -> None:
         try:

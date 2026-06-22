@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Nodes & subscriptions operations — thin wrappers over the router's own scripts.
 
 Uses the built-in mechanisms (never hand-rolls parsing): subscriptions via uci
@@ -52,7 +53,7 @@ def add_subscription(client: RouterClient, url: str) -> None:
     # AEAD; 23.05 lacks ucode-mod-digest/zlib) — the App must decode them, then add
     # the resulting https:// URL here. Validated path (2026-06-19): bundle the
     # upstream `happ-decrypt-universal` CLI (Apache-2.0) and call it as a SEPARATE
-    # process — arm's-length aggregation, so no GPL/Apache combine issue — then
+    # process — arm's-length aggregation, so no license-combine issue — then
     # parse the URL from its "Result" stdout block. See memory: happ-crypt-link-decode.
     #
     # if url.startswith("happ://"):

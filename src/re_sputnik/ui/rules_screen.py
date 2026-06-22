@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """Rules section — routing mode selector + RU-mode flag toggles (editable).
 
 Logos and the full service→node binding table are deferred. This covers the
@@ -20,18 +21,19 @@ from .icons import has_real_icon, service_icon
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
+from ..i18n import N_, _
 
 # routing_mode uci value <-> human label (mirrors client.js, with RU renames).
+# Labels are N_-marked and translated with _() at the render/lookup sites.
 _MODE_LABELS = {
-    "proxy_banned_ru": "Россия (раздельное туннелирование)",
-    "global": "Глобальный (весь трафик через прокси)",
-    "gfwlist": "Китай — GFWList",
-    "bypass_mainland_china": "Китай — Direct",
-    "proxy_mainland_china": "Китай — Proxy",
-    "custom": "Своя маршрутизация",
-    "custom_json": "Свой JSON",
+    "proxy_banned_ru": N_("Россия (раздельное туннелирование)"),
+    "global": N_("Глобальный (весь трафик через прокси)"),
+    "gfwlist": N_("Китай — GFWList"),
+    "bypass_mainland_china": N_("Китай — Direct"),
+    "proxy_mainland_china": N_("Китай — Proxy"),
+    "custom": N_("Своя маршрутизация"),
+    "custom_json": N_("Свой JSON"),
 }
-_LABEL_TO_MODE = {v: k for k, v in _MODE_LABELS.items()}
 
 # Modes the app OFFERS in the dropdown. The China/custom/json modes still resolve
 # via _MODE_LABELS (so a router already set to one, e.g. in LuCI, displays right),
@@ -47,7 +49,7 @@ _GLOBAL_FLAGS: list[tuple[str, str]] = []
 
 # Short explainer of what "раздельное туннелирование" means for THIS app's presets
 # (default-direct + only blocked-in-RU traffic via the proxy).
-_SPLIT_TUNNEL_HELP = (
+_SPLIT_TUNNEL_HELP = N_(
     "Раздельное туннелирование: по умолчанию весь трафик идёт напрямую (как обычно "
     "и быстро), а через VPN направляется только то, что заблокировано в России — по "
     "списку Re:filter (домены и IP из реестра РКН) и выбранным сервисам ниже. "
@@ -59,11 +61,11 @@ _SPLIT_TUNNEL_HELP = (
 # icon names, invert). `invert=True` means the switch ON corresponds to uci '0'
 # (no_proxy_torrents is phrased negatively: ON = "proxy torrents" = flag '0').
 _TRAFFIC_TOGGLES = [
-    ("proxy_calls", "Звонки в мессенджерах через прокси",
-     "WhatsApp, Telegram, FaceTime и др. — пускать голос/видео через прокси.",
+    ("proxy_calls", N_("Звонки в мессенджерах через прокси"),
+     N_("WhatsApp, Telegram, FaceTime и др. — пускать голос/видео через прокси."),
      ("whatsapp", "telegram"), False),
-    ("no_proxy_torrents", "Торренты через прокси",
-     "Рекомендуем отключить — торренты перегружают канал и часто заблокированы на серверах.",
+    ("no_proxy_torrents", N_("Торренты через прокси"),
+     N_("Рекомендуем отключить — торренты перегружают канал и часто заблокированы на серверах."),
      ("torrent",), True),
 ]
 
@@ -87,10 +89,10 @@ class RulesScreen(ctk.CTkFrame):
         self._body.grid(row=0, column=0, padx=24, pady=16, sticky="nsew")
         self._body.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(self._body, text="Правила", font=fonts.title(), text_color=palette.text,
+        ctk.CTkLabel(self._body, text=_("Правила"), font=fonts.title(), text_color=palette.text,
                      image=kit.icon(kit._ICON_FOR["rules"], 26), compound="left").grid(
             row=0, column=0, pady=(4, 8), sticky="w")
-        self._status = ctk.CTkLabel(self._body, text="Считываю правила…", font=fonts.small(),
+        self._status = ctk.CTkLabel(self._body, text=_("Считываю правила…"), font=fonts.small(),
                                     text_color=palette.text_muted, anchor="w")
         self._status.grid(row=1, column=0, sticky="w", pady=(0, 8))
         self._card = ctk.CTkFrame(self._body, fg_color=palette.surface, corner_radius=12)
@@ -111,7 +113,7 @@ class RulesScreen(ctk.CTkFrame):
         self._nodes: list[nodeng.Node] = []
         self._rules: list[ruleng.RuRule] = []
 
-        self._restart_btn = ctk.CTkButton(self._body, text="Применить изменения", font=fonts.body(),
+        self._restart_btn = ctk.CTkButton(self._body, text=_("Применить изменения"), font=fonts.body(),
                                            width=200, fg_color=palette.accent, text_color=palette.accent_fg,
                                            hover_color=palette.accent_hover, state="disabled",
                                            command=self._restart)
@@ -122,14 +124,14 @@ class RulesScreen(ctk.CTkFrame):
             nav = ctk.CTkFrame(self._body, fg_color="transparent")
             nav.grid(row=6, column=0, sticky="ew", pady=(4, 8))
             nav.grid_columnconfigure(0, weight=1)
-            ctk.CTkButton(nav, text="Далее →", font=fonts.heading(), height=42, fg_color=palette.ok,
+            ctk.CTkButton(nav, text=_("Далее →"), font=fonts.heading(), height=42, fg_color=palette.ok,
                           hover_color=palette.accent_hover, command=self._continue).grid(
                 row=0, column=0, columnspan=3, sticky="ew", pady=(0, 4))
-            ctk.CTkButton(nav, text="Пропустить", font=fonts.body(), fg_color="transparent",
+            ctk.CTkButton(nav, text=_("Пропустить"), font=fonts.body(), fg_color="transparent",
                           hover_color=palette.surface_hover, command=self._on_done).grid(
                 row=1, column=0, sticky="w")
             if self._on_back is not None:
-                ctk.CTkButton(nav, text="← Назад", font=fonts.body(), fg_color="transparent",
+                ctk.CTkButton(nav, text=_("← Назад"), font=fonts.body(), fg_color="transparent",
                               hover_color=palette.surface_hover, width=90,
                               command=self._on_back).grid(row=1, column=1, padx=(8, 0))
         self.refresh()
@@ -138,12 +140,12 @@ class RulesScreen(ctk.CTkFrame):
         # Apply pending changes (restart) before advancing, so the next screen sees
         # a live config; if nothing's dirty, just move on.
         if self._dirty and self._on_done is not None:
-            self._restart_btn.configure(state="disabled", text="Применяю…")
+            self._restart_btn.configure(state="disabled", text=_("Применяю…"))
             client = self._client
             run_async(self, lambda: client.ubus_homeproxy("diag_service_restart", timeout=40),
                       lambda _r: (self._after_restart(_r), self._on_done()),
-                      lambda e: (self._restart_btn.configure(state="normal", text="Применить изменения"),
-                                 self._status.configure(text=f"Ошибка применения: {e}. Повторите или «Пропустить».",
+                      lambda e: (self._restart_btn.configure(state="normal", text=_("Применить изменения")),
+                                 self._status.configure(text=_("Ошибка применения: {0}. Повторите или «Пропустить».").format(e),
                                                         text_color=self.p.fail)))
         elif self._on_done is not None:
             self._on_done()
@@ -167,7 +169,7 @@ class RulesScreen(ctk.CTkFrame):
             return d
 
         run_async(self, task, self._render, lambda e: self._status.configure(
-            text=f"Ошибка: {e}", text_color=self.p.fail))
+            text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     @staticmethod
     def _main_node_display(value: str | None, nodes: list) -> str:
@@ -194,10 +196,10 @@ class RulesScreen(ctk.CTkFrame):
             w.destroy()
         mode = d["routing_mode"]
 
-        ctk.CTkLabel(self._card, text="Режим маршрутизации", font=fonts.body(),
+        ctk.CTkLabel(self._card, text=_("Режим маршрутизации"), font=fonts.body(),
                      text_color=p.text_muted).grid(row=0, column=0, padx=(16, 12), pady=(12, 6), sticky="w")
-        offered = [_MODE_LABELS[k] for k in _OFFERED_MODES if k in _MODE_LABELS]
-        cur_label = _MODE_LABELS.get(mode, mode)
+        offered = [_(_MODE_LABELS[k]) for k in _OFFERED_MODES if k in _MODE_LABELS]
+        cur_label = _(_MODE_LABELS.get(mode, mode))
         if cur_label and cur_label not in offered:
             offered.append(cur_label)  # show the router's current mode even if not offered
         self._mode_menu = ctk.CTkOptionMenu(
@@ -208,7 +210,7 @@ class RulesScreen(ctk.CTkFrame):
         self._mode_menu.grid(row=0, column=1, padx=(0, 16), pady=(12, 6), sticky="ew")
 
         if mode == "proxy_banned_ru":
-            ctk.CTkLabel(self._card, text=_SPLIT_TUNNEL_HELP, font=fonts.small(),
+            ctk.CTkLabel(self._card, text=_(_SPLIT_TUNNEL_HELP), font=fonts.small(),
                          text_color=p.text_muted, wraplength=560, justify="left",
                          anchor="w").grid(row=1, column=0, columnspan=2, padx=16, pady=(2, 8),
                                           sticky="w")
@@ -241,7 +243,7 @@ class RulesScreen(ctk.CTkFrame):
         for w in self._traffic_card.winfo_children():
             w.destroy()
         self._traffic_card.grid()
-        kit.SectionHeader(self._traffic_card, p, "traffic", "Особый трафик").grid(
+        kit.SectionHeader(self._traffic_card, p, "traffic", _("Особый трафик")).grid(
             row=0, column=0, padx=16, pady=(12, 6), sticky="w")
         for i, (key, title, subtitle, brands, invert) in enumerate(_TRAFFIC_TOGGLES, start=1):
             rowf = ctk.CTkFrame(self._traffic_card, fg_color=p.surface_hover, corner_radius=8)
@@ -255,9 +257,9 @@ class RulesScreen(ctk.CTkFrame):
                 logos.grid(row=0, column=0, rowspan=2, padx=(12, 8), pady=8)
                 for j, b in enumerate(real):
                     ctk.CTkLabel(logos, text="", image=service_icon(b)).grid(row=0, column=j, padx=1)
-            ctk.CTkLabel(rowf, text=title, font=fonts.body(), text_color=p.text, anchor="w").grid(
+            ctk.CTkLabel(rowf, text=_(title), font=fonts.body(), text_color=p.text, anchor="w").grid(
                 row=0, column=1, padx=0, pady=(8, 0), sticky="w")
-            ctk.CTkLabel(rowf, text=subtitle, font=fonts.small(), text_color=p.text_muted,
+            ctk.CTkLabel(rowf, text=_(subtitle), font=fonts.small(), text_color=p.text_muted,
                          anchor="w", wraplength=420, justify="left").grid(
                 row=1, column=1, padx=0, pady=(0, 8), sticky="w")
             # invert: switch ON == route through proxy == uci '0' for no_proxy_torrents.
@@ -279,7 +281,7 @@ class RulesScreen(ctk.CTkFrame):
             client.uci_commit("homeproxy")
 
         run_async(self, task, lambda _r: self._mark_dirty(), lambda e: self._status.configure(
-            text=f"Ошибка: {e}", text_color=self.p.fail))
+            text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     # ----- service→node bindings ----------------------------------------
 
@@ -288,16 +290,16 @@ class RulesScreen(ctk.CTkFrame):
         for w in self._bind_card.winfo_children():
             w.destroy()
         self._bind_card.grid()
-        kit.SectionHeader(self._bind_card, p, "links", "Привязка сервисов к серверам").grid(
+        kit.SectionHeader(self._bind_card, p, "links", _("Привязка сервисов к серверам")).grid(
             row=0, column=0, padx=16, pady=(12, 2), sticky="w")
         ctk.CTkLabel(self._bind_card,
-                     text="Маршрут по умолчанию — прямой. Добавленные правила проксируются с "
+                     text=_("Маршрут по умолчанию — прямой. Добавленные правила проксируются с "
                      "автоматическим приоритетом:\n"
                      "1. Небольшие списки (YouTube, Discord и т.д.)\n"
                      "2. Russia Inside (1000+ доменов, itdoginfo) — общий набор небольших списков "
                      "(YouTube, Discord, Telegram, Meta…)\n"
                      "3. Re:filter (60000+ доменов + 25000+ IP) — список заблокированных в России "
-                     "доменов и IP (Роскомнадзор, от сообщества)",
+                     "доменов и IP (Роскомнадзор, от сообщества)"),
                      font=fonts.small(), text_color=p.text_muted, wraplength=540,
                      justify="left").grid(row=1, column=0, padx=16, pady=(0, 8), sticky="w")
 
@@ -305,7 +307,7 @@ class RulesScreen(ctk.CTkFrame):
         rows.grid(row=2, column=0, padx=8, sticky="ew")
         rows.grid_columnconfigure(0, weight=1)
         if not self._rules:
-            ctk.CTkLabel(rows, text="Пока нет привязок.", font=fonts.small(),
+            ctk.CTkLabel(rows, text=_("Пока нет привязок."), font=fonts.small(),
                          text_color=p.text_muted).grid(row=0, column=0, padx=8, pady=4, sticky="w")
         for i, r in enumerate(self._rules):
             line = ctk.CTkFrame(rows, fg_color=p.surface_hover, corner_radius=8)
@@ -321,19 +323,19 @@ class RulesScreen(ctk.CTkFrame):
                           command=lambda sec=r.section: self._remove_binding(sec)).grid(
                 row=0, column=2, padx=(0, 8), pady=4)
 
-        ctk.CTkLabel(self._bind_card, text="Логотипы — товарные знаки соответствующих владельцев, "
-                     "используются лишь для обозначения сервиса.", font=fonts.small(),
+        ctk.CTkLabel(self._bind_card, text=_("Логотипы — товарные знаки соответствующих владельцев, "
+                     "используются лишь для обозначения сервиса."), font=fonts.small(),
                      text_color=self.p.text_muted, wraplength=540, justify="left").grid(
             row=4, column=0, padx=16, pady=(2, 8), sticky="w")
 
         # Add-rule row: source + node + add.
         used = {r.source for r in self._rules}
-        avail = [(v, lbl) for v, lbl in ruleng.SERVICE_SOURCES if v not in used]
+        avail = [(v, _(lbl)) for v, lbl in ruleng.SERVICE_SOURCES if v not in used]
         add = ctk.CTkFrame(self._bind_card, fg_color="transparent")
         add.grid(row=3, column=0, padx=8, pady=(8, 12), sticky="ew")
         add.grid_columnconfigure((0, 1), weight=1)
         if not avail:
-            ctk.CTkLabel(add, text="Все сервисы уже добавлены.", font=fonts.small(),
+            ctk.CTkLabel(add, text=_("Все сервисы уже добавлены."), font=fonts.small(),
                          text_color=p.text_muted).grid(row=0, column=0, sticky="w", padx=8)
             return
         self._src_labels = {lbl: v for v, lbl in avail}
@@ -341,14 +343,14 @@ class RulesScreen(ctk.CTkFrame):
                                            fg_color=p.surface_hover, button_color=p.accent,
                                            button_hover_color=p.accent_hover)
         self._src_menu.grid(row=0, column=0, padx=8, pady=4, sticky="ew")
-        node_opts = list(ruleng.NODE_SPECIAL) + [(n.section, f"{n.label or n.section} ({n.type})")
+        node_opts = [(v, _(lbl)) for v, lbl in ruleng.NODE_SPECIAL] + [(n.section, f"{n.label or n.section} ({n.type})")
                                                  for n in self._nodes]
         self._node_labels = {lbl: v for v, lbl in node_opts}
         self._node_menu = ctk.CTkOptionMenu(add, values=[lbl for _v, lbl in node_opts], font=fonts.body(),
                                             fg_color=p.surface_hover, button_color=p.accent,
                                             button_hover_color=p.accent_hover)
         self._node_menu.grid(row=0, column=1, padx=8, pady=4, sticky="ew")
-        ctk.CTkButton(add, text="+ Добавить", font=fonts.body(), fg_color=p.accent, text_color=p.accent_fg,
+        ctk.CTkButton(add, text=_("+ Добавить"), font=fonts.body(), fg_color=p.accent, text_color=p.accent_fg,
                       hover_color=p.accent_hover, width=110, command=self._add_binding).grid(
             row=0, column=2, padx=8, pady=4)
 
@@ -360,24 +362,24 @@ class RulesScreen(ctk.CTkFrame):
         client = self._client
         run_async(self, lambda: ruleng.add_rule(client, source, node),
                   lambda _r: (self._mark_dirty(), self.refresh()),
-                  lambda e: self._status.configure(text=f"Ошибка: {e}", text_color=self.p.fail))
+                  lambda e: self._status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     def _remove_binding(self, section: str) -> None:
         client = self._client
         run_async(self, lambda: ruleng.remove_rule(client, section),
                   lambda _r: (self._mark_dirty(), self.refresh()),
-                  lambda e: self._status.configure(text=f"Ошибка: {e}", text_color=self.p.fail))
+                  lambda e: self._status.configure(text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     # ----- edits --------------------------------------------------------
 
     def _mark_dirty(self) -> None:
         self._dirty = True
         self._restart_btn.configure(state="normal")
-        self._status.configure(text="Изменено. Нажмите «Применить изменения».",
+        self._status.configure(text=_("Изменено. Нажмите «Применить изменения»."),
                                text_color=self.p.warn)
 
     def _on_mode(self, label: str) -> None:
-        mode = _LABEL_TO_MODE.get(label)
+        mode = {_(v): k for k, v in _MODE_LABELS.items()}.get(label)
         if not mode:
             return
         client = self._client
@@ -391,7 +393,7 @@ class RulesScreen(ctk.CTkFrame):
             self.refresh()  # re-render flags for the new mode
 
         run_async(self, task, done, lambda e: self._status.configure(
-            text=f"Ошибка: {e}", text_color=self.p.fail))
+            text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     def _on_flag(self, key: str, var: ctk.StringVar) -> None:
         value = var.get()
@@ -402,20 +404,20 @@ class RulesScreen(ctk.CTkFrame):
             client.uci_commit("homeproxy")
 
         run_async(self, task, lambda _r: self._mark_dirty(), lambda e: self._status.configure(
-            text=f"Ошибка: {e}", text_color=self.p.fail))
+            text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     def _restart(self) -> None:
-        self._restart_btn.configure(state="disabled", text="Применяю…")
+        self._restart_btn.configure(state="disabled", text=_("Применяю…"))
         client = self._client
         run_async(self, lambda: client.ubus_homeproxy("diag_service_restart", timeout=40),
                   self._after_restart, lambda e: self._status.configure(
-                      text=f"Ошибка: {e}", text_color=self.p.fail))
+                      text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
 
     def _after_restart(self, res: dict[str, Any]) -> None:
-        self._restart_btn.configure(text="Применить изменения")
+        self._restart_btn.configure(text=_("Применить изменения"))
         if res.get("result"):
             self._dirty = False
-            self._status.configure(text="Изменения применены.", text_color=self.p.ok)
+            self._status.configure(text=_("Изменения применены."), text_color=self.p.ok)
         else:
             self._restart_btn.configure(state="normal")
-            self._status.configure(text="Не удалось применить изменения.", text_color=self.p.fail)
+            self._status.configure(text=_("Не удалось применить изменения."), text_color=self.p.fail)

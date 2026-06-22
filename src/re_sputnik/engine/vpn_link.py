@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
+# SPDX-License-Identifier: LicenseRef-Proprietary
+# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
 """AmneziaVPN ``vpn://`` share-link import — decoded entirely on the PC.
 
 ``vpn://`` is a container format: ``vpn://`` + base64url( qCompress(JSON) ), where
