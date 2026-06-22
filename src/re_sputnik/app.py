@@ -711,7 +711,10 @@ class App(ctk.CTk):
         # go back past firstrun, which changed credentials). Each step threads its
         # own back, so the chain reconstructs from the live device on the way back.
         back = lambda: self.show_internet(client, state)  # noqa: E731
-        if not state.homeproxy_installed:
+        # A pre-rename package counts as "needs install" so Quick Setup MIGRATES it to
+        # luci-app-re-homeproxy (the software step removes the old + installs the new),
+        # instead of skipping and leaving the outdated app running.
+        if not state.homeproxy_installed or state.legacy_app:
             self.show_software(client, state, back=back)
         elif not state.has_config:
             self.show_nodes(client, state, back=back)

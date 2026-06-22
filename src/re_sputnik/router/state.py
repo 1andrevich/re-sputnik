@@ -50,6 +50,7 @@ class RouterState:
 
     package_manager: PackageManager = PackageManager.UNKNOWN
     homeproxy_installed: bool = False
+    legacy_app: bool = False                    # a pre-rename luci-app-homeproxy* pkg is installed
     preferred_core: Optional[str] = None        # 'hiddify' / 'sing-box' / None
     has_config: bool = False                    # homeproxy has a main node set
 
@@ -138,6 +139,14 @@ def detect_state(client: RouterClient, *, our_public_key: Optional[str] = None) 
         st.preferred_core = client.uci_get("homeproxy.config.preferred_core") or None
         main_node = client.uci_get("homeproxy.config.main_node")
         st.has_config = bool(main_node) and main_node not in ("", "nil")
+    # A REAL pre-rename package (luci-app-homeproxy-hiddify / luci-app-homeproxy) still
+    # installed — file presence can't tell it from the new luci-app-re-homeproxy, so we
+    # check the installed-package list (apk `info -e` would match the new pkg's
+    # `provides`). Drives the migration offer instead of silently keeping the old app.
+    st.legacy_app = bool(client.run(
+        "(apk info 2>/dev/null || opkg list-installed 2>/dev/null) "
+        "| grep -E '^luci-app-homeproxy-hiddify( |$)|^luci-app-homeproxy( |$)'"
+    ).stdout.strip())
 
     # Does root already have a password? (so we never overwrite it)
     st.root_has_password = root_has_password(client)

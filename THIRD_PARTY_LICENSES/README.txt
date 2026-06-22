@@ -19,14 +19,11 @@ Bundled license texts in this directory:
   Lucide-ISC.txt             Lucide icons      (ISC, + Feather MIT)
   Phosphor-MIT.txt           Phosphor Icons    (MIT)
 
-Linux build only (bundled in the .AppImage, not the Windows/macOS builds):
+Linux-only dependencies — bundled only in the .AppImage, but their texts are
+shipped on every platform (harmless extra attribution):
 
-  SecretStorage              (BSD-3-Clause)    https://github.com/mitya57/secretstorage
-  jeepney                    (MIT)             https://gitlab.com/takluyver/jeepney
-
-Their license texts are added to this directory by the Linux build job. To
-refresh any text from the installed wheel, copy the LICENSE file from the
-package's *.dist-info directory.
+  SecretStorage-BSD-3-Clause.txt   SecretStorage   (BSD-3-Clause)
+  jeepney-MIT.txt                  jeepney         (MIT)
 
 Icons and fonts (see NOTICE section 2 for details and trademark status):
   Simple Icons (CC0-1.0), Lucide/Phosphor (ISC/MIT), Twemoji flags (CC-BY 4.0).

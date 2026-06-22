@@ -422,8 +422,17 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     # PC fetched them over https, the router has no repo keys for these).
     remotes = " ".join(p.remote for p in pkgs)
     say(_("Устанавливаю пакеты…"))
+    if with_app:
+        # If the router still has the pre-rename package, remove it first so the new
+        # luci-app-re-homeproxy replaces it cleanly (offline `apk del` needs no network).
+        from .install_app import remove_legacy_app
+        remove_legacy_app(client, ti.pkg_manager, say)
     if ti.pkg_manager == "apk":
-        cmd = f"apk add --no-cache --allow-untrusted {remotes}"
+        # NO --no-cache: it forces apk to refetch the repo indexes over the network,
+        # which defeats the whole point of an OFFLINE install (and fails on a router
+        # with no/poor uplink). All deps are staged as local files, so apk needs no
+        # index. See memory: apk --no-cache forces index refetch.
+        cmd = f"apk add --allow-untrusted {remotes}"
     else:
         cmd = f"opkg install {remotes}"
     out = client.run(f"{cmd} 2>&1; RC=$?; rm -f {remotes}; exit $RC", timeout=180)

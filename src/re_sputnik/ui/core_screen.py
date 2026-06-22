@@ -370,6 +370,14 @@ class CoreScreen(ctk.CTkFrame):
             self._app_ver.configure(text=_("Приложение не установлено."), text_color=p.warn)
             self._app_btn.configure(text=_("Установить"), state="normal", fg_color=p.accent,
                                     hover_color=p.accent_hover, text_color=p.accent_fg)
+        elif inst == install_app.LEGACY_INSTALLED:
+            # Pre-rename package present — offer the migration to luci-app-re-homeproxy.
+            self._app_ver.configure(
+                text=_("Установлена прежняя версия (luci-app-homeproxy-hiddify) · "
+                       "доступно обновление {0}").format(latest or "").rstrip(" ·"),
+                text_color=p.warn)
+            self._app_btn.configure(text=_("Обновить приложение"), state="normal", fg_color=p.accent,
+                                    hover_color=p.accent_hover, text_color=p.accent_fg)
         elif install_app.is_newer(latest, inst):
             self._app_ver.configure(text=_("Установлено {0} · доступно {1}").format(inst, latest), text_color=p.warn)
             self._app_btn.configure(text=_("Обновить приложение"), state="normal", fg_color=p.accent,

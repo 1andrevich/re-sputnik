@@ -39,9 +39,13 @@ PUBKEY_NAME = "homeproxy-hiddify.pub"
 CORE_MGMT = "/usr/share/homeproxy/scripts/core_mgmt.uc"
 APP_PKG = "luci-app-re-homeproxy"
 
-# Pin specific releases for ongoing testing — install the LuCI package from
-# THESE exact tags instead of scanning for the newest. Set BOTH to None to
-# resume the newest-first "latest" scan once a stable release is the target.
+# ⚠️ TEMPORARY pins for ongoing testing — install the LuCI package from THESE exact
+# tags instead of scanning for the newest.
+# END STATE (once real STABLE releases resume): set BOTH to None so that BOTH fresh
+# install AND update pull the LATEST STABLE release — never a prerelease/dev tag:
+#   • non-legacy → GitHub `releases/latest` (newest non-prerelease);
+#   • legacy (23.05) → the newest `*-legacy` release (latest legacy, kept current).
+# (See the matching TODO in the version-ranking block below.)
 PINNED_TAG: Optional[str] = "2026.06.22-r1-dev"            # 24.10+ / non-legacy
 PINNED_TAG_LEGACY: Optional[str] = "2026.06.22-r1-legacy"  # OpenWrt 23.05 (legacy .ipk)
 
@@ -218,7 +222,23 @@ def resolve_app_assets(ti: TargetInfo, language: str, *, use_latest: bool = Fals
         if not rel.get("prerelease"):
             if best_stable is None or key > best_stable[0]:
                 best_stable = (key, cand)
-    chosen = best_stable or best_any
+    # ⚠️ TEMPORARY (since 2026-06) — track the newest release in ANY status,
+    # including PRERELEASES. The project currently ships only dev prereleases, which
+    # ARE the genuine latest; preferring stable would pin the update check to an old
+    # stable (e.g. 2026.06.16) and hide a newer prerelease (2026.06.22-dev), so the
+    # app would wrongly report "you're up to date". Stable is preferred only to break
+    # a tie at the SAME version.
+    # TODO (end state, once real STABLE releases resume): BOTH install AND update
+    # must use the LATEST STABLE release, never a prerelease/dev tag —
+    #   • non-legacy → newest NON-prerelease (revert to `chosen = best_stable or
+    #     best_any`, i.e. stable-preferred);
+    #   • legacy (23.05) → newest `*-legacy` release regardless of status.
+    # Also drop PINNED_TAG/PINNED_TAG_LEGACY (set to None) so install stops targeting
+    # a hand-picked tag and follows the same latest-stable resolution as update.
+    if best_any and best_stable:
+        chosen = best_any if best_any[0] > best_stable[0] else best_stable
+    else:
+        chosen = best_stable or best_any
     if chosen:
         return chosen[1]
     where = f"релизе {pin}" if pin else f"релизах {HP_REPO}"
@@ -321,6 +341,59 @@ def _install_luci_i18n(client: RouterClient, pm: str, language: str,
     return True
 
 
+# Packages this one supersedes (the pre-rename lineage). Removed before installing
+# the new package so an upgrade from the old name is a CLEAN replacement — no file
+# conflict, no orphaned package left registered. The shared /etc/config/homeproxy is
+# a conffile and survives the removal. Mirrors the package's own Provides/Replaces.
+LEGACY_APP_PKGS = ("luci-app-homeproxy-hiddify", "luci-app-homeproxy")
+
+# Sentinel returned by app_installed_version() when ONLY a pre-rename package is
+# installed (new name absent): the UI shows it as "old version → migration available".
+LEGACY_INSTALLED = "legacy"
+
+
+def legacy_app_installed(client: RouterClient, pm: str) -> str:
+    """Name of a REAL (not merely 'provided') pre-rename package installed on the
+    router, or '' if none. apk `info -e` matches PROVIDED names (the new pkg provides
+    the old ones), so detect via the real installed-name list instead."""
+    for old in LEGACY_APP_PKGS:
+        if pm == "apk":
+            real = bool(client.run(f"apk info 2>/dev/null | grep -xF {old}").stdout.strip())
+        else:
+            real = bool(client.run(
+                f"opkg list-installed 2>/dev/null | grep '^{old} '").stdout.strip())
+        if real:
+            return old
+    return ""
+
+
+def remove_legacy_app(client: RouterClient, pm: str, say: "Optional[Progress]" = None) -> None:
+    """Remove any pre-rename homeproxy package before the new one is installed.
+    No-op when none is present; best-effort (never aborts the install)."""
+    for old in LEGACY_APP_PKGS:
+        if pm == "apk":
+            # CAUTION: `apk info -e <name>` ALSO matches PROVIDED names — the new
+            # package `provides` the old ones, so `-e` returns true even when no real
+            # old package is installed, and `apk del <provided-name>` would remove the
+            # PROVIDER (the new app!). Match only a REAL installed package by its name
+            # in the installed-package list.
+            present = bool(client.run(f"apk info 2>/dev/null | grep -xF {old}").stdout.strip())
+            cmd = f"apk del {old}"
+        else:
+            present = bool(client.run(
+                f"opkg list-installed 2>/dev/null | grep '^{old} '").stdout.strip())
+            # --force-depends: the OLD luci-i18n-homeproxy-* packages depend on the OLD
+            # app name and would otherwise BLOCK removal ("depended upon by …"). It
+            # removes ONLY the app (not the dependents); the i18n keeps working (its
+            # .lmo files stay) and its broken dependency is repaired when run()/
+            # update_app()/preinstall reinstall the NEW i18n right after.
+            cmd = f"opkg remove --force-depends {old}"
+        if present:
+            if say:
+                say(f"Удаляю старый пакет {old}…")
+            client.run(f"{cmd} 2>/dev/null; true", timeout=90)
+
+
 # ----- orchestration ----------------------------------------------------
 
 
@@ -365,6 +438,8 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         if not _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}"):
             res.error = _("не удалось скачать пакет приложения на роутер")
             return res
+        # Clean replacement if the router still has the pre-rename package.
+        remove_legacy_app(client, pm, say)
         # A local-file install doesn't need a repo refresh — skipping `apk update`
         # avoids a flaky feed index aborting the app install.
         # Streamed so the (slow over Wi-Fi) dependency pulls show live in the log.
@@ -536,18 +611,23 @@ def install_core(client: RouterClient, ti: TargetInfo, core: str, *,
 
 
 def app_installed_version(client: RouterClient) -> str:
-    """Installed version string of the LuCI app, or '' if absent/unknown."""
+    """Installed version of the LuCI app, or '' if absent. Returns the
+    ``LEGACY_INSTALLED`` sentinel when the NEW package is absent but a REAL pre-rename
+    package is installed — so the Core screen offers a migration update instead of
+    wrongly reporting "not installed"."""
+    is_apk = client.run("command -v apk >/dev/null 2>&1").ok
     out = client.run(
-        "if command -v apk >/dev/null 2>&1; then "
-        f"apk list -I {APP_PKG} 2>/dev/null | head -1; "
-        f"else opkg status {APP_PKG} 2>/dev/null | sed -n 's/^Version: //p'; fi"
+        f"apk list -I {APP_PKG} 2>/dev/null | head -1" if is_apk
+        else f"opkg status {APP_PKG} 2>/dev/null | sed -n 's/^Version: //p'"
     ).stdout.strip()
-    if not out:
-        return ""
-    # apk: "<pkg>-<ver> <arch> {...} ..."  → strip the "<pkg>-" prefix, take field 1.
-    if out.startswith(APP_PKG + "-"):
-        return out[len(APP_PKG) + 1:].split()[0]
-    return out.split()[0]  # opkg: the Version: line is already just the version
+    if out:
+        # apk: "<pkg>-<ver> <arch> {...} ..." → strip the "<pkg>-" prefix, take field 1.
+        if out.startswith(APP_PKG + "-"):
+            return out[len(APP_PKG) + 1:].split()[0]
+        return out.split()[0]  # opkg: the Version: line is already just the version
+    if legacy_app_installed(client, "apk" if is_apk else "opkg"):
+        return LEGACY_INSTALLED
+    return ""
 
 
 def app_versions(client: RouterClient, ti: TargetInfo, language: str = "ru") -> tuple[str, str]:
@@ -585,6 +665,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
         ).stdout.strip().endswith("OK")
     if not _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}"):
         return False, _("не удалось скачать пакет приложения")
+    remove_legacy_app(client, pm, say)  # clean replacement if old-name pkg present
     if pm == "apk":
         flag = "" if trusted else "--allow-untrusted "
         inst = client.run_stream(f"apk add {flag}/tmp/{APP_PKG}{ti.ext} 2>&1",
