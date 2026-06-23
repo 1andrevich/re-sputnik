@@ -53,6 +53,9 @@ _DNS_HELP = N_(
     "провайдер не видит и не может подменить ваши запросы."
 )
 
+# rpcd returns the region label in English; localize it for the DNS row title.
+_REGION_NAMES = {"Russia": N_("Россия"), "China": N_("Китай"), "Iran": N_("Иран")}
+
 
 class OverviewScreen(ctk.CTkFrame):
     def __init__(
@@ -766,7 +769,7 @@ class OverviewScreen(ctk.CTkFrame):
         p = self.p
         dns = d.get("dns") or {}
         if not isinstance(dns, dict) or dns.get("skip"):
-            return row  # only meaningful in the Russia (proxy_banned_ru) mode
+            return row  # only meaningful in the selective modes (RU/CN/IR)
         card = self._card("DNS", row)
         # Help "?" toggle next to the title (explains DNS + Россия/Защищённый).
         ctk.CTkButton(card, text="?", width=26, height=26, corner_radius=13,
@@ -784,8 +787,11 @@ class OverviewScreen(ctk.CTkFrame):
             return row + 1
         inner = ctk.CTkFrame(card, fg_color="transparent")
         inner.grid(row=1, column=0, columnspan=2, padx=16, pady=(0, 12), sticky="ew")
-        self._dns_row(inner, 0, _("Россия — протестировано на mail.ru"),
-                      dns.get("russia_ok"), dns.get("russia_server"))
+        region = _(_REGION_NAMES.get(dns.get("region_label"), dns.get("region_label") or ""))
+        domain = dns.get("region_domain") or "?"
+        region_label = (_("{0} — протестировано на {1}").format(region, domain)
+                        if region else domain)
+        self._dns_row(inner, 0, region_label, dns.get("region_ok"), dns.get("region_server"))
         self._dns_row(inner, 1, _("Защищённый — протестировано на andrevi.ch"),
                       dns.get("secure_ok"), dns.get("secure_server"))
         return row + 1

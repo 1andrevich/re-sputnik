@@ -697,7 +697,18 @@ def list_radio_wifi(client: RouterClient) -> list[RadioWifi]:
     Excludes nothing — a radio used as the STA uplink is flagged (``is_sta``) so
     the UI can show it read-only."""
     ifaces = _wifi_ifaces(client)
-    sta_radio = client.uci_get("wireless.sta.device")
+    # A radio is the Wi-Fi uplink if ANY iface on it is in client mode — not just
+    # a section literally named "sta". OpenWrt names STA ifaces variously (sta,
+    # wwan, default_radioN…); keying on the name alone misses them and the radio
+    # then falls through to the "channel list unavailable" warning. Detect by mode.
+    sta_radios = {
+        opt.get("device")
+        for opt in ifaces.values()
+        if opt.get("mode") in ("sta", "mesh", "adhoc") and opt.get("device")
+    }
+    named_sta = client.uci_get("wireless.sta.device")
+    if named_sta:
+        sta_radios.add(named_sta)
     up = _radios_up(client)
     ifname_map = _radio_ifname_map(client)
     out: list[RadioWifi] = []
@@ -709,18 +720,34 @@ def list_radio_wifi(client: RouterClient) -> list[RadioWifi]:
                 ap_sec, ap_opt = sec, opt
                 break
         channel = client.uci_get(f"wireless.{r.name}.channel") or "auto"
-        # Real per-radio channels (iwinfo, like LuCI). If iwinfo can't report
-        # (radio down / unavailable) the list stays EMPTY — we then have no
-        # trustworthy basis to configure this radio, so the UI marks it and won't
-        # let it be edited. No fabricated static fallback.
+        is_sta = (r.name in sta_radios)
+        radio_up = up.get(r.name, not r.disabled)
+        ap_disabled = ap_opt.get("disabled") == "1"
+        # "Broadcasting" means an AP iface is actually up — not merely that the
+        # wifi-DEVICE is enabled. A radio whose only AP iface is disabled (or which
+        # has none) is NOT broadcasting, even if the device itself is up. STA radios
+        # keep the device-up flag (they're a live client, not an AP).
+        broadcasting = radio_up and bool(ap_sec) and not ap_disabled
+        # Real per-radio channel list (iwinfo, like LuCI). iwinfo needs an UP netdev,
+        # so a radio whose AP is disabled (no netdev, e.g. radio0/radio2 here) reports
+        # nothing. Reading the phy (iw phy) doesn't help either: before the regdomain
+        # is set the phy marks most 5 GHz channels "disabled", leaving a DFS-only list.
+        # So when the real list is unavailable but the device is enabled, fall back to
+        # the curated RU-safe per-band set — keeping the radio configurable instead of
+        # showing the "unavailable" warning. (configure_ap sets country=RU on save.)
         ifname = ifname_map.get(r.name, "")
         real = radio_supported_channels(client, ifname)
-        channels = (["auto"] + real) if real else []
+        if real:
+            channels = ["auto"] + real
+        elif not r.disabled:
+            channels = wifi_channel_options(r.band)
+        else:
+            channels = []
         htmode = client.uci_get(f"wireless.{r.name}.htmode") or ""
         widths = channel_width_options(radio_htmodes(client, ifname))
         out.append(RadioWifi(
             radio=r.name, band=r.band, radio_disabled=r.disabled,
-            up=up.get(r.name, not r.disabled), is_sta=(r.name == sta_radio),
+            up=(radio_up if is_sta else broadcasting), is_sta=is_sta,
             iface=ap_sec, ssid=ap_opt.get("ssid", ""), key=ap_opt.get("key", ""),
             encryption=ap_opt.get("encryption", ""), channel=channel, channels=channels,
             htmode=htmode, widths=widths))

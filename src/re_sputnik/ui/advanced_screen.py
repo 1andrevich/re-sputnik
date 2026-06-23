@@ -23,10 +23,13 @@ from ..engine import access as access_engine
 from ..engine import lan as lan_engine
 from ..engine import maintenance
 from ..engine import network as net_engine
+from ..engine import nodes as nodeng
 from ..engine import overview as ov_engine
+from ..engine import rules as ruleng
 from ..engine import sqm as sqm_engine
 from ..engine import upnp as upnp_engine
 from ..router import RouterClient
+from .. import profiles
 from . import kit
 from .theme import Palette, fonts
 from .worker import run_async
@@ -151,6 +154,15 @@ class AdvancedScreen(ctk.CTkFrame):
         client = self._client
 
         def task() -> dict[str, Any]:
+            mode = ruleng.normalize_mode(client.uci_get("homeproxy.config.routing_mode") or "")
+            routing: dict[str, Any] = {"mode": mode}
+            if ruleng.is_selective(mode):
+                dns_key = ruleng.DNS_PRESETS[mode][0]
+                routing["dns_key"] = dns_key
+                routing["dns_val"] = client.uci_get(f"homeproxy.config.{dns_key}") or ruleng.DNS_PRESETS[mode][1]
+                if mode in ("bypass_cn", "bypass_ir"):  # UDP-node picker is cn/ir only
+                    routing["udp"] = client.uci_get("homeproxy.config.main_udp_node") or "same"
+                    routing["nodes"] = nodeng.list_nodes(client)
             return {
                 "hostname": client.uci_get("system.@system[0].hostname") or "",
                 "net_mode": lan_engine.detect_network_mode(client),
@@ -161,6 +173,7 @@ class AdvancedScreen(ctk.CTkFrame):
                 "upnp": upnp_engine.get_status(client),
                 "sqm": sqm_engine.get_settings(client),
                 "sqm_ifaces": sqm_engine.wan_candidates(client),
+                "routing": routing,
             }
 
         run_async(self, task, self._render,
@@ -177,6 +190,7 @@ class AdvancedScreen(ctk.CTkFrame):
         self._upnp = d["upnp"]
         self._sqm = d["sqm"]
         self._sqm_ifaces = d["sqm_ifaces"]
+        self._routing = d.get("routing") or {"mode": ""}
         for w in self._cards.winfo_children():
             w.destroy()
         # Running row counter so the optional UPnP/SQM cards (shown only when the
@@ -193,7 +207,11 @@ class AdvancedScreen(ctk.CTkFrame):
         if self._sqm.installed:
             self._build_sqm_card(row)
             row += 1
+        if ruleng.is_selective(self._routing.get("mode", "")):
+            self._build_routing_card(row)
+            row += 1
         self._build_reset_card(row)
+        self._build_app_reset_card(row + 1)
 
     # ----- router name --------------------------------------------------
 
@@ -377,7 +395,7 @@ class AdvancedScreen(ctk.CTkFrame):
 
         # A radio used as the Wi-Fi uplink (STA) can't also be an AP — show read-only.
         if rw.is_sta:
-            ctk.CTkLabel(blk, text=_("Этот диапазон занят подключением роутера к интернету по "
+            ctk.CTkLabel(blk, text=_("Этот диапазон сейчас занят подключением роутера к интернету по "
                          "Wi-Fi, поэтому раздавать сеть на нём нельзя."), font=fonts.small(),
                          text_color=p.text_muted, wraplength=520, justify="left",
                          anchor="w").grid(row=1, column=0, padx=12, pady=(2, 10), sticky="w")
@@ -955,6 +973,83 @@ class AdvancedScreen(ctk.CTkFrame):
 
         run_async(self, lambda: sqm_engine.apply_settings(client, new), done, err)
 
+    # ----- proxy routing (region DNS + dedicated UDP node) --------------
+
+    def _build_routing_card(self, row: int) -> None:
+        p = self.p
+        mode = self._routing["mode"]
+        c = self._card(row, _("Маршрутизация прокси"))
+
+        # Domestic DNS resolver (region presets): resolves the region's own sites
+        # directly, without the proxy. Backend defaults it, so this is fine-tuning.
+        dns_key, _default, presets = ruleng.DNS_PRESETS[mode]
+        cur_dns = self._routing.get("dns_val", "")
+        label_by_val = {v: lbl for v, lbl in presets}
+        val_by_label = {lbl: v for v, lbl in presets}
+        options = [lbl for _v, lbl in presets]
+        cur_label = label_by_val.get(cur_dns, cur_dns)
+        if cur_label and cur_label not in options:
+            options.append(cur_label)  # keep a custom value visible
+        dns_title = {
+            "proxy_banned_ru": _("DNS для российских сайтов (напрямую)"),
+            "bypass_cn": _("DNS для китайских сайтов (напрямую)"),
+            "bypass_ir": _("DNS для иранских сайтов (напрямую)"),
+        }.get(mode, _("Региональный DNS"))
+        ctk.CTkLabel(c, text=dns_title, font=fonts.body(), text_color=p.text_muted).grid(
+            row=1, column=0, padx=16, pady=(8, 2), sticky="w")
+        self._dns_menu = ctk.CTkOptionMenu(
+            c, values=options, font=fonts.body(), fg_color=p.surface_hover,
+            button_color=p.accent, button_hover_color=p.accent_hover,
+            command=lambda lbl: self._apply_routing(dns_key, val_by_label.get(lbl, lbl)))
+        self._dns_menu.set(cur_label or options[0])
+        self._dns_menu.grid(row=2, column=0, padx=16, pady=(0, 8), sticky="w")
+
+        # Dedicated UDP node (voice/games) — reverse modes only. 'same' = no
+        # dedicated node (UDP rides the main outbound).
+        if mode in ("bypass_cn", "bypass_ir"):
+            nodes = self._routing.get("nodes") or []
+            udp_opts = [("same", _("Как основной узел")), ("urltest", _("Отдельный URLTest"))]
+            udp_opts += [(n.section, f"{n.label or n.section} ({n.type})") for n in nodes]
+            udp_val_by_label = {lbl: v for v, lbl in udp_opts}
+            udp_label_by_val = {v: lbl for v, lbl in udp_opts}
+            cur_udp = self._routing.get("udp", "same")
+            cur_udp_label = udp_label_by_val.get(cur_udp, cur_udp)
+            ctk.CTkLabel(c, text=_("Отдельный сервер для UDP (звонки, игры)"),
+                         font=fonts.body(), text_color=p.text_muted).grid(
+                row=3, column=0, padx=16, pady=(8, 2), sticky="w")
+            ctk.CTkLabel(c, text=_("По умолчанию UDP идёт через основной узел. Можно выделить "
+                         "отдельный сервер — иногда стабильнее для голоса и игр."),
+                         font=fonts.small(), text_color=p.text_muted, wraplength=540,
+                         justify="left").grid(row=4, column=0, padx=16, pady=(0, 4), sticky="w")
+            udp_options = [lbl for _v, lbl in udp_opts]
+            if cur_udp_label not in udp_options:
+                udp_options.append(cur_udp_label)
+            self._udp_menu = ctk.CTkOptionMenu(
+                c, values=udp_options, font=fonts.body(), fg_color=p.surface_hover,
+                button_color=p.accent, button_hover_color=p.accent_hover,
+                command=lambda lbl: self._apply_routing("main_udp_node", udp_val_by_label.get(lbl, lbl)))
+            self._udp_menu.set(cur_udp_label or udp_options[0])
+            self._udp_menu.grid(row=5, column=0, padx=16, pady=(0, 8), sticky="w")
+
+        self._routing_status = ctk.CTkLabel(c, text="", font=fonts.small(), anchor="w",
+                                            wraplength=560, justify="left")
+        self._routing_status.grid(row=6, column=0, padx=16, pady=(0, 10), sticky="w")
+
+    def _apply_routing(self, key: str, value: str) -> None:
+        self._routing_status.configure(text=_("Применяю…"), text_color=self.p.text_muted)
+        client = self._client
+
+        def task() -> None:
+            client.uci_set(f"homeproxy.config.{key}", value)
+            client.uci_commit("homeproxy")
+            client.ubus_homeproxy("diag_service_restart", timeout=40)
+
+        run_async(self, task,
+                  lambda _r: self._routing_status.configure(
+                      text=_("Готово — настройки применены."), text_color=self.p.ok),
+                  lambda e: self._routing_status.configure(
+                      text=_("Ошибка: {0}").format(e), text_color=self.p.fail))
+
     # ----- factory reset ------------------------------------------------
 
     def _build_reset_card(self, row: int) -> None:
@@ -986,3 +1081,38 @@ class AdvancedScreen(ctk.CTkFrame):
             dc.set_status(_("Ошибка: {0}").format(e), self.p.fail)
 
         run_async(self, lambda: maintenance.factory_reset(client), done, err)
+
+    # ----- app data reset (local, NOT the router) ----------------------
+
+    def _build_app_reset_card(self, row: int) -> None:
+        p = self.p
+        c = self._card(row, _("Удалить данные приложения (не роутера)"))
+        ctk.CTkLabel(c, text=_("Стирает с ЭТОГО компьютера все данные Re:Sputnik: SSH-ключ "
+                     "приложения, сохранённые пароли роутеров, привязки host-key и список "
+                     "роутеров. Сам роутер и его настройки не трогаются. Используйте, чтобы "
+                     "убрать за собой на чужом или общем компьютере."), font=fonts.small(),
+                     text_color=p.text_muted, wraplength=560, justify="left",
+                     anchor="w").grid(row=1, column=0, padx=16, sticky="w")
+        box = ctk.CTkFrame(c, fg_color="transparent")
+        box.grid(row=2, column=0, padx=16, pady=(8, 12), sticky="ew")
+        box.grid_columnconfigure(0, weight=1)
+        _DangerConfirm(
+            box, p, label=_("Удалить данные приложения"),
+            confirm_label=_("Да, удалить данные"),
+            warning=_("После удаления для следующего входа понадобится пароль root роутера. "
+                    "Он у вас есть — его показывали при настройке, и его можно посмотреть на "
+                    "устройстве в разделе «Безопасность». ВАЖНО: посмотрите/сохраните пароль "
+                    "ДО удаления — после стирания его не восстановить. Сам роутер не "
+                    "сбрасывается."),
+            command=self._do_app_reset).grid(row=0, column=0, sticky="ew")
+
+    def _do_app_reset(self, dc: _DangerConfirm) -> None:
+        def done(_r: Any) -> None:
+            dc.set_status(_("Данные приложения удалены с этого компьютера. "
+                          "Перезапустите Re:Sputnik."), self.p.ok)
+
+        def err(e: BaseException) -> None:
+            dc.reset()
+            dc.set_status(_("Не удалось полностью удалить: {0}").format(e), self.p.fail)
+
+        run_async(self, profiles.reset_app_data, done, err)

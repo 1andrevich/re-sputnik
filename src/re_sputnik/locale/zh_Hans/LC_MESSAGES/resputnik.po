@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-22 18:59+0400\n"
+"POT-Creation-Date: 2026-06-23 22:44+0400\n"
 "PO-Revision-Date: 2026-06-22 00:26+0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.18.0\n"
+"Generated-By: Babel 2.18.0"
 
 #: src/re_sputnik/app.py:39
 msgid ""
@@ -121,7 +121,7 @@ msgstr "高级"
 msgid "Свободная навигация по разделам: Серверы, Правила, Диагностика…"
 msgstr "自由浏览各部分：服务器、规则、诊断…"
 
-#: src/re_sputnik/app.py:553 src/re_sputnik/ui/preinstall_screen.py:46
+#: src/re_sputnik/app.py:553 src/re_sputnik/ui/preinstall_screen.py:47
 msgid "Предустановить пакеты"
 msgstr "预安装软件包"
 
@@ -438,127 +438,127 @@ msgstr "密码已保存到 Windows 凭据管理器。"
 msgid "Первичная настройка завершена."
 msgstr "初始设置完成。"
 
-#: src/re_sputnik/engine/install_app.py:294
-#: src/re_sputnik/engine/install_app.py:298
+#: src/re_sputnik/engine/install_app.py:328
+#: src/re_sputnik/engine/install_app.py:332
 msgid "обновление репозитория"
 msgstr "刷新软件源"
 
-#: src/re_sputnik/engine/install_app.py:331
+#: src/re_sputnik/engine/install_app.py:418
 msgid ""
 "На устройстве SNAPSHOT-сборка OpenWrt — kmod из релизного репозитория "
 "недоступны. Используйте релизную прошивку."
 msgstr "设备上是 OpenWrt SNAPSHOT 构建——发行版仓库中的 kmod 不可用。请使用发行版固件。"
 
-#: src/re_sputnik/engine/install_app.py:341
+#: src/re_sputnik/engine/install_app.py:428
 msgid "Устанавливаю приложение Re:HomeProxy…"
 msgstr "正在安装 Re:HomeProxy 应用…"
 
-#: src/re_sputnik/engine/install_app.py:352
+#: src/re_sputnik/engine/install_app.py:439
 msgid "не удалось скачать пакет приложения на роутер"
 msgstr "无法将应用软件包下载到路由器"
 
-#: src/re_sputnik/engine/install_app.py:370
+#: src/re_sputnik/engine/install_app.py:459
 msgid "Приложение установлено"
 msgstr "应用已安装"
 
-#: src/re_sputnik/engine/install_app.py:389
-#: src/re_sputnik/engine/install_app.py:591
-#: src/re_sputnik/engine/preinstall.py:336
+#: src/re_sputnik/engine/install_app.py:478
+#: src/re_sputnik/engine/install_app.py:699
+#: src/re_sputnik/engine/preinstall.py:448
 msgid "Перезапускаю rpcd…"
 msgstr "正在重启 rpcd…"
 
-#: src/re_sputnik/engine/install_app.py:400
-#: src/re_sputnik/engine/install_app.py:507
+#: src/re_sputnik/engine/install_app.py:489
+#: src/re_sputnik/engine/install_app.py:596
 msgid "Скачиваю ядро на роутер…"
 msgstr "正在将内核下载到路由器…"
 
-#: src/re_sputnik/engine/install_app.py:402
-#: src/re_sputnik/engine/install_app.py:509
+#: src/re_sputnik/engine/install_app.py:491
+#: src/re_sputnik/engine/install_app.py:598
 msgid "скачивание ядра"
 msgstr "下载内核"
 
-#: src/re_sputnik/engine/install_app.py:406
-#: src/re_sputnik/engine/install_app.py:511
+#: src/re_sputnik/engine/install_app.py:495
+#: src/re_sputnik/engine/install_app.py:600
 msgid "Устанавливаю ядро…"
 msgstr "正在安装内核…"
 
-#: src/re_sputnik/engine/install_app.py:408
-#: src/re_sputnik/engine/install_app.py:513
+#: src/re_sputnik/engine/install_app.py:497
+#: src/re_sputnik/engine/install_app.py:602
 msgid "установка ядра"
 msgstr "安装内核"
 
-#: src/re_sputnik/engine/install_app.py:415
-#: src/re_sputnik/engine/install_app.py:517
+#: src/re_sputnik/engine/install_app.py:504
+#: src/re_sputnik/engine/install_app.py:606
 msgid "Устанавливаю модули ядра (kmod-nft-tproxy, kmod-tun)…"
 msgstr "正在安装内核模块（kmod-nft-tproxy、kmod-tun）…"
 
-#: src/re_sputnik/engine/install_app.py:417
-#: src/re_sputnik/engine/install_app.py:519
+#: src/re_sputnik/engine/install_app.py:506
+#: src/re_sputnik/engine/install_app.py:608
 msgid "установка модулей ядра"
 msgstr "安装内核模块"
 
-#: src/re_sputnik/engine/install_app.py:427
+#: src/re_sputnik/engine/install_app.py:516
 msgid "Модули ядра"
 msgstr "内核模块"
 
-#: src/re_sputnik/engine/install_app.py:431
+#: src/re_sputnik/engine/install_app.py:520
 msgid "Устанавливаю curl (нужен тестеру ByeDPI)…"
 msgstr "正在安装 curl（ByeDPI 测试工具需要）…"
 
-#: src/re_sputnik/engine/install_app.py:434
+#: src/re_sputnik/engine/install_app.py:523
 msgid "Устанавливаю ByeDPI…"
 msgstr "正在安装 ByeDPI…"
 
-#: src/re_sputnik/engine/install_app.py:439
+#: src/re_sputnik/engine/install_app.py:528
 msgid "ByeDPI: не удалось скачать пакет."
 msgstr "ByeDPI：软件包下载失败。"
 
-#: src/re_sputnik/engine/install_app.py:447
+#: src/re_sputnik/engine/install_app.py:536
 msgid "ByeDPI: установка не удалась."
 msgstr "ByeDPI：安装失败。"
 
-#: src/re_sputnik/engine/install_app.py:451
+#: src/re_sputnik/engine/install_app.py:540
 msgid "Устанавливаю Zapret…"
 msgstr "正在安装 Zapret…"
 
-#: src/re_sputnik/engine/install_app.py:456
+#: src/re_sputnik/engine/install_app.py:545
 msgid "Zapret: не удалось скачать пакет."
 msgstr "Zapret：软件包下载失败。"
 
-#: src/re_sputnik/engine/install_app.py:464
+#: src/re_sputnik/engine/install_app.py:553
 msgid "Zapret: установка не удалась."
 msgstr "Zapret：安装失败。"
 
-#: src/re_sputnik/engine/install_app.py:467
+#: src/re_sputnik/engine/install_app.py:556
 msgid "Выбираю ядро и запускаю сервис…"
 msgstr "正在选择内核并启动服务…"
 
-#: src/re_sputnik/engine/install_app.py:473
+#: src/re_sputnik/engine/install_app.py:562
 msgid "Сервис запущен"
 msgstr "服务已启动"
 
-#: src/re_sputnik/engine/install_app.py:475
+#: src/re_sputnik/engine/install_app.py:564
 msgid "Сервис включён (старт после добавления серверов)"
 msgstr "服务已启用（添加服务器后启动）"
 
-#: src/re_sputnik/engine/install_app.py:478
-#: src/re_sputnik/engine/preinstall.py:348
+#: src/re_sputnik/engine/install_app.py:567
+#: src/re_sputnik/engine/preinstall.py:465
 msgid "Готово."
 msgstr "完成。"
 
-#: src/re_sputnik/engine/install_app.py:510
+#: src/re_sputnik/engine/install_app.py:599
 msgid "скачивание ядра не удалось"
 msgstr "内核下载失败"
 
-#: src/re_sputnik/engine/install_app.py:520
+#: src/re_sputnik/engine/install_app.py:609
 msgid "не удалось установить модули ядра"
 msgstr "内核模块安装失败"
 
-#: src/re_sputnik/engine/install_app.py:563
+#: src/re_sputnik/engine/install_app.py:657
 msgid "Определяю последнюю версию приложения…"
 msgstr "正在获取应用的最新版本…"
 
-#: src/re_sputnik/engine/install_app.py:573
+#: src/re_sputnik/engine/install_app.py:667
 msgid "не удалось скачать пакет приложения"
 msgstr "无法下载应用软件包"
 
@@ -635,7 +635,7 @@ msgid "резервная копия не создалась на роутере
 msgstr "备份未在路由器上创建成功。sysupgrade 响应：\n"
 
 #: src/re_sputnik/engine/maintenance.py:65
-#: src/re_sputnik/ui/advanced_screen.py:300
+#: src/re_sputnik/ui/advanced_screen.py:318
 msgid "Это не похоже на резервную копию (.tar.gz)."
 msgstr "这看起来不像备份文件（.tar.gz）。"
 
@@ -670,15 +670,15 @@ msgid ""
 "другую."
 msgstr "子网与运营商网络冲突——冲突将继续存在。请选择另一个。"
 
-#: src/re_sputnik/engine/network.py:740
+#: src/re_sputnik/engine/network.py:751
 msgid "Введите имя сети (SSID)."
 msgstr "请输入网络名称（SSID）。"
 
-#: src/re_sputnik/engine/network.py:744
+#: src/re_sputnik/engine/network.py:755
 msgid "Для защищённой сети нужен пароль."
 msgstr "受保护的网络需要密码。"
 
-#: src/re_sputnik/engine/network.py:746 src/re_sputnik/ui/wifi_ap_screen.py:160
+#: src/re_sputnik/engine/network.py:757 src/re_sputnik/ui/wifi_ap_screen.py:160
 msgid "Пароль должен быть не короче 8 символов."
 msgstr "密码长度不能少于 8 个字符。"
 
@@ -738,33 +738,33 @@ msgstr "{0}时"
 msgid "{0}м"
 msgstr "{0}分"
 
-#: src/re_sputnik/engine/preinstall.py:140
+#: src/re_sputnik/engine/preinstall.py:160
 msgid "не найден каталог ядра в kmods/"
 msgstr "在 kmods/ 中未找到内核目录"
 
-#: src/re_sputnik/engine/preinstall.py:280
+#: src/re_sputnik/engine/preinstall.py:383
 msgid "SNAPSHOT: нужные kmod уже установлены — ставлю только ядро."
 msgstr "SNAPSHOT：所需的 kmod 已安装——仅安装内核。"
 
-#: src/re_sputnik/engine/preinstall.py:282
+#: src/re_sputnik/engine/preinstall.py:385
 msgid ""
 "На устройстве SNAPSHOT — автоматическая установка kmod невозможна (модули"
 " привязаны к сборке). Используйте релизную прошивку."
 msgstr "设备上是 SNAPSHOT 版本——无法自动安装 kmod（模块与构建绑定）。请使用发行版固件。"
 
-#: src/re_sputnik/engine/preinstall.py:286
+#: src/re_sputnik/engine/preinstall.py:389
 msgid "не удалось определить arch/board роутера"
 msgstr "无法确定路由器的架构/型号"
 
-#: src/re_sputnik/engine/preinstall.py:291
+#: src/re_sputnik/engine/preinstall.py:394
 msgid "Определяю ссылки на пакеты…"
 msgstr "正在解析软件包下载链接…"
 
-#: src/re_sputnik/engine/preinstall.py:313
+#: src/re_sputnik/engine/preinstall.py:416
 msgid "Файлы переданы (установка пропущена)."
 msgstr "文件已传输（已跳过安装）。"
 
-#: src/re_sputnik/engine/preinstall.py:321
+#: src/re_sputnik/engine/preinstall.py:424
 msgid "Устанавливаю пакеты…"
 msgstr "正在安装软件包…"
 
@@ -914,7 +914,7 @@ msgstr "正在读取设备…"
 #: src/re_sputnik/ui/access_screen.py:79 src/re_sputnik/ui/access_screen.py:91
 #: src/re_sputnik/ui/access_screen.py:244
 #: src/re_sputnik/ui/access_screen.py:249
-#: src/re_sputnik/ui/advanced_screen.py:609
+#: src/re_sputnik/ui/advanced_screen.py:627
 #: src/re_sputnik/ui/antidpi_screen.py:144
 #: src/re_sputnik/ui/antidpi_screen.py:193
 #: src/re_sputnik/ui/antidpi_screen.py:198
@@ -922,11 +922,11 @@ msgstr "正在读取设备…"
 #: src/re_sputnik/ui/antidpi_screen.py:518
 #: src/re_sputnik/ui/antidpi_screen.py:523 src/re_sputnik/ui/core_screen.py:155
 #: src/re_sputnik/ui/core_screen.py:344
-#: src/re_sputnik/ui/overview_screen.py:641
-#: src/re_sputnik/ui/overview_screen.py:752
-#: src/re_sputnik/ui/overview_screen.py:760
-#: src/re_sputnik/ui/rules_screen.py:116 src/re_sputnik/ui/rules_screen.py:147
-#: src/re_sputnik/ui/rules_screen.py:417
+#: src/re_sputnik/ui/overview_screen.py:644
+#: src/re_sputnik/ui/overview_screen.py:755
+#: src/re_sputnik/ui/overview_screen.py:763
+#: src/re_sputnik/ui/rules_screen.py:145 src/re_sputnik/ui/rules_screen.py:176
+#: src/re_sputnik/ui/rules_screen.py:444
 msgid "Применить изменения"
 msgstr "应用更改"
 
@@ -939,33 +939,34 @@ msgstr "模式选择和设备设置只有在点击“应用更改”后才会生
 #: src/re_sputnik/ui/access_screen.py:111
 #: src/re_sputnik/ui/access_screen.py:233
 #: src/re_sputnik/ui/access_screen.py:245
-#: src/re_sputnik/ui/advanced_screen.py:167
-#: src/re_sputnik/ui/advanced_screen.py:285
-#: src/re_sputnik/ui/advanced_screen.py:323
-#: src/re_sputnik/ui/advanced_screen.py:672
-#: src/re_sputnik/ui/advanced_screen.py:733
-#: src/re_sputnik/ui/advanced_screen.py:739
-#: src/re_sputnik/ui/advanced_screen.py:793
-#: src/re_sputnik/ui/advanced_screen.py:986
+#: src/re_sputnik/ui/advanced_screen.py:180
+#: src/re_sputnik/ui/advanced_screen.py:303
+#: src/re_sputnik/ui/advanced_screen.py:341
+#: src/re_sputnik/ui/advanced_screen.py:690
+#: src/re_sputnik/ui/advanced_screen.py:751
+#: src/re_sputnik/ui/advanced_screen.py:757
+#: src/re_sputnik/ui/advanced_screen.py:811
+#: src/re_sputnik/ui/advanced_screen.py:1051
+#: src/re_sputnik/ui/advanced_screen.py:1081
 #: src/re_sputnik/ui/antidpi_screen.py:94
 #: src/re_sputnik/ui/antidpi_screen.py:283
 #: src/re_sputnik/ui/antidpi_screen.py:442
-#: src/re_sputnik/ui/connect_screen.py:446
+#: src/re_sputnik/ui/connect_screen.py:521
 #: src/re_sputnik/ui/diagnostics_screen.py:187
 #: src/re_sputnik/ui/finalize_screen.py:184
 #: src/re_sputnik/ui/firstrun_screen.py:250
 #: src/re_sputnik/ui/nodes_screen.py:110 src/re_sputnik/ui/nodes_screen.py:199
 #: src/re_sputnik/ui/nodes_screen.py:305
-#: src/re_sputnik/ui/overview_screen.py:180
-#: src/re_sputnik/ui/overview_screen.py:426
-#: src/re_sputnik/ui/overview_screen.py:761
-#: src/re_sputnik/ui/preinstall_screen.py:213
+#: src/re_sputnik/ui/overview_screen.py:183
+#: src/re_sputnik/ui/overview_screen.py:429
+#: src/re_sputnik/ui/overview_screen.py:764
+#: src/re_sputnik/ui/preinstall_screen.py:220
 #: src/re_sputnik/ui/quick_nodes_screen.py:218
 #: src/re_sputnik/ui/quick_nodes_screen.py:269
-#: src/re_sputnik/ui/rules_screen.py:172 src/re_sputnik/ui/rules_screen.py:284
-#: src/re_sputnik/ui/rules_screen.py:365 src/re_sputnik/ui/rules_screen.py:371
-#: src/re_sputnik/ui/rules_screen.py:396 src/re_sputnik/ui/rules_screen.py:407
-#: src/re_sputnik/ui/rules_screen.py:414
+#: src/re_sputnik/ui/rules_screen.py:202 src/re_sputnik/ui/rules_screen.py:316
+#: src/re_sputnik/ui/rules_screen.py:392 src/re_sputnik/ui/rules_screen.py:398
+#: src/re_sputnik/ui/rules_screen.py:423 src/re_sputnik/ui/rules_screen.py:434
+#: src/re_sputnik/ui/rules_screen.py:441
 #: src/re_sputnik/ui/security_screen.py:93
 #: src/re_sputnik/ui/security_screen.py:374
 #: src/re_sputnik/ui/software_screen.py:201
@@ -998,160 +999,161 @@ msgstr "游戏（TCP）"
 msgid "Весь трафик"
 msgstr "全部流量"
 
-#: src/re_sputnik/ui/access_screen.py:201 src/re_sputnik/ui/rules_screen.py:378
+#: src/re_sputnik/ui/access_screen.py:201 src/re_sputnik/ui/rules_screen.py:405
 msgid "Изменено. Нажмите «Применить изменения»."
 msgstr "已更改。请点击“应用更改”。"
 
 #: src/re_sputnik/ui/access_screen.py:237
-#: src/re_sputnik/ui/advanced_screen.py:503
-#: src/re_sputnik/ui/advanced_screen.py:789
-#: src/re_sputnik/ui/advanced_screen.py:943
+#: src/re_sputnik/ui/advanced_screen.py:521
+#: src/re_sputnik/ui/advanced_screen.py:807
+#: src/re_sputnik/ui/advanced_screen.py:961
+#: src/re_sputnik/ui/advanced_screen.py:1039
 #: src/re_sputnik/ui/antidpi_screen.py:188
 #: src/re_sputnik/ui/antidpi_screen.py:513 src/re_sputnik/ui/core_screen.py:337
 #: src/re_sputnik/ui/finalize_screen.py:237
 #: src/re_sputnik/ui/firstrun_screen.py:237
-#: src/re_sputnik/ui/overview_screen.py:737
+#: src/re_sputnik/ui/overview_screen.py:740
 #: src/re_sputnik/ui/quick_nodes_screen.py:355
-#: src/re_sputnik/ui/rules_screen.py:143 src/re_sputnik/ui/rules_screen.py:410
+#: src/re_sputnik/ui/rules_screen.py:172 src/re_sputnik/ui/rules_screen.py:437
 msgid "Применяю…"
 msgstr "正在应用…"
 
 #: src/re_sputnik/ui/access_screen.py:251
 #: src/re_sputnik/ui/antidpi_screen.py:194
 #: src/re_sputnik/ui/antidpi_screen.py:519 src/re_sputnik/ui/core_screen.py:347
-#: src/re_sputnik/ui/overview_screen.py:754
-#: src/re_sputnik/ui/rules_screen.py:420
+#: src/re_sputnik/ui/overview_screen.py:757
+#: src/re_sputnik/ui/rules_screen.py:447
 msgid "Изменения применены."
 msgstr "更改已应用。"
 
 #: src/re_sputnik/ui/access_screen.py:255 src/re_sputnik/ui/core_screen.py:351
-#: src/re_sputnik/ui/overview_screen.py:757
-#: src/re_sputnik/ui/rules_screen.py:423
+#: src/re_sputnik/ui/overview_screen.py:760
+#: src/re_sputnik/ui/rules_screen.py:450
 msgid "Не удалось применить изменения."
 msgstr "无法应用更改。"
 
-#: src/re_sputnik/ui/advanced_screen.py:82
-#: src/re_sputnik/ui/connect_screen.py:473
+#: src/re_sputnik/ui/advanced_screen.py:85
+#: src/re_sputnik/ui/connect_screen.py:548
 msgid "Отмена"
 msgstr "取消"
 
-#: src/re_sputnik/ui/advanced_screen.py:93
+#: src/re_sputnik/ui/advanced_screen.py:96
 msgid "Выполняю…"
 msgstr "正在执行…"
 
-#: src/re_sputnik/ui/advanced_screen.py:124
+#: src/re_sputnik/ui/advanced_screen.py:127
 #: src/re_sputnik/ui/settings_shell.py:32
 msgid "Дополнительно"
 msgstr "更多"
 
-#: src/re_sputnik/ui/advanced_screen.py:127
+#: src/re_sputnik/ui/advanced_screen.py:130
 msgid ""
 "Опасные операции с роутером. Делайте только при необходимости и сначала "
 "скачайте резервную копию."
 msgstr "危险的路由器操作。仅在必要时执行，并先下载备份。"
 
-#: src/re_sputnik/ui/advanced_screen.py:131
+#: src/re_sputnik/ui/advanced_screen.py:134
 msgid "Считываю настройки…"
 msgstr "正在读取设置…"
 
-#: src/re_sputnik/ui/advanced_screen.py:202
+#: src/re_sputnik/ui/advanced_screen.py:220
 #: src/re_sputnik/ui/finalize_screen.py:51
 msgid "Имя роутера"
 msgstr "路由器名称"
 
-#: src/re_sputnik/ui/advanced_screen.py:203
+#: src/re_sputnik/ui/advanced_screen.py:221
 msgid ""
 "Под этим именем роутер виден в сети и в приложении. Латинские буквы, "
 "цифры и дефис, без пробелов."
 msgstr "路由器在网络和应用中以此名称显示。拉丁字母、数字和短横线，不含空格。"
 
-#: src/re_sputnik/ui/advanced_screen.py:212
+#: src/re_sputnik/ui/advanced_screen.py:230
 #: src/re_sputnik/ui/finalize_screen.py:65
 #: src/re_sputnik/ui/finalize_screen.py:243
 #: src/re_sputnik/ui/finalize_screen.py:248
 msgid "Переименовать"
 msgstr "重命名"
 
-#: src/re_sputnik/ui/advanced_screen.py:222
+#: src/re_sputnik/ui/advanced_screen.py:240
 msgid "Имя не изменилось."
 msgstr "名称未改变。"
 
-#: src/re_sputnik/ui/advanced_screen.py:224
+#: src/re_sputnik/ui/advanced_screen.py:242
 msgid "Переименовываю…"
 msgstr "正在重命名…"
 
-#: src/re_sputnik/ui/advanced_screen.py:229
+#: src/re_sputnik/ui/advanced_screen.py:247
 #: src/re_sputnik/ui/finalize_screen.py:244
 #, python-brace-format
 msgid "Готово — роутер переименован в «{0}»."
 msgstr "完成——路由器已重命名为“{0}”。"
 
-#: src/re_sputnik/ui/advanced_screen.py:241
+#: src/re_sputnik/ui/advanced_screen.py:259
 msgid "Резервная копия настроек"
 msgstr "设置备份"
 
-#: src/re_sputnik/ui/advanced_screen.py:242
+#: src/re_sputnik/ui/advanced_screen.py:260
 msgid ""
 "Полная копия настроек роутера (как в LuCI). Сохраните её перед любыми "
 "изменениями на этой странице."
 msgstr "路由器设置的完整副本（与 LuCI 中相同）。在此页面进行任何更改前请先保存它。"
 
-#: src/re_sputnik/ui/advanced_screen.py:248
+#: src/re_sputnik/ui/advanced_screen.py:266
 msgid "Скачать резервную копию"
 msgstr "下载备份"
 
-#: src/re_sputnik/ui/advanced_screen.py:251
+#: src/re_sputnik/ui/advanced_screen.py:269
 msgid "Восстановить из файла…"
 msgstr "从文件恢复…"
 
-#: src/re_sputnik/ui/advanced_screen.py:263
+#: src/re_sputnik/ui/advanced_screen.py:281
 msgid "Создаю резервную копию…"
 msgstr "正在创建备份…"
 
-#: src/re_sputnik/ui/advanced_screen.py:270
-#: src/re_sputnik/ui/advanced_screen.py:289
+#: src/re_sputnik/ui/advanced_screen.py:288
+#: src/re_sputnik/ui/advanced_screen.py:307
 msgid "Архив резервной копии"
 msgstr "备份归档"
 
-#: src/re_sputnik/ui/advanced_screen.py:270
-#: src/re_sputnik/ui/advanced_screen.py:289
-#: src/re_sputnik/ui/diagnostics_screen.py:461
+#: src/re_sputnik/ui/advanced_screen.py:288
+#: src/re_sputnik/ui/advanced_screen.py:307
+#: src/re_sputnik/ui/diagnostics_screen.py:468
 #: src/re_sputnik/ui/nodes_screen.py:308
 #: src/re_sputnik/ui/quick_nodes_screen.py:323
 msgid "Все файлы"
 msgstr "所有文件"
 
-#: src/re_sputnik/ui/advanced_screen.py:273
+#: src/re_sputnik/ui/advanced_screen.py:291
 msgid "Отменено."
 msgstr "已取消。"
 
-#: src/re_sputnik/ui/advanced_screen.py:278
+#: src/re_sputnik/ui/advanced_screen.py:296
 #, python-brace-format
 msgid "Сохранено: {0} ({1} КБ)"
 msgstr "已保存：{0}（{1} KB）"
 
-#: src/re_sputnik/ui/advanced_screen.py:281
-#: src/re_sputnik/ui/diagnostics_screen.py:471
+#: src/re_sputnik/ui/advanced_screen.py:299
+#: src/re_sputnik/ui/diagnostics_screen.py:478
 #, python-brace-format
 msgid "Не удалось сохранить: {0}"
 msgstr "无法保存：{0}"
 
-#: src/re_sputnik/ui/advanced_screen.py:296
+#: src/re_sputnik/ui/advanced_screen.py:314
 #: src/re_sputnik/ui/nodes_screen.py:314
 #: src/re_sputnik/ui/quick_nodes_screen.py:330
 #, python-brace-format
 msgid "Не удалось прочитать файл: {0}"
 msgstr "无法读取文件：{0}"
 
-#: src/re_sputnik/ui/advanced_screen.py:309
+#: src/re_sputnik/ui/advanced_screen.py:327
 msgid "Восстановить"
 msgstr "恢复"
 
-#: src/re_sputnik/ui/advanced_screen.py:309
+#: src/re_sputnik/ui/advanced_screen.py:327
 msgid "Подтвердить восстановление"
 msgstr "确认恢复"
 
-#: src/re_sputnik/ui/advanced_screen.py:310
+#: src/re_sputnik/ui/advanced_screen.py:328
 #, python-brace-format
 msgid ""
 "Файл: {0}. Настройки роутера будут заменены содержимым копии, после чего "
@@ -1159,89 +1161,89 @@ msgid ""
 "отключится — возможно, потребуется переподключение по другому адресу."
 msgstr "文件：{0}。路由器的设置将被备份内容替换，之后路由器将重启。当前设置将丢失。应用会断开连接——可能需要使用其他地址重新连接。"
 
-#: src/re_sputnik/ui/advanced_screen.py:318
+#: src/re_sputnik/ui/advanced_screen.py:336
 msgid ""
 "Копия восстановлена. Роутер перезагружается — переподключитесь через "
 "минуту (возможно, по адресу из копии)."
 msgstr "备份已恢复。路由器正在重启——请在一分钟后重新连接（可能需要使用备份中的地址）。"
 
-#: src/re_sputnik/ui/advanced_screen.py:331
+#: src/re_sputnik/ui/advanced_screen.py:349
 msgid "Открытая (без пароля)"
 msgstr "开放网络（无密码）"
 
-#: src/re_sputnik/ui/advanced_screen.py:339
+#: src/re_sputnik/ui/advanced_screen.py:357
 msgid "Wi-Fi сети"
 msgstr "Wi-Fi 网络"
 
-#: src/re_sputnik/ui/advanced_screen.py:342
+#: src/re_sputnik/ui/advanced_screen.py:360
 msgid "На этом устройстве не найден Wi-Fi-чип — настраивать нечего."
 msgstr "此设备上未找到 Wi-Fi 芯片——无可配置项。"
 
-#: src/re_sputnik/ui/advanced_screen.py:346
+#: src/re_sputnik/ui/advanced_screen.py:364
 msgid ""
 "Имя сети, пароль, шифрование и канал — отдельно для каждого диапазона. "
 "Изменения применяются сразу; подключённые устройства переподключатся. "
 "QR-код и данные на «Обзоре» обновятся при следующем открытии."
 msgstr "网络名称、密码、加密方式和信道——每个频段单独设置。更改会立即生效；已连接的设备将重新连接。下次打开“概览”时，二维码和数据会更新。"
 
-#: src/re_sputnik/ui/advanced_screen.py:369
+#: src/re_sputnik/ui/advanced_screen.py:387
 msgid "включено, вещает"
 msgstr "已启用，正在广播"
 
-#: src/re_sputnik/ui/advanced_screen.py:370
+#: src/re_sputnik/ui/advanced_screen.py:388
 msgid "выключено"
 msgstr "已关闭"
 
-#: src/re_sputnik/ui/advanced_screen.py:370
+#: src/re_sputnik/ui/advanced_screen.py:388
 msgid "не вещает"
 msgstr "未广播"
 
-#: src/re_sputnik/ui/advanced_screen.py:380
+#: src/re_sputnik/ui/advanced_screen.py:398
 msgid ""
-"Этот диапазон занят подключением роутера к интернету по Wi-Fi, поэтому "
-"раздавать сеть на нём нельзя."
+"Этот диапазон сейчас занят подключением роутера к интернету по Wi-Fi, "
+"поэтому раздавать сеть на нём нельзя."
 msgstr "此频段正用于路由器的 Wi-Fi 互联网上联，因此无法在其上广播网络。"
 
-#: src/re_sputnik/ui/advanced_screen.py:390
+#: src/re_sputnik/ui/advanced_screen.py:408
 msgid ""
 "⚠ Не удалось получить список каналов от этого радио (возможно, оно "
 "выключено или недоступно). Настройка этого диапазона сейчас недоступна — "
 "включите радио и обновите страницу."
 msgstr "⚠ 无法从该无线模块获取信道列表（可能已关闭或不可用）。该频段目前无法配置——请打开无线模块并刷新页面。"
 
-#: src/re_sputnik/ui/advanced_screen.py:415
+#: src/re_sputnik/ui/advanced_screen.py:433
 #: src/re_sputnik/ui/wifi_ap_screen.py:55
 msgid "Имя сети (SSID)"
 msgstr "网络名称（SSID）"
 
-#: src/re_sputnik/ui/advanced_screen.py:420
+#: src/re_sputnik/ui/advanced_screen.py:438
 #: src/re_sputnik/ui/connect_screen.py:199
 msgid "Пароль"
 msgstr "密码"
 
-#: src/re_sputnik/ui/advanced_screen.py:433
+#: src/re_sputnik/ui/advanced_screen.py:451
 msgid "Шифрование"
 msgstr "加密方式"
 
-#: src/re_sputnik/ui/advanced_screen.py:441
+#: src/re_sputnik/ui/advanced_screen.py:459
 msgid "Канал"
 msgstr "信道"
 
-#: src/re_sputnik/ui/advanced_screen.py:455
+#: src/re_sputnik/ui/advanced_screen.py:473
 #, python-brace-format
 msgid "{0} МГц"
 msgstr "{0} MHz"
 
-#: src/re_sputnik/ui/advanced_screen.py:457
+#: src/re_sputnik/ui/advanced_screen.py:475
 msgid "Ширина канала"
 msgstr "信道宽度"
 
-#: src/re_sputnik/ui/advanced_screen.py:466
-#: src/re_sputnik/ui/advanced_screen.py:508
-#: src/re_sputnik/ui/advanced_screen.py:517
-#: src/re_sputnik/ui/advanced_screen.py:886
-#: src/re_sputnik/ui/advanced_screen.py:948
-#: src/re_sputnik/ui/advanced_screen.py:953
+#: src/re_sputnik/ui/advanced_screen.py:484
+#: src/re_sputnik/ui/advanced_screen.py:526
+#: src/re_sputnik/ui/advanced_screen.py:535
+#: src/re_sputnik/ui/advanced_screen.py:904
+#: src/re_sputnik/ui/advanced_screen.py:966
+#: src/re_sputnik/ui/advanced_screen.py:971
 #: src/re_sputnik/ui/antidpi_screen.py:612
 #: src/re_sputnik/ui/firstrun_screen.py:157
 #: src/re_sputnik/ui/firstrun_screen.py:249
@@ -1250,35 +1252,35 @@ msgstr "信道宽度"
 msgid "Применить"
 msgstr "应用"
 
-#: src/re_sputnik/ui/advanced_screen.py:498
+#: src/re_sputnik/ui/advanced_screen.py:516
 #: src/re_sputnik/ui/wifi_ap_screen.py:157
 msgid "Введите имя сети."
 msgstr "请输入网络名称。"
 
-#: src/re_sputnik/ui/advanced_screen.py:501
+#: src/re_sputnik/ui/advanced_screen.py:519
 msgid "Пароль не короче 8 символов."
 msgstr "密码长度不能少于 8 个字符。"
 
-#: src/re_sputnik/ui/advanced_screen.py:504
+#: src/re_sputnik/ui/advanced_screen.py:522
 #: src/re_sputnik/ui/wifi_ap_screen.py:164
 msgid "Настраиваю Wi-Fi…"
 msgstr "正在配置 Wi-Fi…"
 
-#: src/re_sputnik/ui/advanced_screen.py:510
+#: src/re_sputnik/ui/advanced_screen.py:528
 msgid "Готово — сеть обновлена."
 msgstr "完成——网络已更新。"
 
-#: src/re_sputnik/ui/advanced_screen.py:513
+#: src/re_sputnik/ui/advanced_screen.py:531
 msgid ""
 "Применено, но диапазон не поднялся — возможно, канал не разрешён в этом "
 "регионе. Попробуйте другой канал."
 msgstr "已应用，但该频段未能启动——该信道可能在本地区不被允许。请尝试其他信道。"
 
-#: src/re_sputnik/ui/advanced_screen.py:529
+#: src/re_sputnik/ui/advanced_screen.py:547
 msgid "Сеть LAN и DHCP"
 msgstr "LAN 网络和 DHCP"
 
-#: src/re_sputnik/ui/advanced_screen.py:533
+#: src/re_sputnik/ui/advanced_screen.py:551
 msgid ""
 "На сборке OpenWrt SNAPSHOT формат сетевых настроек может отличаться, "
 "поэтому менять адрес роутера и DHCP отсюда небезопасно. Настройте сеть "
@@ -1287,71 +1289,71 @@ msgstr ""
 "在 OpenWrt SNAPSHOT 构建上，网络设置的格式可能有所不同，因此从这里更改路由器地址和 DHCP "
 "并不安全。请通过路由器的网页界面（浏览器）或控制台自行配置网络。"
 
-#: src/re_sputnik/ui/advanced_screen.py:554
+#: src/re_sputnik/ui/advanced_screen.py:572
 msgid "IP-адрес роутера с маской (CIDR)"
 msgstr "带子网掩码的路由器 IP 地址（CIDR）"
 
-#: src/re_sputnik/ui/advanced_screen.py:555
+#: src/re_sputnik/ui/advanced_screen.py:573
 msgid ""
 "Адрес роутера вместе с размером подсети через «/», например "
 "192.168.1.1/24. По этому адресу открываются настройки; его же вы вводите "
 "в приложении."
 msgstr "路由器地址加上以“/”分隔的子网大小，例如 192.168.1.1/24。设置页面在此地址打开；您在应用中输入的也是这个地址。"
 
-#: src/re_sputnik/ui/advanced_screen.py:562
+#: src/re_sputnik/ui/advanced_screen.py:580
 msgid "IP-адрес роутера"
 msgstr "路由器 IP 地址"
 
-#: src/re_sputnik/ui/advanced_screen.py:563
+#: src/re_sputnik/ui/advanced_screen.py:581
 msgid ""
 "Адрес, по которому открываются настройки роутера; его же вы вводите в "
 "приложении. Обычно 192.168.1.1."
 msgstr "打开路由器设置的地址；您在应用中输入的也是这个地址。通常为 192.168.1.1。"
 
-#: src/re_sputnik/ui/advanced_screen.py:568
+#: src/re_sputnik/ui/advanced_screen.py:586
 msgid "Маска подсети"
 msgstr "子网掩码"
 
-#: src/re_sputnik/ui/advanced_screen.py:569
+#: src/re_sputnik/ui/advanced_screen.py:587
 msgid "Размер локальной сети. Если не уверены — оставьте 255.255.255.0."
 msgstr "本地网络的大小。如果不确定，请保留 255.255.255.0。"
 
-#: src/re_sputnik/ui/advanced_screen.py:573
+#: src/re_sputnik/ui/advanced_screen.py:591
 msgid "DHCP: начало диапазона"
 msgstr "DHCP：范围起始地址"
 
-#: src/re_sputnik/ui/advanced_screen.py:574
+#: src/re_sputnik/ui/advanced_screen.py:592
 msgid ""
 "С какого адреса роутер начинает раздавать IP. 100 означает 192.168.1.100."
 " Адреса до него (1–99) остаются свободными — их удобно отдавать под "
 "постоянные IP устройств."
 msgstr "路由器从哪个地址开始分配 IP。100 表示 192.168.1.100。之前的地址（1–99）保持空闲——便于分配给设备的固定 IP。"
 
-#: src/re_sputnik/ui/advanced_screen.py:576
+#: src/re_sputnik/ui/advanced_screen.py:594
 msgid "DHCP: сколько адресов раздавать"
 msgstr "DHCP：分配多少个地址"
 
-#: src/re_sputnik/ui/advanced_screen.py:577
+#: src/re_sputnik/ui/advanced_screen.py:595
 msgid ""
 "Максимум устройств, которым роутер выдаст адрес автоматически (размер "
 "диапазона)."
 msgstr "路由器自动分配地址的最大设备数（范围大小）。"
 
-#: src/re_sputnik/ui/advanced_screen.py:587
+#: src/re_sputnik/ui/advanced_screen.py:605
 msgid "Время аренды адреса (ЧЧ:ММ)"
 msgstr "地址租约时间（时:分）"
 
-#: src/re_sputnik/ui/advanced_screen.py:599
+#: src/re_sputnik/ui/advanced_screen.py:617
 msgid ""
 "Через какое время устройство заново запрашивает свой адрес. Например "
 "12:00 — каждые 12 часов. Слишком малое значение нагружает сеть."
 msgstr "设备重新请求其地址前的时间间隔。例如 12:00 表示每 12 小时一次。值过小会增加网络负担。"
 
-#: src/re_sputnik/ui/advanced_screen.py:609
+#: src/re_sputnik/ui/advanced_screen.py:627
 msgid "Подтвердить"
 msgstr "确认"
 
-#: src/re_sputnik/ui/advanced_screen.py:610
+#: src/re_sputnik/ui/advanced_screen.py:628
 msgid ""
 "Изменение адреса роутера, маски или DHCP отключит ВСЕ устройства, включая"
 " это. Может потребоваться полный сброс роутера. Делайте только при "
@@ -1359,91 +1361,91 @@ msgid ""
 " адресу."
 msgstr "更改路由器地址、掩码或 DHCP 将断开所有设备的连接，包括此设备。可能需要完全重置路由器。仅在确有必要时执行——应用将断开连接并以新地址重新连接。"
 
-#: src/re_sputnik/ui/advanced_screen.py:646
+#: src/re_sputnik/ui/advanced_screen.py:664
 msgid "Неверный адрес. Укажите IP с маской через «/», например 192.168.1.1/24."
 msgstr "地址无效。请输入带“/”子网掩码的 IP，例如 192.168.1.1/24。"
 
-#: src/re_sputnik/ui/advanced_screen.py:656
+#: src/re_sputnik/ui/advanced_screen.py:674
 msgid "Неверный адрес."
 msgstr "地址无效。"
 
-#: src/re_sputnik/ui/advanced_screen.py:668
+#: src/re_sputnik/ui/advanced_screen.py:686
 #, python-brace-format
 msgid ""
 "Применяется. Роутер переедет на {0} — приложение отключится, "
 "переподключитесь по новому адресу."
 msgstr "正在应用。路由器将迁移到 {0}——应用将断开连接，请使用新地址重新连接。"
 
-#: src/re_sputnik/ui/advanced_screen.py:681
+#: src/re_sputnik/ui/advanced_screen.py:699
 msgid "Постоянный IP-адрес для устройства"
 msgstr "设备的固定 IP 地址"
 
-#: src/re_sputnik/ui/advanced_screen.py:682
+#: src/re_sputnik/ui/advanced_screen.py:700
 msgid ""
 "Закрепите за устройством его текущий адрес — роутер всегда будет выдавать"
 " ему один и тот же IP."
 msgstr "将设备的当前地址固定下来——路由器将始终分配给它同一个 IP。"
 
-#: src/re_sputnik/ui/advanced_screen.py:698
+#: src/re_sputnik/ui/advanced_screen.py:716
 msgid "Закрепить адрес"
 msgstr "固定地址"
 
-#: src/re_sputnik/ui/advanced_screen.py:702
+#: src/re_sputnik/ui/advanced_screen.py:720
 msgid "Все известные устройства уже закреплены или нет устройств с MAC."
 msgstr "所有已知设备都已固定，或没有带 MAC 的设备。"
 
-#: src/re_sputnik/ui/advanced_screen.py:709
+#: src/re_sputnik/ui/advanced_screen.py:727
 msgid "Закреплённые:"
 msgstr "已固定："
 
-#: src/re_sputnik/ui/advanced_screen.py:717
+#: src/re_sputnik/ui/advanced_screen.py:735
 msgid "Убрать"
 msgstr "移除"
 
-#: src/re_sputnik/ui/advanced_screen.py:728
+#: src/re_sputnik/ui/advanced_screen.py:746
 msgid "Закрепляю адрес…"
 msgstr "正在固定地址…"
 
-#: src/re_sputnik/ui/advanced_screen.py:746
+#: src/re_sputnik/ui/advanced_screen.py:764
 msgid "UPnP / переадресация портов"
 msgstr "UPnP / 端口转发"
 
-#: src/re_sputnik/ui/advanced_screen.py:747
+#: src/re_sputnik/ui/advanced_screen.py:765
 msgid ""
 "Позволяет программам и играм самим открывать нужные порты на роутере "
 "(онлайн-игры, торренты, видеозвонки). Удобно, но снижает контроль над "
 "тем, какие порты открыты."
 msgstr "允许程序和游戏自行在路由器上打开所需端口（在线游戏、torrent、视频通话）。方便，但会降低对开放端口的控制。"
 
-#: src/re_sputnik/ui/advanced_screen.py:758
+#: src/re_sputnik/ui/advanced_screen.py:776
 msgid "Служба включена и работает"
 msgstr "服务已启用并运行中"
 
-#: src/re_sputnik/ui/advanced_screen.py:759
+#: src/re_sputnik/ui/advanced_screen.py:777
 msgid "Включена, но не запущена"
 msgstr "已启用，但未运行"
 
-#: src/re_sputnik/ui/advanced_screen.py:759
+#: src/re_sputnik/ui/advanced_screen.py:777
 msgid "Отключена"
 msgstr "已禁用"
 
-#: src/re_sputnik/ui/advanced_screen.py:763
+#: src/re_sputnik/ui/advanced_screen.py:781
 msgid "Включить UPnP"
 msgstr "启用 UPnP"
 
-#: src/re_sputnik/ui/advanced_screen.py:774
+#: src/re_sputnik/ui/advanced_screen.py:792
 msgid "Активные переадресации:"
 msgstr "活动的端口转发："
 
-#: src/re_sputnik/ui/advanced_screen.py:784
+#: src/re_sputnik/ui/advanced_screen.py:802
 msgid "нет активных переадресаций"
 msgstr "没有活动的端口转发"
 
-#: src/re_sputnik/ui/advanced_screen.py:801
+#: src/re_sputnik/ui/advanced_screen.py:819
 msgid "SQM — сглаживание буфера (bufferbloat)"
 msgstr "SQM — 缓冲平滑（缓冲膨胀）"
 
-#: src/re_sputnik/ui/advanced_screen.py:802
+#: src/re_sputnik/ui/advanced_screen.py:820
 msgid ""
 "Убирает «залипания» интернета, когда кто-то качает или грузит канал "
 "(видеозвонки, игры перестают тормозить). Ограничивает скорость чуть ниже "
@@ -1454,108 +1456,150 @@ msgstr ""
 "当有人下载或占用带宽时，消除网络“卡顿”（视频通话和游戏不再卡顿）。会将速度限制在实际速度之下，以便路由器管理数据包队列。对路由器性能要求较高：在高速套餐（500+"
 " Mbps）上，可能因性能不足而降低速度。"
 
-#: src/re_sputnik/ui/advanced_screen.py:826
+#: src/re_sputnik/ui/advanced_screen.py:844
 msgid "WAN-интерфейс (что ограничиваем)"
 msgstr "WAN 接口（要限速的对象）"
 
-#: src/re_sputnik/ui/advanced_screen.py:827
+#: src/re_sputnik/ui/advanced_screen.py:845
 msgid ""
 "Устройство, через которое роутер выходит в интернет. Обычно определяется "
 "автоматически."
 msgstr "路由器接入互联网所使用的接口。通常自动检测。"
 
-#: src/re_sputnik/ui/advanced_screen.py:834
+#: src/re_sputnik/ui/advanced_screen.py:852
 msgid "Скорость приёма, кбит/с"
 msgstr "下载速度，kbit/s"
 
-#: src/re_sputnik/ui/advanced_screen.py:835
+#: src/re_sputnik/ui/advanced_screen.py:853
 msgid ""
 "Поставьте ~90–95% от тарифной скорости загрузки, либо на 1–2 Мбит/с "
 "меньше реально измеренной. Например, при тарифе 100 Мбит/с — около "
 "90000–95000."
 msgstr "设置为套餐下载速度的约 90–95%，或比实测值低 1–2 Mbps。例如 100 Mbps 套餐——大约 90000–95000。"
 
-#: src/re_sputnik/ui/advanced_screen.py:841
+#: src/re_sputnik/ui/advanced_screen.py:859
 msgid "Скорость отдачи, кбит/с"
 msgstr "上传速度，kbit/s"
 
-#: src/re_sputnik/ui/advanced_screen.py:842
+#: src/re_sputnik/ui/advanced_screen.py:860
 msgid ""
 "Так же: ~90–95% от тарифной скорости отдачи (upload) или на 1–2 Мбит/с "
 "меньше измеренной."
 msgstr "同样：约为套餐上传速度的 90–95%，或比实测值低 1–2 Mbps。"
 
-#: src/re_sputnik/ui/advanced_screen.py:848
+#: src/re_sputnik/ui/advanced_screen.py:866
 msgid "Дисциплина очереди"
 msgstr "队列调度算法"
 
-#: src/re_sputnik/ui/advanced_screen.py:849
+#: src/re_sputnik/ui/advanced_screen.py:867
 msgid ""
 "cake — современная, рекомендуется (сама управляет приоритетами). fq_codel"
 " — проще и легче, для слабых роутеров."
 msgstr "cake——现代算法，推荐使用（自动管理优先级）。fq_codel——更简单更轻量，适合性能较弱的路由器。"
 
-#: src/re_sputnik/ui/advanced_screen.py:859
+#: src/re_sputnik/ui/advanced_screen.py:877
 msgid "Шаблон настройки очереди"
 msgstr "队列设置模板"
 
-#: src/re_sputnik/ui/advanced_screen.py:860
+#: src/re_sputnik/ui/advanced_screen.py:878
 msgid ""
 "Простой подходит почти всем. «С приоритизацией» отдаёт приоритет звонкам "
 "и играм перед загрузками, но чуть тяжелее."
 msgstr "简单模式适合几乎所有人。“带优先级”会让通话和游戏优先于下载，但稍微更耗资源。"
 
-#: src/re_sputnik/ui/advanced_screen.py:868
+#: src/re_sputnik/ui/advanced_screen.py:886
 msgid "Накладные расходы на пакет, байт"
 msgstr "每包开销，字节"
 
-#: src/re_sputnik/ui/advanced_screen.py:869
+#: src/re_sputnik/ui/advanced_screen.py:887
 msgid ""
 "Запас на служебные данные канала. 44 подходит для большинства подключений"
 " (Ethernet/оптика/кабель). Для DSL может быть иначе — если не уверены, "
 "оставьте 44."
 msgstr "为链路开销预留的余量。44 适合大多数连接（以太网/光纤/有线）。DSL 可能不同——如果不确定，保留 44。"
 
-#: src/re_sputnik/ui/advanced_screen.py:876
+#: src/re_sputnik/ui/advanced_screen.py:894
 msgid "Включить SQM"
 msgstr "启用 SQM"
 
-#: src/re_sputnik/ui/advanced_screen.py:882
-#: src/re_sputnik/ui/advanced_screen.py:916
-#: src/re_sputnik/ui/advanced_screen.py:924
+#: src/re_sputnik/ui/advanced_screen.py:900
+#: src/re_sputnik/ui/advanced_screen.py:934
+#: src/re_sputnik/ui/advanced_screen.py:942
 msgid "Измерить"
 msgstr "测速"
 
-#: src/re_sputnik/ui/advanced_screen.py:908
+#: src/re_sputnik/ui/advanced_screen.py:926
 msgid "Измеряю…"
 msgstr "正在测速…"
 
-#: src/re_sputnik/ui/advanced_screen.py:910
+#: src/re_sputnik/ui/advanced_screen.py:928
 msgid ""
 "Измеряю скорость загрузки (несколько секунд, скачается часть тестового "
 "файла)…"
 msgstr "正在测量下载速度（几秒钟，会下载部分测试文件）…"
 
-#: src/re_sputnik/ui/advanced_screen.py:920
+#: src/re_sputnik/ui/advanced_screen.py:938
 #, python-brace-format
 msgid ""
 "Измерено: приём ≈ {0} кбит/с (−2% к замеру). Отдачу прикинул как {1} "
 "кбит/с (половина приёма) — уточните под свой тариф и нажмите «Применить»."
 msgstr "测得：下载 ≈ {0} kbit/s（比测量值低 2%）。上传估算为 {1} kbit/s（下载的一半）——请根据您的套餐调整，然后点击“应用”。"
 
-#: src/re_sputnik/ui/advanced_screen.py:944
+#: src/re_sputnik/ui/advanced_screen.py:962
 msgid "Настраиваю очередь…"
 msgstr "正在配置队列…"
 
-#: src/re_sputnik/ui/advanced_screen.py:949
+#: src/re_sputnik/ui/advanced_screen.py:967
 msgid "Готово — настройки SQM применены."
 msgstr "完成——SQM 设置已应用。"
 
-#: src/re_sputnik/ui/advanced_screen.py:962
+#: src/re_sputnik/ui/advanced_screen.py:981
+msgid "Маршрутизация прокси"
+msgstr "代理路由"
+
+#: src/re_sputnik/ui/advanced_screen.py:994
+msgid "DNS для российских сайтов (напрямую)"
+msgstr "俄罗斯网站的 DNS（直连）"
+
+#: src/re_sputnik/ui/advanced_screen.py:995
+msgid "DNS для китайских сайтов (напрямую)"
+msgstr "中国网站的 DNS（直连）"
+
+#: src/re_sputnik/ui/advanced_screen.py:996
+msgid "DNS для иранских сайтов (напрямую)"
+msgstr "伊朗网站的 DNS（直连）"
+
+#: src/re_sputnik/ui/advanced_screen.py:997
+msgid "Региональный DNS"
+msgstr "区域 DNS"
+
+#: src/re_sputnik/ui/advanced_screen.py:1011
+msgid "Как основной узел"
+msgstr "与主节点相同"
+
+#: src/re_sputnik/ui/advanced_screen.py:1011
+msgid "Отдельный URLTest"
+msgstr "独立 URLTest"
+
+#: src/re_sputnik/ui/advanced_screen.py:1017
+msgid "Отдельный сервер для UDP (звонки, игры)"
+msgstr "UDP 专用服务器（通话、游戏）"
+
+#: src/re_sputnik/ui/advanced_screen.py:1020
+msgid ""
+"По умолчанию UDP идёт через основной узел. Можно выделить отдельный "
+"сервер — иногда стабильнее для голоса и игр."
+msgstr "默认情况下，UDP 通过主节点传输。可以指定专用服务器——有时对语音和游戏更稳定。"
+
+#: src/re_sputnik/ui/advanced_screen.py:1049
+msgid "Готово — настройки применены."
+msgstr "完成 — 设置已应用。"
+
+#: src/re_sputnik/ui/advanced_screen.py:1057
 msgid "Сброс к заводским настройкам"
 msgstr "恢复出厂设置"
 
-#: src/re_sputnik/ui/advanced_screen.py:963
+#: src/re_sputnik/ui/advanced_screen.py:1058
 msgid ""
 "Полностью стирает все настройки роутера и возвращает его к состоянию «из "
 "коробки» (обычно адрес 192.168.1.1, без пароля). HomeProxy, ключи, Wi-Fi "
@@ -1564,26 +1608,77 @@ msgstr ""
 "完全清除路由器的所有设置，并将其恢复到“开箱”状态（通常地址为 192.168.1.1，无密码）。HomeProxy、密钥、Wi-"
 "Fi——一切都将被删除。"
 
-#: src/re_sputnik/ui/advanced_screen.py:972
+#: src/re_sputnik/ui/advanced_screen.py:1067
 msgid "Сбросить устройство"
 msgstr "重置设备"
 
-#: src/re_sputnik/ui/advanced_screen.py:972
+#: src/re_sputnik/ui/advanced_screen.py:1067
 msgid "Подтвердить сброс"
 msgstr "确认重置"
 
-#: src/re_sputnik/ui/advanced_screen.py:973
+#: src/re_sputnik/ui/advanced_screen.py:1068
 msgid ""
 "Все настройки будут безвозвратно удалены, роутер перезагрузится в "
 "заводском состоянии. Приложение потеряет связь. Убедитесь, что у вас есть"
 " резервная копия."
 msgstr "所有设置将被永久删除，路由器将以出厂状态重启。应用将失去连接。请确保您已有备份。"
 
-#: src/re_sputnik/ui/advanced_screen.py:981
+#: src/re_sputnik/ui/advanced_screen.py:1076
 msgid ""
 "Сброс запущен. Роутер перезагрузится в заводском состоянии — подключитесь"
 " заново как к новому устройству."
 msgstr "重置已开始。路由器将以出厂状态重启——请将其作为新设备重新连接。"
+
+#: src/re_sputnik/ui/advanced_screen.py:1089
+#: src/re_sputnik/ui/connect_screen.py:299
+msgid "Удалить данные приложения (не роутера)"
+msgstr "删除应用数据（不是路由器）"
+
+#: src/re_sputnik/ui/advanced_screen.py:1090
+#: src/re_sputnik/ui/connect_screen.py:301
+msgid ""
+"Стирает с ЭТОГО компьютера все данные Re:Sputnik: SSH-ключ приложения, "
+"сохранённые пароли роутеров, привязки host-key и список роутеров. Сам "
+"роутер и его настройки не трогаются. Используйте, чтобы убрать за собой "
+"на чужом или общем компьютере."
+msgstr ""
+"从本台计算机抹除所有 Re:Sputnik 数据：应用的 SSH "
+"密钥、已保存的路由器密码、主机密钥指纹以及路由器列表。路由器本身及其设置不受影响。可用于在他人或公用电脑上清理你的痕迹。"
+
+#: src/re_sputnik/ui/advanced_screen.py:1100
+#: src/re_sputnik/ui/connect_screen.py:266
+#: src/re_sputnik/ui/connect_screen.py:289
+#: src/re_sputnik/ui/connect_screen.py:311
+msgid "Удалить данные приложения"
+msgstr "删除应用数据"
+
+#: src/re_sputnik/ui/advanced_screen.py:1101
+#: src/re_sputnik/ui/connect_screen.py:312
+msgid "Да, удалить данные"
+msgstr "是的，删除数据"
+
+#: src/re_sputnik/ui/advanced_screen.py:1102
+#: src/re_sputnik/ui/connect_screen.py:313
+msgid ""
+"После удаления для следующего входа понадобится пароль root роутера. Он у"
+" вас есть — его показывали при настройке, и его можно посмотреть на "
+"устройстве в разделе «Безопасность». ВАЖНО: посмотрите/сохраните пароль "
+"ДО удаления — после стирания его не восстановить. Сам роутер не "
+"сбрасывается."
+msgstr ""
+"删除后，下次登录将需要路由器的 root "
+"密码。你是有这个密码的——它在设置时显示过，也可以在设备的「安全」一节中查看。重要：请在删除之前查看／保存好密码——抹除后将无法恢复。路由器本身不会被重置。"
+
+#: src/re_sputnik/ui/advanced_screen.py:1111
+#: src/re_sputnik/ui/connect_screen.py:322
+msgid "Данные приложения удалены с этого компьютера. Перезапустите Re:Sputnik."
+msgstr "应用数据已从本台计算机删除。请重新启动 Re:Sputnik。"
+
+#: src/re_sputnik/ui/advanced_screen.py:1116
+#: src/re_sputnik/ui/connect_screen.py:329
+#, python-brace-format
+msgid "Не удалось полностью удалить: {0}"
+msgstr "未能完全删除：{0}"
 
 #: src/re_sputnik/ui/antidpi_screen.py:26
 msgid "отказ"
@@ -1618,7 +1713,7 @@ msgid "🟡 установлен, остановлен"
 msgstr "🟡 已安装，已停止"
 
 #: src/re_sputnik/ui/antidpi_screen.py:110
-#: src/re_sputnik/ui/antidpi_screen.py:305 src/re_sputnik/ui/core_screen.py:480
+#: src/re_sputnik/ui/antidpi_screen.py:305 src/re_sputnik/ui/core_screen.py:489
 msgid "🔴 не установлен"
 msgstr "🔴 未安装"
 
@@ -1926,31 +2021,31 @@ msgid "Запомнить роутер (адрес и пароль — в хра
 msgstr "记住此路由器（地址和密码保存在操作系统的密钥库中）"
 
 #: src/re_sputnik/ui/connect_screen.py:218
-#: src/re_sputnik/ui/connect_screen.py:442
+#: src/re_sputnik/ui/connect_screen.py:517
 #: src/re_sputnik/ui/internet_screen.py:297
 msgid "Подключиться"
 msgstr "连接"
 
 #: src/re_sputnik/ui/connect_screen.py:230
-#: src/re_sputnik/ui/connect_screen.py:502
+#: src/re_sputnik/ui/connect_screen.py:577
 #: src/re_sputnik/ui/firstrun_screen.py:211
 #: src/re_sputnik/ui/firstrun_screen.py:267
 #: src/re_sputnik/ui/internet_screen.py:93
 #: src/re_sputnik/ui/internet_screen.py:139
-#: src/re_sputnik/ui/rules_screen.py:127
+#: src/re_sputnik/ui/rules_screen.py:156
 #: src/re_sputnik/ui/software_screen.py:109
 #: src/re_sputnik/ui/wifi_ap_screen.py:83
 msgid "Далее →"
 msgstr "下一步 →"
 
-#: src/re_sputnik/ui/connect_screen.py:250
+#: src/re_sputnik/ui/connect_screen.py:258
 #: src/re_sputnik/ui/diagnostics_screen.py:211
 #: src/re_sputnik/ui/finalize_screen.py:145
 #: src/re_sputnik/ui/firstrun_screen.py:159
 #: src/re_sputnik/ui/internet_screen.py:62
-#: src/re_sputnik/ui/preinstall_screen.py:129
+#: src/re_sputnik/ui/preinstall_screen.py:135
 #: src/re_sputnik/ui/quick_nodes_screen.py:179
-#: src/re_sputnik/ui/rules_screen.py:134
+#: src/re_sputnik/ui/rules_screen.py:163
 #: src/re_sputnik/ui/security_screen.py:112
 #: src/re_sputnik/ui/software_screen.py:122
 #: src/re_sputnik/ui/verify_screen.py:109
@@ -1958,136 +2053,136 @@ msgstr "下一步 →"
 msgid "← Назад"
 msgstr "← 返回"
 
-#: src/re_sputnik/ui/connect_screen.py:286
+#: src/re_sputnik/ui/connect_screen.py:361
 msgid "— выбрать сохранённый —"
 msgstr "— 选择已保存的 —"
 
-#: src/re_sputnik/ui/connect_screen.py:301
+#: src/re_sputnik/ui/connect_screen.py:376
 msgid "Сохранённые"
 msgstr "已保存"
 
-#: src/re_sputnik/ui/connect_screen.py:334
+#: src/re_sputnik/ui/connect_screen.py:409
 #, python-brace-format
 msgid "Готово к подключению: {0}"
 msgstr "可以连接：{0}"
 
-#: src/re_sputnik/ui/connect_screen.py:339
+#: src/re_sputnik/ui/connect_screen.py:414
 #, python-brace-format
 msgid "Роутер {0} удалён из сохранённых."
 msgstr "路由器 {0} 已从已保存列表中移除。"
 
-#: src/re_sputnik/ui/connect_screen.py:351
-#: src/re_sputnik/ui/connect_screen.py:352
+#: src/re_sputnik/ui/connect_screen.py:426
+#: src/re_sputnik/ui/connect_screen.py:427
 msgid "— не найдено —"
 msgstr "— 未找到 —"
 
-#: src/re_sputnik/ui/connect_screen.py:353
+#: src/re_sputnik/ui/connect_screen.py:428
 msgid "Роутер не найден автоматически — введите адрес вручную."
 msgstr "未能自动找到路由器——请手动输入地址。"
 
-#: src/re_sputnik/ui/connect_screen.py:368
+#: src/re_sputnik/ui/connect_screen.py:443
 #, python-brace-format
 msgid "Найден OpenWrt: {0}"
 msgstr "找到 OpenWrt：{0}"
 
-#: src/re_sputnik/ui/connect_screen.py:371
+#: src/re_sputnik/ui/connect_screen.py:446
 msgid ""
 "SSH отвечает, но баннер не OpenWrt — проверьте адрес или выберите "
 "кандидата."
 msgstr "SSH 有响应，但横幅不是 OpenWrt——请检查地址或选择一个候选项。"
 
-#: src/re_sputnik/ui/connect_screen.py:401
+#: src/re_sputnik/ui/connect_screen.py:476
 msgid "Укажите адрес роутера."
 msgstr "请输入路由器地址。"
 
-#: src/re_sputnik/ui/connect_screen.py:406
+#: src/re_sputnik/ui/connect_screen.py:481
 msgid "Порт должен быть числом."
 msgstr "端口必须是数字。"
 
-#: src/re_sputnik/ui/connect_screen.py:413
+#: src/re_sputnik/ui/connect_screen.py:488
 msgid "Подключение…"
 msgstr "正在连接…"
 
-#: src/re_sputnik/ui/connect_screen.py:416
+#: src/re_sputnik/ui/connect_screen.py:491
 #, python-brace-format
 msgid "Подключаюсь к {0}:{1}…"
 msgstr "正在连接到 {0}:{1}…"
 
-#: src/re_sputnik/ui/connect_screen.py:452
+#: src/re_sputnik/ui/connect_screen.py:527
 msgid "⚠ Отпечаток ключа роутера изменился."
 msgstr "⚠ 路由器的密钥指纹已更改。"
 
-#: src/re_sputnik/ui/connect_screen.py:459
+#: src/re_sputnik/ui/connect_screen.py:534
 msgid ""
 "Это нормально после сброса роутера к заводским настройкам, но также может"
 " означать подмену устройства в сети. Принимайте новый ключ, только если "
 "вы только что сбрасывали роутер."
 msgstr "这在路由器恢复出厂设置后是正常的，但也可能意味着网络上的设备被替换了。仅当您刚刚重置了路由器时才接受新密钥。"
 
-#: src/re_sputnik/ui/connect_screen.py:464
+#: src/re_sputnik/ui/connect_screen.py:539
 #, python-brace-format
 msgid "Был:   {0}"
 msgstr "原来：   {0}"
 
-#: src/re_sputnik/ui/connect_screen.py:466
+#: src/re_sputnik/ui/connect_screen.py:541
 #, python-brace-format
 msgid "Стал:  {0}"
 msgstr "现在：  {0}"
 
-#: src/re_sputnik/ui/connect_screen.py:470
+#: src/re_sputnik/ui/connect_screen.py:545
 msgid "Принять новый ключ"
 msgstr "接受新密钥"
 
-#: src/re_sputnik/ui/connect_screen.py:480
+#: src/re_sputnik/ui/connect_screen.py:555
 msgid "Новый ключ принят. Переподключаюсь…"
 msgstr "新密钥已接受。正在重新连接…"
 
-#: src/re_sputnik/ui/connect_screen.py:487
+#: src/re_sputnik/ui/connect_screen.py:562
 msgid "Переподключиться"
 msgstr "重新连接"
 
-#: src/re_sputnik/ui/connect_screen.py:488
+#: src/re_sputnik/ui/connect_screen.py:563
 msgid "Подключено."
 msgstr "已连接。"
 
-#: src/re_sputnik/ui/connect_screen.py:500
+#: src/re_sputnik/ui/connect_screen.py:575
 msgid "Всё равно продолжить →"
 msgstr "仍然继续 →"
 
-#: src/re_sputnik/ui/connect_screen.py:518
+#: src/re_sputnik/ui/connect_screen.py:593
 msgid "Чистый роутер — потребуется полная настройка"
 msgstr "全新路由器——需要完整设置"
 
-#: src/re_sputnik/ui/connect_screen.py:519
+#: src/re_sputnik/ui/connect_screen.py:594
 msgid "ПО установлено, нужна настройка серверов"
 msgstr "已安装软件，需要配置服务器"
 
-#: src/re_sputnik/ui/connect_screen.py:520
+#: src/re_sputnik/ui/connect_screen.py:595
 msgid "Роутер уже настроен — режим управления"
 msgstr "路由器已配置——管理模式"
 
-#: src/re_sputnik/ui/connect_screen.py:526
+#: src/re_sputnik/ui/connect_screen.py:601
 msgid "не определён"
 msgstr "未确定"
 
-#: src/re_sputnik/ui/connect_screen.py:527
+#: src/re_sputnik/ui/connect_screen.py:602
 msgid "установлен"
 msgstr "已安装"
 
-#: src/re_sputnik/ui/connect_screen.py:527
+#: src/re_sputnik/ui/connect_screen.py:602
 msgid "не установлен"
 msgstr "未安装"
 
-#: src/re_sputnik/ui/connect_screen.py:529
+#: src/re_sputnik/ui/connect_screen.py:604
 #: src/re_sputnik/ui/diagnostics_screen.py:283
 msgid "Состояние"
 msgstr "状态"
 
-#: src/re_sputnik/ui/connect_screen.py:547
+#: src/re_sputnik/ui/connect_screen.py:622
 msgid "Совместимость прошивки"
 msgstr "固件兼容性"
 
-#: src/re_sputnik/ui/connect_screen.py:559
+#: src/re_sputnik/ui/connect_screen.py:634
 #, python-brace-format
 msgid ""
 "\n"
@@ -2163,7 +2258,7 @@ msgid "Обновить до последней"
 msgstr "更新到最新版"
 
 #: src/re_sputnik/ui/core_screen.py:275 src/re_sputnik/ui/core_screen.py:371
-#: src/re_sputnik/ui/core_screen.py:496
+#: src/re_sputnik/ui/core_screen.py:505
 #: src/re_sputnik/ui/finalize_screen.py:109
 #: src/re_sputnik/ui/finalize_screen.py:224
 #: src/re_sputnik/ui/finalize_screen.py:229
@@ -2200,71 +2295,78 @@ msgstr "内核已选定。请点击“应用更改”。"
 msgid "Приложение не установлено."
 msgstr "应用未安装。"
 
-#: src/re_sputnik/ui/core_screen.py:374
+#: src/re_sputnik/ui/core_screen.py:376
+#, python-brace-format
+msgid ""
+"Установлена прежняя версия (luci-app-homeproxy-hiddify) · доступно "
+"обновление {0}"
+msgstr "已安装旧版本（luci-app-homeproxy-hiddify）· 可更新至 {0}"
+
+#: src/re_sputnik/ui/core_screen.py:379 src/re_sputnik/ui/core_screen.py:383
+msgid "Обновить приложение"
+msgstr "更新应用"
+
+#: src/re_sputnik/ui/core_screen.py:382
 #, python-brace-format
 msgid "Установлено {0} · доступно {1}"
 msgstr "已安装 {0} · 最新可用 {1}"
 
-#: src/re_sputnik/ui/core_screen.py:375
-msgid "Обновить приложение"
-msgstr "更新应用"
-
-#: src/re_sputnik/ui/core_screen.py:378
+#: src/re_sputnik/ui/core_screen.py:386
 #, python-brace-format
 msgid "{0} (последняя версия)"
 msgstr "{0}（最新版本）"
 
-#: src/re_sputnik/ui/core_screen.py:379
+#: src/re_sputnik/ui/core_screen.py:387
 #, python-brace-format
 msgid "Установлено {0}"
 msgstr "已安装 {0}"
 
-#: src/re_sputnik/ui/core_screen.py:381
+#: src/re_sputnik/ui/core_screen.py:389
 #: src/re_sputnik/ui/software_screen.py:149
 msgid "Переустановить"
 msgstr "重新安装"
 
-#: src/re_sputnik/ui/core_screen.py:426
+#: src/re_sputnik/ui/core_screen.py:434
 msgid "▶ Обновление приложения…"
 msgstr "▶ 正在更新应用…"
 
-#: src/re_sputnik/ui/core_screen.py:442
+#: src/re_sputnik/ui/core_screen.py:451
 #, python-brace-format
 msgid "✗ Ошибка: {0}"
 msgstr "✗ 错误：{0}"
 
-#: src/re_sputnik/ui/core_screen.py:477
+#: src/re_sputnik/ui/core_screen.py:486
 msgid "🟢 запущен"
 msgstr "🟢 运行中"
 
-#: src/re_sputnik/ui/core_screen.py:477
+#: src/re_sputnik/ui/core_screen.py:486
 msgid "🟡 установлен"
 msgstr "🟡 已安装"
 
-#: src/re_sputnik/ui/core_screen.py:486
+#: src/re_sputnik/ui/core_screen.py:495
 msgid "Обновить"
 msgstr "更新"
 
-#: src/re_sputnik/ui/core_screen.py:490
+#: src/re_sputnik/ui/core_screen.py:499
 msgid "Удалить"
 msgstr "删除"
 
-#: src/re_sputnik/ui/core_screen.py:508
+#: src/re_sputnik/ui/core_screen.py:517
 #, python-brace-format
 msgid "▶ Установка/обновление: {0}…"
 msgstr "▶ 正在安装/更新：{0}…"
 
-#: src/re_sputnik/ui/core_screen.py:523
+#: src/re_sputnik/ui/core_screen.py:532
 #, python-brace-format
 msgid "▶ Удаление: {0}…"
 msgstr "▶ 正在删除：{0}…"
 
-#: src/re_sputnik/ui/core_screen.py:529
+#: src/re_sputnik/ui/core_screen.py:538
 #, python-brace-format
 msgid "{0} удалён."
 msgstr "{0} 已删除。"
 
-#: src/re_sputnik/ui/core_screen.py:529
+#: src/re_sputnik/ui/core_screen.py:538
 #, python-brace-format
 msgid "Не удалось удалить {0}."
 msgstr "无法删除 {0}。"
@@ -2336,7 +2438,7 @@ msgid "Конфиг"
 msgstr "配置"
 
 #: src/re_sputnik/ui/diagnostics_screen.py:325
-#: src/re_sputnik/ui/overview_screen.py:485
+#: src/re_sputnik/ui/overview_screen.py:488
 msgid "Активный сервер"
 msgstr "活跃服务器"
 
@@ -2345,18 +2447,18 @@ msgid "нет активного сервера"
 msgstr "没有活跃服务器"
 
 #: src/re_sputnik/ui/diagnostics_screen.py:340
-#: src/re_sputnik/ui/overview_screen.py:437
+#: src/re_sputnik/ui/overview_screen.py:440
 #, python-brace-format
 msgid "{0} ms (таймаут)"
 msgstr "{0} ms（超时）"
 
 #: src/re_sputnik/ui/diagnostics_screen.py:344
-#: src/re_sputnik/ui/overview_screen.py:439
+#: src/re_sputnik/ui/overview_screen.py:442
 msgid "нет данных"
 msgstr "无数据"
 
 #: src/re_sputnik/ui/diagnostics_screen.py:349
-#: src/re_sputnik/ui/overview_screen.py:477
+#: src/re_sputnik/ui/overview_screen.py:480
 #, python-brace-format
 msgid "   ·   группа: {0} ({1})"
 msgstr "   ·   分组：{0}（{1}）"
@@ -2375,53 +2477,65 @@ msgstr "运营商 IP"
 msgid "Через прокси"
 msgstr "通过代理"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:399
-msgid "Россия — mail.ru"
-msgstr "俄罗斯 — mail.ru"
+#: src/re_sputnik/ui/diagnostics_screen.py:385
+#: src/re_sputnik/ui/overview_screen.py:57
+#, fuzzy
+msgid "Россия"
+msgstr "版本"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:400
+#: src/re_sputnik/ui/diagnostics_screen.py:385
+#: src/re_sputnik/ui/overview_screen.py:57
+msgid "Китай"
+msgstr "中国"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:385
+#: src/re_sputnik/ui/overview_screen.py:57
+msgid "Иран"
+msgstr "伊朗"
+
+#: src/re_sputnik/ui/diagnostics_screen.py:407
 msgid "Защищённый — andrevi.ch"
 msgstr "安全 — andrevi.ch"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:420
+#: src/re_sputnik/ui/diagnostics_screen.py:427
 msgid "Проверка связи"
 msgstr "连接检查"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:428
+#: src/re_sputnik/ui/diagnostics_screen.py:435
 msgid "Полный отчёт (без паролей и ключей)"
 msgstr "完整报告（不含密码和密钥）"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:429
+#: src/re_sputnik/ui/diagnostics_screen.py:436
 msgid ""
 "Можно безопасно скопировать или сохранить и отправить на проверку — "
 "пароли и ключи из отчёта автоматически удалены."
 msgstr "可以安全地复制或保存并发送以供检查——报告中的密码和密钥已自动移除。"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:436
+#: src/re_sputnik/ui/diagnostics_screen.py:443
 msgid "(пусто)"
 msgstr "（空）"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:440
+#: src/re_sputnik/ui/diagnostics_screen.py:447
 msgid "📋 Копировать"
 msgstr "📋 复制"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:443
+#: src/re_sputnik/ui/diagnostics_screen.py:450
 msgid "💾 Сохранить"
 msgstr "💾 保存"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:453
+#: src/re_sputnik/ui/diagnostics_screen.py:460
 msgid "Отчёт скопирован."
 msgstr "报告已复制。"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:457
+#: src/re_sputnik/ui/diagnostics_screen.py:464
 msgid "Нет отчёта для сохранения."
 msgstr "没有可保存的报告。"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:461
+#: src/re_sputnik/ui/diagnostics_screen.py:468
 msgid "Текстовый файл"
 msgstr "文本文件"
 
-#: src/re_sputnik/ui/diagnostics_screen.py:469
+#: src/re_sputnik/ui/diagnostics_screen.py:476
 #, python-brace-format
 msgid "Сохранено: {0}"
 msgstr "已保存：{0}"
@@ -3028,7 +3142,7 @@ msgstr ""
 "在此处粘贴订阅链接（以 http:// 或 https:// 开头）或单个服务器密钥（vless:// vmess:// hysteria2://"
 " trojan:// ss:// vpn:// …）——每行一个。应用会自动识别哪个是订阅，哪个是密钥。"
 
-#: src/re_sputnik/ui/nodes_screen.py:161 src/re_sputnik/ui/rules_screen.py:353
+#: src/re_sputnik/ui/nodes_screen.py:161 src/re_sputnik/ui/rules_screen.py:380
 msgid "+ Добавить"
 msgstr "+ 添加"
 
@@ -3176,277 +3290,278 @@ msgstr ""
 "• “俄罗斯”——用于俄罗斯网站的 DNS：直接打开，快速且不经过代理。\n"
 "• “安全”——通过加密通道（DoH/DoT）处理其余流量的 DNS：运营商无法查看或篡改您的请求。"
 
-#: src/re_sputnik/ui/overview_screen.py:100
-#: src/re_sputnik/ui/overview_screen.py:290
+#: src/re_sputnik/ui/overview_screen.py:103
+#: src/re_sputnik/ui/overview_screen.py:293
 #: src/re_sputnik/ui/settings_shell.py:24
 msgid "Обзор"
 msgstr "概览"
 
-#: src/re_sputnik/ui/overview_screen.py:110
+#: src/re_sputnik/ui/overview_screen.py:113
 msgid "Авто-обновление страницы"
 msgstr "自动刷新页面"
 
-#: src/re_sputnik/ui/overview_screen.py:128
+#: src/re_sputnik/ui/overview_screen.py:131
 msgid "Собираю данные…"
 msgstr "正在收集数据…"
 
-#: src/re_sputnik/ui/overview_screen.py:294
+#: src/re_sputnik/ui/overview_screen.py:297
 #, python-brace-format
 msgid "аптайм {0}"
 msgstr "运行时间 {0}"
 
-#: src/re_sputnik/ui/overview_screen.py:295
+#: src/re_sputnik/ui/overview_screen.py:298
 #, python-brace-format
 msgid "IP роутера {0}"
 msgstr "路由器 IP {0}"
 
-#: src/re_sputnik/ui/overview_screen.py:314
+#: src/re_sputnik/ui/overview_screen.py:317
 #, python-brace-format
 msgid "{0}%  ·  свободно {1} из {2} МБ"
 msgstr "{0}%  ·  剩余 {1} / {2} MB"
 
-#: src/re_sputnik/ui/overview_screen.py:317
+#: src/re_sputnik/ui/overview_screen.py:320
 msgid "Система"
 msgstr "系统"
 
-#: src/re_sputnik/ui/overview_screen.py:322
+#: src/re_sputnik/ui/overview_screen.py:325
 msgid "Загрузка процессора"
 msgstr "CPU 负载"
 
-#: src/re_sputnik/ui/overview_screen.py:324
+#: src/re_sputnik/ui/overview_screen.py:327
 msgid "Свободно ОЗУ"
 msgstr "可用内存"
 
-#: src/re_sputnik/ui/overview_screen.py:368
+#: src/re_sputnik/ui/overview_screen.py:371
 msgid "Не удалось определить интерфейс выхода в интернет."
 msgstr "无法确定互联网上联接口。"
 
-#: src/re_sputnik/ui/overview_screen.py:372
+#: src/re_sputnik/ui/overview_screen.py:375
 msgid "Wi-Fi (клиент)"
 msgstr "Wi-Fi（客户端）"
 
-#: src/re_sputnik/ui/overview_screen.py:374
+#: src/re_sputnik/ui/overview_screen.py:377
 msgid " ГГц"
 msgstr " GHz"
 
-#: src/re_sputnik/ui/overview_screen.py:376
+#: src/re_sputnik/ui/overview_screen.py:379
 #, python-brace-format
 msgid "{0} Мбит/с"
 msgstr "{0} Mbps"
 
-#: src/re_sputnik/ui/overview_screen.py:378
+#: src/re_sputnik/ui/overview_screen.py:381
 msgid "Кабель"
 msgstr "网线"
 
-#: src/re_sputnik/ui/overview_screen.py:387
+#: src/re_sputnik/ui/overview_screen.py:390
 msgid "Есть подключение к интернету"
 msgstr "已联网"
 
-#: src/re_sputnik/ui/overview_screen.py:389
+#: src/re_sputnik/ui/overview_screen.py:392
 msgid "Нет подключения к интернету"
 msgstr "未联网"
 
-#: src/re_sputnik/ui/overview_screen.py:392
+#: src/re_sputnik/ui/overview_screen.py:395
 msgid "Подключение к интернету"
 msgstr "互联网连接"
 
-#: src/re_sputnik/ui/overview_screen.py:416
+#: src/re_sputnik/ui/overview_screen.py:419
 msgid "Обновляю…"
 msgstr "正在刷新…"
 
-#: src/re_sputnik/ui/overview_screen.py:470
+#: src/re_sputnik/ui/overview_screen.py:473
 msgid "Сервис ещё запускается — активный сервер появится через несколько секунд."
 msgstr "服务仍在启动——活跃服务器将在几秒后出现。"
 
-#: src/re_sputnik/ui/overview_screen.py:473
+#: src/re_sputnik/ui/overview_screen.py:476
 msgid "Прокси-сервис не запущен — активного сервера пока нет."
 msgstr "代理服务未运行——目前没有活跃服务器。"
 
-#: src/re_sputnik/ui/overview_screen.py:558
+#: src/re_sputnik/ui/overview_screen.py:561
 msgid "Ядро: не установлено"
 msgstr "内核：未安装"
 
-#: src/re_sputnik/ui/overview_screen.py:560
+#: src/re_sputnik/ui/overview_screen.py:563
 #, python-brace-format
 msgid "Ядро: {0}"
 msgstr "内核：{0}"
 
-#: src/re_sputnik/ui/overview_screen.py:561
+#: src/re_sputnik/ui/overview_screen.py:564
 msgid "   ·   запущено"
 msgstr "   ·   运行中"
 
-#: src/re_sputnik/ui/overview_screen.py:561
+#: src/re_sputnik/ui/overview_screen.py:564
 msgid "   ·   остановлено"
 msgstr "   ·   已停止"
 
-#: src/re_sputnik/ui/overview_screen.py:565
+#: src/re_sputnik/ui/overview_screen.py:568
 msgid "ByeDPI: не установлен"
 msgstr "ByeDPI：未安装"
 
-#: src/re_sputnik/ui/overview_screen.py:567
+#: src/re_sputnik/ui/overview_screen.py:570
 msgid "ByeDPI: запущен"
 msgstr "ByeDPI：运行中"
 
-#: src/re_sputnik/ui/overview_screen.py:569
+#: src/re_sputnik/ui/overview_screen.py:572
 msgid "ByeDPI: установлен, остановлен"
 msgstr "ByeDPI：已安装，已停止"
 
-#: src/re_sputnik/ui/overview_screen.py:572
+#: src/re_sputnik/ui/overview_screen.py:575
 msgid "Zapret: не установлен"
 msgstr "Zapret：未安装"
 
-#: src/re_sputnik/ui/overview_screen.py:574
+#: src/re_sputnik/ui/overview_screen.py:577
 msgid "Zapret: запущен"
 msgstr "Zapret：运行中"
 
-#: src/re_sputnik/ui/overview_screen.py:576
+#: src/re_sputnik/ui/overview_screen.py:579
 msgid "Zapret: установлен, остановлен"
 msgstr "Zapret：已安装，已停止"
 
-#: src/re_sputnik/ui/overview_screen.py:586
+#: src/re_sputnik/ui/overview_screen.py:589
 msgid "Пул серверов"
 msgstr "服务器池"
 
-#: src/re_sputnik/ui/overview_screen.py:604
+#: src/re_sputnik/ui/overview_screen.py:607
 msgid "Сервер"
 msgstr "服务器"
 
-#: src/re_sputnik/ui/overview_screen.py:622
+#: src/re_sputnik/ui/overview_screen.py:625
 msgid "Серверы в пуле"
 msgstr "池中的服务器"
 
-#: src/re_sputnik/ui/overview_screen.py:634
+#: src/re_sputnik/ui/overview_screen.py:637
 msgid "Интервал проверки (с)"
 msgstr "检查间隔（秒）"
 
-#: src/re_sputnik/ui/overview_screen.py:635
+#: src/re_sputnik/ui/overview_screen.py:638
 msgid ""
 "Время в секундах: меньше = серверы тестируются чаще, больше = реже тесты "
 "— меньше нагрузки."
 msgstr "时间（秒）：数值越小，服务器测试越频繁；数值越大，测试越少——负载更低。"
 
-#: src/re_sputnik/ui/overview_screen.py:637
+#: src/re_sputnik/ui/overview_screen.py:640
 msgid "Допуск (мс)"
 msgstr "容差（毫秒）"
 
-#: src/re_sputnik/ui/overview_screen.py:638
+#: src/re_sputnik/ui/overview_screen.py:641
 msgid ""
 "Минимальная разница задержек (мс) для переключения на более быстрый "
 "сервер — предотвращает постоянное переключение между серверами с близкой "
 "задержкой."
 msgstr "切换到更快服务器所需的最小延迟差（毫秒）——防止在延迟相近的服务器之间频繁切换。"
 
-#: src/re_sputnik/ui/overview_screen.py:730
+#: src/re_sputnik/ui/overview_screen.py:733
 msgid "Выберите хотя бы один сервер для пула URLTest."
 msgstr "请为 URLTest 池选择至少一个服务器。"
 
-#: src/re_sputnik/ui/overview_screen.py:734
+#: src/re_sputnik/ui/overview_screen.py:737
 msgid "Интервал и допуск должны быть числами."
 msgstr "间隔和容差必须为数字。"
 
-#: src/re_sputnik/ui/overview_screen.py:738
+#: src/re_sputnik/ui/overview_screen.py:741
 msgid "Применяю изменения…"
 msgstr "正在应用更改…"
 
-#: src/re_sputnik/ui/overview_screen.py:787
-msgid "Россия — протестировано на mail.ru"
-msgstr "俄罗斯 — 已在 mail.ru 测试"
+#: src/re_sputnik/ui/overview_screen.py:792
+#, python-brace-format
+msgid "{0} — протестировано на {1}"
+msgstr "{0} — 在 {1} 上测试"
 
-#: src/re_sputnik/ui/overview_screen.py:789
+#: src/re_sputnik/ui/overview_screen.py:795
 msgid "Защищённый — протестировано на andrevi.ch"
 msgstr "安全 — 已在 andrevi.ch 测试"
 
-#: src/re_sputnik/ui/overview_screen.py:818
+#: src/re_sputnik/ui/overview_screen.py:824
 msgid "Активные правила"
 msgstr "活跃规则"
 
-#: src/re_sputnik/ui/overview_screen.py:820
+#: src/re_sputnik/ui/overview_screen.py:826
 msgid "Правил нет — весь трафик идёт напрямую."
 msgstr "没有规则——所有流量都直连。"
 
-#: src/re_sputnik/ui/overview_screen.py:844
+#: src/re_sputnik/ui/overview_screen.py:850
 #, python-brace-format
 msgid "Устройства в сети ({0})"
 msgstr "网络中的设备（{0}）"
 
-#: src/re_sputnik/ui/overview_screen.py:846
+#: src/re_sputnik/ui/overview_screen.py:852
 msgid "Нет активных аренд DHCP."
 msgstr "没有活跃的 DHCP 租约。"
 
-#: src/re_sputnik/ui/overview_screen.py:862
+#: src/re_sputnik/ui/overview_screen.py:868
 #, python-brace-format
 msgid "… и ещё {0} устройств"
 msgstr "… 还有 {0} 个设备"
 
-#: src/re_sputnik/ui/overview_screen.py:872
+#: src/re_sputnik/ui/overview_screen.py:878
 msgid "Wi-Fi сети роутера"
 msgstr "路由器 Wi-Fi 网络"
 
-#: src/re_sputnik/ui/overview_screen.py:874
+#: src/re_sputnik/ui/overview_screen.py:880
 msgid "Точка доступа не настроена."
 msgstr "未配置接入点。"
 
-#: src/re_sputnik/ui/overview_screen.py:889
+#: src/re_sputnik/ui/overview_screen.py:895
 #, python-brace-format
 msgid "{0} ГГц"
 msgstr "{0} GHz"
 
-#: src/re_sputnik/ui/overview_screen.py:890
+#: src/re_sputnik/ui/overview_screen.py:896
 msgid "скрытая"
 msgstr "隐藏"
 
-#: src/re_sputnik/ui/overview_screen.py:895
+#: src/re_sputnik/ui/overview_screen.py:901
 #, python-brace-format
 msgid "Пароль: {0}"
 msgstr "密码：{0}"
 
-#: src/re_sputnik/ui/overview_screen.py:899
+#: src/re_sputnik/ui/overview_screen.py:905
 msgid "Открытая сеть (без пароля)"
 msgstr "开放网络（无密码）"
 
-#: src/re_sputnik/ui/overview_screen.py:906
+#: src/re_sputnik/ui/overview_screen.py:912
 msgid "Наведите камеру телефона"
 msgstr "用手机摄像头扫描"
 
-#: src/re_sputnik/ui/preinstall_screen.py:42
+#: src/re_sputnik/ui/preinstall_screen.py:43
 msgid "Компоненты"
 msgstr "组件"
 
-#: src/re_sputnik/ui/preinstall_screen.py:48
+#: src/re_sputnik/ui/preinstall_screen.py:49
 msgid ""
 "Пакеты скачает этот компьютер и передаст на роутер — для подготовки "
 "устройства к установке без интернета."
 msgstr "本电脑将下载软件包并传输到路由器——用于准备设备进行离线安装。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:55
+#: src/re_sputnik/ui/preinstall_screen.py:56
 msgid "Проверяю, что уже установлено на роутере…"
 msgstr "正在检查路由器上已安装的内容…"
 
-#: src/re_sputnik/ui/preinstall_screen.py:64
+#: src/re_sputnik/ui/preinstall_screen.py:65
 msgid "Ядро (с модулями ядра)"
 msgstr "内核（含内核模块）"
 
-#: src/re_sputnik/ui/preinstall_screen.py:72
+#: src/re_sputnik/ui/preinstall_screen.py:77
 msgid "Обязательно: kmod-nft-tproxy + kmod-tun."
 msgstr "必需：kmod-nft-tproxy + kmod-tun。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:79
+#: src/re_sputnik/ui/preinstall_screen.py:85
 msgid "Установить LuCI-приложение Re:HomeProxy (+ русский язык)"
 msgstr "安装 Re:HomeProxy LuCI 应用（+ 俄语语言包）"
 
-#: src/re_sputnik/ui/preinstall_screen.py:83
+#: src/re_sputnik/ui/preinstall_screen.py:89
 msgid ""
 "Без него на роутере будет только ядро, но не сам HomeProxy (веб-настройки"
 " и импорт серверов работать не будут). Оставьте включённым для полной "
 "офлайн-установки."
 msgstr "没有它，路由器上只会有内核，而没有 HomeProxy 本身（网页设置和服务器导入将无法使用）。完整离线安装请保持启用。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:93
+#: src/re_sputnik/ui/preinstall_screen.py:99
 #: src/re_sputnik/ui/software_screen.py:87
 msgid "Также установить ByeDPI"
 msgstr "同时安装 ByeDPI"
 
-#: src/re_sputnik/ui/preinstall_screen.py:96
+#: src/re_sputnik/ui/preinstall_screen.py:102
 #: src/re_sputnik/ui/software_screen.py:90
 msgid ""
 "Обход DPI открывает заблокированные сайты без полного VPN: маскирует "
@@ -3454,12 +3569,12 @@ msgid ""
 "вручную подобрать параметры под вашего провайдера."
 msgstr "DPI 绕过无需完整 VPN 即可打开被屏蔽的网站：伪装流量，使运营商的过滤器无法识别。有时需要针对您的运营商手动调整参数。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:101
+#: src/re_sputnik/ui/preinstall_screen.py:107
 #: src/re_sputnik/ui/software_screen.py:95
 msgid "Также установить Zapret"
 msgstr "同时安装 Zapret"
 
-#: src/re_sputnik/ui/preinstall_screen.py:104
+#: src/re_sputnik/ui/preinstall_screen.py:110
 msgid ""
 "Другой движок обхода DPI: умеет ещё видео (QUIC) и звонки, с которыми "
 "ByeDPI не справляется. Нужный модуль ядра (kmod-nft-queue) скачивается и "
@@ -3468,73 +3583,73 @@ msgstr ""
 "另一个 DPI 绕过引擎：还能处理 ByeDPI 无法处理的视频（QUIC）和通话。所需的内核模块（kmod-nft-"
 "queue）会随之一起下载并安装。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:110
-#: src/re_sputnik/ui/preinstall_screen.py:212
-#: src/re_sputnik/ui/preinstall_screen.py:221
+#: src/re_sputnik/ui/preinstall_screen.py:116
+#: src/re_sputnik/ui/preinstall_screen.py:219
+#: src/re_sputnik/ui/preinstall_screen.py:228
 msgid "Скачать и установить"
 msgstr "下载并安装"
 
-#: src/re_sputnik/ui/preinstall_screen.py:124
+#: src/re_sputnik/ui/preinstall_screen.py:130
 msgid "Далее: интернет (WAN) и Wi-Fi →"
 msgstr "下一步：网络（WAN）和 Wi-Fi →"
 
-#: src/re_sputnik/ui/preinstall_screen.py:142
+#: src/re_sputnik/ui/preinstall_screen.py:148
 msgid "Не удалось проверить роутер — можно предустановить заново."
 msgstr "无法检查路由器——可以重新预安装。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:157
+#: src/re_sputnik/ui/preinstall_screen.py:163
 #, python-brace-format
 msgid ""
 "✓ На роутере уже есть: приложение, {0}, модули ядра{1}. Предустановка не "
 "нужна — можно сразу к настройке."
 msgstr "✓ 路由器上已有：应用、{0}、内核模块{1}。不需要预安装——可以直接进行设置。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:158
+#: src/re_sputnik/ui/preinstall_screen.py:164
 #, python-brace-format
 msgid "✓ На роутере уже всё установлено ({0}{1})."
 msgstr "✓ 路由器上已全部安装（{0}{1}）。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:160
+#: src/re_sputnik/ui/preinstall_screen.py:166
 msgid "Предустановить заново"
 msgstr "重新预安装"
 
-#: src/re_sputnik/ui/preinstall_screen.py:166
+#: src/re_sputnik/ui/preinstall_screen.py:172
 #: src/re_sputnik/ui/software_screen.py:154
 msgid "приложение"
 msgstr "应用"
 
-#: src/re_sputnik/ui/preinstall_screen.py:170
+#: src/re_sputnik/ui/preinstall_screen.py:176
 #: src/re_sputnik/ui/software_screen.py:158
 msgid "модули ядра"
 msgstr "内核模块"
 
-#: src/re_sputnik/ui/preinstall_screen.py:172
+#: src/re_sputnik/ui/preinstall_screen.py:178
 #: src/re_sputnik/ui/software_screen.py:160
 msgid "Частично установлено: "
 msgstr "部分已安装："
 
-#: src/re_sputnik/ui/preinstall_screen.py:173
+#: src/re_sputnik/ui/preinstall_screen.py:179
 msgid ". Предустановка доставит недостающее."
 msgstr "。预安装将补齐缺失的部分。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:175
+#: src/re_sputnik/ui/preinstall_screen.py:181
 msgid "На роутере ничего не установлено."
 msgstr "路由器上什么都没有安装。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:190
+#: src/re_sputnik/ui/preinstall_screen.py:196
 msgid "Работаю…"
 msgstr "正在处理…"
 
-#: src/re_sputnik/ui/preinstall_screen.py:223
+#: src/re_sputnik/ui/preinstall_screen.py:230
 #: src/re_sputnik/ui/software_screen.py:206
 msgid "✓ Установлено: "
 msgstr "✓ 已安装："
 
-#: src/re_sputnik/ui/preinstall_screen.py:225
+#: src/re_sputnik/ui/preinstall_screen.py:232
 msgid "Можно заранее настроить интернет (WAN) и Wi-Fi — кнопка ниже."
 msgstr "您可以提前配置网络（WAN）和 Wi-Fi——见下方按钮。"
 
-#: src/re_sputnik/ui/preinstall_screen.py:228
+#: src/re_sputnik/ui/preinstall_screen.py:235
 #: src/re_sputnik/ui/software_screen.py:211
 msgid "не удалось"
 msgstr "失败"
@@ -3719,30 +3834,26 @@ msgid "Россия (раздельное туннелирование)"
 msgstr "俄罗斯（分流隧道）"
 
 #: src/re_sputnik/ui/rules_screen.py:30
+msgid "Китай (обход материкового)"
+msgstr "中国（绕过大陆）"
+
+#: src/re_sputnik/ui/rules_screen.py:31
+msgid "Иран (обход внутреннего)"
+msgstr "伊朗（绕过国内）"
+
+#: src/re_sputnik/ui/rules_screen.py:32
 msgid "Глобальный (весь трафик через прокси)"
 msgstr "全局（所有流量通过代理）"
 
-#: src/re_sputnik/ui/rules_screen.py:31
-msgid "Китай — GFWList"
-msgstr "中国 — GFWList"
-
-#: src/re_sputnik/ui/rules_screen.py:32
-msgid "Китай — Direct"
-msgstr "中国 — Direct"
-
 #: src/re_sputnik/ui/rules_screen.py:33
-msgid "Китай — Proxy"
-msgstr "中国 — Proxy"
-
-#: src/re_sputnik/ui/rules_screen.py:34
 msgid "Своя маршрутизация"
 msgstr "自定义路由"
 
-#: src/re_sputnik/ui/rules_screen.py:35
+#: src/re_sputnik/ui/rules_screen.py:34
 msgid "Свой JSON"
 msgstr "自定义 JSON"
 
-#: src/re_sputnik/ui/rules_screen.py:53
+#: src/re_sputnik/ui/rules_screen.py:52
 msgid ""
 "Раздельное туннелирование: по умолчанию весь трафик идёт напрямую (как "
 "обычно и быстро), а через VPN направляется только то, что заблокировано в"
@@ -3753,54 +3864,24 @@ msgstr ""
 "分流隧道：默认情况下所有流量直连（与平时一样快），只有在俄罗斯被屏蔽的内容才通过 VPN——依据 Re:filter 列表（来自 RKN "
 "名单的域名和 IP）以及下方选定的服务。这样国外服务可以打开，而俄罗斯网站和银行仍能直连工作，无需 VPN。"
 
-#: src/re_sputnik/ui/rules_screen.py:64
-msgid "Звонки в мессенджерах через прокси"
-msgstr "代理通话（信使应用）"
-
-#: src/re_sputnik/ui/rules_screen.py:65
-msgid "WhatsApp, Telegram, FaceTime и др. — пускать голос/видео через прокси."
-msgstr "WhatsApp、Telegram、FaceTime 等——让语音/视频通话通过代理。"
+#: src/re_sputnik/ui/rules_screen.py:63
+msgid ""
+"Обход материкового Китая: по умолчанию весь трафик идёт через VPN, а "
+"напрямую (быстро, без прокси) — только китайские домены и IP (списки "
+"geosite/geoip CN). Так зарубежные сервисы работают через прокси, а "
+"китайские сайты — напрямую."
+msgstr ""
+"绕过中国大陆：默认情况下所有流量通过 VPN，只有中国域名和 IP（geosite/geoip CN 列表）直连（快速，无需代理）。这样境外服务通过代理访问，而中国网站直接访问。"
 
 #: src/re_sputnik/ui/rules_screen.py:67
-msgid "Торренты через прокси"
-msgstr "通过代理的 Torrent"
-
-#: src/re_sputnik/ui/rules_screen.py:68
 msgid ""
-"Рекомендуем отключить — торренты перегружают канал и часто заблокированы "
-"на серверах."
-msgstr "建议关闭——torrent 会占满带宽，并且常常在服务器端被屏蔽。"
+"Обход внутреннего Ирана: по умолчанию весь трафик идёт через VPN, а "
+"напрямую — только иранские домены и IP (списки geosite/geoip IR). Так "
+"зарубежные сервисы работают через прокси, а иранские сайты — напрямую."
+msgstr ""
+"绕过伊朗国内：默认情况下所有流量通过 VPN，只有伊朗域名和 IP（geosite/geoip IR 列表）直连。这样境外服务通过代理访问，而伊朗网站直接访问。"
 
-#: src/re_sputnik/ui/rules_screen.py:92 src/re_sputnik/ui/settings_shell.py:26
-msgid "Правила"
-msgstr "规则"
-
-#: src/re_sputnik/ui/rules_screen.py:95
-msgid "Считываю правила…"
-msgstr "正在读取规则…"
-
-#: src/re_sputnik/ui/rules_screen.py:130 src/re_sputnik/ui/wifi_ap_screen.py:91
-msgid "Пропустить"
-msgstr "跳过"
-
-#: src/re_sputnik/ui/rules_screen.py:148
-#, python-brace-format
-msgid "Ошибка применения: {0}. Повторите или «Пропустить»."
-msgstr "应用出错：{0}。请重试或点击“跳过”。"
-
-#: src/re_sputnik/ui/rules_screen.py:199
-msgid "Режим маршрутизации"
-msgstr "路由模式"
-
-#: src/re_sputnik/ui/rules_screen.py:246
-msgid "Особый трафик"
-msgstr "特殊流量"
-
-#: src/re_sputnik/ui/rules_screen.py:293
-msgid "Привязка сервисов к серверам"
-msgstr "将服务绑定到服务器"
-
-#: src/re_sputnik/ui/rules_screen.py:296
+#: src/re_sputnik/ui/rules_screen.py:75
 msgid ""
 "Маршрут по умолчанию — прямой. Добавленные правила проксируются с "
 "автоматическим приоритетом:\n"
@@ -3816,17 +3897,73 @@ msgstr ""
 "域名，itdoginfo）——小型列表的综合集合（YouTube、Discord、Telegram、Meta…）\n"
 "3. Re:filter（60000+ 域名 + 25000+ IP）——俄罗斯境内被屏蔽的域名和 IP 列表（RKN，社区维护）"
 
-#: src/re_sputnik/ui/rules_screen.py:310
+#: src/re_sputnik/ui/rules_screen.py:83
+msgid ""
+"Маршрут по умолчанию — через прокси. Домены и IP региона (geosite + "
+"geoip) автоматически идут напрямую. Добавленные здесь правила — "
+"пер-сервисные исключения: например, отправить конкретный сервис напрямую "
+"или через отдельный сервер."
+msgstr ""
+"默认路由为通过代理。该地区的域名和 IP（geosite + geoip）自动直连。此处添加的规则是按服务的例外：例如，将特定服务直接发送或通过单独的服务器。"
+
+#: src/re_sputnik/ui/rules_screen.py:93
+msgid "Звонки в мессенджерах через прокси"
+msgstr "代理通话（信使应用）"
+
+#: src/re_sputnik/ui/rules_screen.py:94
+msgid "WhatsApp, Telegram, FaceTime и др. — пускать голос/видео через прокси."
+msgstr "WhatsApp、Telegram、FaceTime 等——让语音/视频通话通过代理。"
+
+#: src/re_sputnik/ui/rules_screen.py:96
+msgid "Торренты через прокси"
+msgstr "通过代理的 Torrent"
+
+#: src/re_sputnik/ui/rules_screen.py:97
+msgid ""
+"Рекомендуем отключить — торренты перегружают канал и часто заблокированы "
+"на серверах."
+msgstr "建议关闭——torrent 会占满带宽，并且常常在服务器端被屏蔽。"
+
+#: src/re_sputnik/ui/rules_screen.py:121 src/re_sputnik/ui/settings_shell.py:26
+msgid "Правила"
+msgstr "规则"
+
+#: src/re_sputnik/ui/rules_screen.py:124
+msgid "Считываю правила…"
+msgstr "正在读取规则…"
+
+#: src/re_sputnik/ui/rules_screen.py:159 src/re_sputnik/ui/wifi_ap_screen.py:91
+msgid "Пропустить"
+msgstr "跳过"
+
+#: src/re_sputnik/ui/rules_screen.py:177
+#, python-brace-format
+msgid "Ошибка применения: {0}. Повторите или «Пропустить»."
+msgstr "应用出错：{0}。请重试或点击“跳过”。"
+
+#: src/re_sputnik/ui/rules_screen.py:229
+msgid "Режим маршрутизации"
+msgstr "路由模式"
+
+#: src/re_sputnik/ui/rules_screen.py:278
+msgid "Особый трафик"
+msgstr "特殊流量"
+
+#: src/re_sputnik/ui/rules_screen.py:326
+msgid "Привязка сервисов к серверам"
+msgstr "将服务绑定到服务器"
+
+#: src/re_sputnik/ui/rules_screen.py:337
 msgid "Пока нет привязок."
 msgstr "目前没有绑定。"
 
-#: src/re_sputnik/ui/rules_screen.py:326
+#: src/re_sputnik/ui/rules_screen.py:353
 msgid ""
 "Логотипы — товарные знаки соответствующих владельцев, используются лишь "
 "для обозначения сервиса."
 msgstr "徽标为各自所有者的商标，仅用于标识相应服务。"
 
-#: src/re_sputnik/ui/rules_screen.py:338
+#: src/re_sputnik/ui/rules_screen.py:365
 msgid "Все сервисы уже добавлены."
 msgstr "所有服务已添加。"
 
@@ -4138,4 +4275,16 @@ msgid ""
 " Чаще всего так бывает с 6 ГГц — из-за устаревших настроек разрешённых "
 "частот в прошивке роутера."
 msgstr " 这种情况最常见于 6 GHz 频段——因为路由器固件中允许频率的设置已过时。"
+
+#~ msgid "Россия — mail.ru"
+#~ msgstr "俄罗斯 — mail.ru"
+
+#~ msgid "Китай — GFWList"
+#~ msgstr "中国 — GFWList"
+
+#~ msgid "Китай — Direct"
+#~ msgstr "中国 — Direct"
+
+#~ msgid "Китай — Proxy"
+#~ msgstr "中国 — Proxy"
 

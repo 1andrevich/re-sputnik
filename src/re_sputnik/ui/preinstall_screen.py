@@ -128,7 +128,7 @@ class PreinstallScreen(ctk.CTkFrame):
         # lets the installer pre-configure WAN + Wi-Fi before handing off the device.
         self._continue_btn = ctk.CTkButton(
             body, text=_("Далее: интернет (WAN) и Wi-Fi →"), font=fonts.heading(), height=42,
-            fg_color=palette.accent, text_color=palette.accent_fg, hover_color=palette.accent_hover, command=self._continue)
+            fg_color=palette.ok, text_color=palette.accent_fg, hover_color=palette.accent_hover, command=self._continue)
         self._continue_btn.grid(row=8, column=0, padx=32, pady=(6, 6), sticky="ew")
         self._continue_btn.grid_remove()
 

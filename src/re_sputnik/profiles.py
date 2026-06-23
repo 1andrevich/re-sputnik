@@ -113,3 +113,29 @@ def forget_profile(host: str, port: int = 22) -> None:
     if not any(p.host == host for p in remaining):
         app_secrets.forget_router_password(host)
         app_secrets.forget_hostkey(host)
+
+
+def reset_app_data() -> None:
+    """Wipe ALL local Re:Sputnik state on THIS machine — for handing off / cleaning a
+    shared or borrowed computer so the next person can't connect to your routers.
+
+    Removes from the OS keychain: the app's SSH identity (private+public key), every
+    router root password and host-key pin, and the EULA-accepted flag. Deletes the
+    on-disk config dir (router list + settings). The machine is left with no
+    credentials and not even the LIST of routers; a fresh, useless SSH key is created
+    on next use.
+
+    The ROUTER is not touched: its old authorized public key is harmless once the
+    private key here is gone (and the cron lease prunes it), and it keeps its current
+    root password — recover it from «Безопасность» BEFORE resetting if you'll still
+    need to manage that router."""
+    import shutil
+
+    # Read the host list BEFORE deleting routers.json, to clear per-host secrets.
+    for prof in list_profiles():
+        app_secrets.forget_router_password(prof.host)
+        app_secrets.forget_hostkey(prof.host)
+    app_secrets.delete_app_identity()
+    app_secrets.forget_disclaimer()
+    # On-disk config (router list + settings). Recreated empty on next save.
+    shutil.rmtree(_config_dir(), ignore_errors=True)

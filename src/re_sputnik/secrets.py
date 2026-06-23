@@ -283,6 +283,15 @@ def accept_disclaimer() -> None:
         pass  # non-fatal: worst case it's shown again next launch
 
 
+def forget_disclaimer() -> None:
+    """Delete the stored EULA/disclaimer-accepted flag (gate reappears next launch)."""
+    _kr_cache.pop("disclaimer-accepted", None)
+    try:
+        keyring.delete_password(SERVICE, "disclaimer-accepted")
+    except keyring.errors.KeyringError:
+        pass
+
+
 def delete_app_identity() -> None:
     """Delete the app's local SSH keypair from the keychain (full revocation).
 

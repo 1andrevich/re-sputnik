@@ -244,16 +244,91 @@ class ConnectScreen(ctk.CTkFrame):
         self._state_panel.grid_columnconfigure(0, weight=1)
         self._state_panel.grid_remove()
 
+        # Bottom bar: «Назад» on the left, a discreet «Удалить данные приложения»
+        # on the right. The reset entry lives HERE (not only in Advanced) because
+        # its whole point is cleaning up a borrowed/shared PC — where you may not
+        # want to, or can't, connect to a router first. Shown only when there's
+        # actually local data to wipe, so a clean install doesn't advertise it.
+        bar = ctk.CTkFrame(body, fg_color="transparent")
+        bar.grid(row=8, column=0, padx=32, pady=(12, 8), sticky="ew")
+        bar.grid_columnconfigure(1, weight=1)
         if self._on_back is not None:
             ctk.CTkButton(
-                body,
+                bar,
                 text=_("← Назад"),
                 font=fonts.body(),
                 fg_color="transparent",
                 hover_color=p.surface_hover,
                 width=80,
                 command=self._on_back,
-            ).grid(row=8, column=0, padx=32, pady=(12, 8), sticky="w")
+            ).grid(row=0, column=0, sticky="w")
+        self._reset_btn = ctk.CTkButton(
+            bar, text="🗑  " + _("Удалить данные приложения"), font=fonts.small(),
+            fg_color="transparent", hover_color=p.surface_hover, text_color=p.text_muted,
+            command=self._show_app_reset)
+        self._reset_btn.grid(row=0, column=2, sticky="e")
+        if not self._has_app_data():
+            self._reset_btn.grid_remove()  # nothing stored — don't surface it
+
+    # ----- app-data reset (local wipe; NOT the router) ------------------
+
+    @staticmethod
+    def _has_app_data() -> bool:
+        """True if THIS machine holds anything worth wiping — saved router profiles
+        or the app's SSH identity. Gates the reset entry so a fresh install is clean."""
+        if app_profiles.list_profiles():
+            return True
+        return app_secrets.existing_public_key() is not None
+
+    def _show_app_reset(self) -> None:
+        """Pop a small dialog with the two-step red confirm, reusing Advanced's widget."""
+        from .advanced_screen import _DangerConfirm  # lazy: avoid import-time engine load
+
+        p = self.p
+        win = ctk.CTkToplevel(self)
+        win.title(_("Удалить данные приложения"))
+        win.configure(fg_color=p.bg)
+        win.geometry("640x440")
+        win.minsize(560, 380)
+        win.transient(self.winfo_toplevel())
+        win.after(120, win.lift)
+
+        body = ctk.CTkFrame(win, fg_color="transparent")
+        body.pack(fill="both", expand=True, padx=20, pady=20)
+        body.grid_columnconfigure(0, weight=1)
+        ctk.CTkLabel(body, text=_("Удалить данные приложения (не роутера)"), font=fonts.title(),
+                     text_color=p.text).grid(row=0, column=0, sticky="w", pady=(0, 8))
+        ctk.CTkLabel(body, text=_("Стирает с ЭТОГО компьютера все данные Re:Sputnik: SSH-ключ "
+                     "приложения, сохранённые пароли роутеров, привязки host-key и список "
+                     "роутеров. Сам роутер и его настройки не трогаются. Используйте, чтобы "
+                     "убрать за собой на чужом или общем компьютере."), font=fonts.body(),
+                     text_color=p.text_muted, wraplength=580, justify="left",
+                     anchor="w").grid(row=1, column=0, sticky="w", pady=(0, 12))
+        box = ctk.CTkFrame(body, fg_color="transparent")
+        box.grid(row=2, column=0, sticky="ew")
+        box.grid_columnconfigure(0, weight=1)
+        _DangerConfirm(
+            box, p, label=_("Удалить данные приложения"),
+            confirm_label=_("Да, удалить данные"),
+            warning=_("После удаления для следующего входа понадобится пароль root роутера. "
+                    "Он у вас есть — его показывали при настройке, и его можно посмотреть на "
+                    "устройстве в разделе «Безопасность». ВАЖНО: посмотрите/сохраните пароль "
+                    "ДО удаления — после стирания его не восстановить. Сам роутер не "
+                    "сбрасывается."),
+            command=self._do_app_reset).grid(row=0, column=0, sticky="ew")
+
+    def _do_app_reset(self, dc: "object") -> None:
+        def done(_r: object) -> None:
+            dc.set_status(_("Данные приложения удалены с этого компьютера. "
+                          "Перезапустите Re:Sputnik."), self.p.ok)
+            self._build_saved()  # registry now empty → the saved picker hides itself
+            self._reset_btn.grid_remove()  # nothing left to wipe
+
+        def err(e: BaseException) -> None:
+            dc.reset()
+            dc.set_status(_("Не удалось полностью удалить: {0}").format(e), self.p.fail)
+
+        run_async(self, app_profiles.reset_app_data, done, err)
 
     def _field(
         self,

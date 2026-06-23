@@ -381,12 +381,16 @@ class DiagnosticsScreen(ctk.CTkFrame):
             self._kv(inner, 0, 1, _("Через прокси"), fmt(ip.get("proxy")))
         return row + 1
 
+    # rpcd returns the region label in English; localize it for the row title.
+    _REGION_NAMES = {"Russia": N_("Россия"), "China": N_("Китай"), "Iran": N_("Иран")}
+
     def _render_dns(self, d: dict[str, Any], row: int) -> int:
-        """DNS routing test results (RU mode only): the russia-dns and secure-dns
-        probes with their server + pass/fail, instead of one combined chip."""
+        """DNS routing test results (any selective mode — RU/CN/IR): the region
+        resolver and secure-dns probes with their server + pass/fail. Region is
+        data: the backend picks the resolver tag and domestic anchor domain."""
         dns = d.get("dns", {})
         if dns.get("skip"):
-            return row  # only meaningful in the Russia (proxy_banned_ru) mode
+            return row  # only meaningful in the selective modes (RU/CN/IR)
         card = self._card("DNS", row)
         if "error" in dns:
             ctk.CTkLabel(card, text=dns["error"], font=fonts.body(), text_color=self.p.text_muted,
@@ -396,7 +400,10 @@ class DiagnosticsScreen(ctk.CTkFrame):
         inner = ctk.CTkFrame(card, fg_color="transparent")
         inner.grid(row=1, column=0, padx=16, pady=(0, 12), sticky="ew")
         inner.grid_columnconfigure(0, weight=1)
-        self._dns_row(inner, 0, _("Россия — mail.ru"), dns.get("russia_ok"), dns.get("russia_server"))
+        region = _(self._REGION_NAMES.get(dns.get("region_label"), dns.get("region_label") or ""))
+        domain = dns.get("region_domain") or "?"
+        region_label = (f"{region} — {domain}" if region else domain)
+        self._dns_row(inner, 0, region_label, dns.get("region_ok"), dns.get("region_server"))
         self._dns_row(inner, 1, _("Защищённый — andrevi.ch"), dns.get("secure_ok"),
                       dns.get("secure_server"))
         return row + 1

@@ -27,18 +27,17 @@ from ..i18n import N_, _
 # Labels are N_-marked and translated with _() at the render/lookup sites.
 _MODE_LABELS = {
     "proxy_banned_ru": N_("Россия (раздельное туннелирование)"),
+    "bypass_cn": N_("Китай (обход материкового)"),
+    "bypass_ir": N_("Иран (обход внутреннего)"),
     "global": N_("Глобальный (весь трафик через прокси)"),
-    "gfwlist": N_("Китай — GFWList"),
-    "bypass_mainland_china": N_("Китай — Direct"),
-    "proxy_mainland_china": N_("Китай — Proxy"),
     "custom": N_("Своя маршрутизация"),
     "custom_json": N_("Свой JSON"),
 }
 
-# Modes the app OFFERS in the dropdown. The China/custom/json modes still resolve
-# via _MODE_LABELS (so a router already set to one, e.g. in LuCI, displays right),
-# but the app only lets you choose the two that fit its audience.
-_OFFERED_MODES = ("proxy_banned_ru", "global")
+# Modes the app OFFERS in the dropdown. custom/custom_json still resolve via
+# _MODE_LABELS (so a router already set to one, e.g. in LuCI, displays right),
+# but the app only lets you choose the region/global presets that fit its audience.
+_OFFERED_MODES = ("proxy_banned_ru", "bypass_cn", "bypass_ir", "global")
 
 # RU-mode boolean flags shown as plain switches (uci key -> label). The VoIP and
 # torrent flags are pulled OUT of here and rendered as rich, logo'd toggles
@@ -56,6 +55,36 @@ _SPLIT_TUNNEL_HELP = N_(
     "Так зарубежные сервисы открываются, а российские сайты и банки продолжают "
     "работать напрямую, без VPN."
 )
+
+# Reverse modes (cn/ir): the inverse of split tunneling — default goes THROUGH the
+# proxy, only the region's own domains/IPs stay direct. Region is data.
+_BYPASS_HELP = {
+    "bypass_cn": N_(
+        "Обход материкового Китая: по умолчанию весь трафик идёт через VPN, а напрямую "
+        "(быстро, без прокси) — только китайские домены и IP (списки geosite/geoip CN). "
+        "Так зарубежные сервисы работают через прокси, а китайские сайты — напрямую."),
+    "bypass_ir": N_(
+        "Обход внутреннего Ирана: по умолчанию весь трафик идёт через VPN, а напрямую — "
+        "только иранские домены и IP (списки geosite/geoip IR). Так зарубежные сервисы "
+        "работают через прокси, а иранские сайты — напрямую."),
+}
+
+# Per-mode header for the service→node bindings card (forward vs reverse semantics).
+_BINDINGS_DESC = {
+    "proxy_banned_ru": N_(
+        "Маршрут по умолчанию — прямой. Добавленные правила проксируются с "
+        "автоматическим приоритетом:\n"
+        "1. Небольшие списки (YouTube, Discord и т.д.)\n"
+        "2. Russia Inside (1000+ доменов, itdoginfo) — общий набор небольших списков "
+        "(YouTube, Discord, Telegram, Meta…)\n"
+        "3. Re:filter (60000+ доменов + 25000+ IP) — список заблокированных в России "
+        "доменов и IP (Роскомнадзор, от сообщества)"),
+    "_bypass": N_(
+        "Маршрут по умолчанию — через прокси. Домены и IP региона (geosite + geoip) "
+        "автоматически идут напрямую. Добавленные здесь правила — пер-сервисные "
+        "исключения: например, отправить конкретный сервис напрямую или через "
+        "отдельный сервер."),
+}
 
 # Rich traffic toggles for the Russia mode: uci key -> (title, subtitle, brand
 # icon names, invert). `invert=True` means the switch ON corresponds to uci '0'
@@ -161,9 +190,10 @@ class RulesScreen(ctk.CTkFrame):
 
         def task() -> dict[str, Any]:
             if quick:
-                ruleng.ensure_ru_defaults(client)  # seed RU mode + blocklists once
+                ruleng.ensure_mode_defaults(client)  # seed region (by lang) + blocklist once
             d = {k: (client.uci_get(f"homeproxy.config.{k}") or "") for k in keys}
-            if d["routing_mode"] == "proxy_banned_ru":
+            d["routing_mode"] = ruleng.normalize_mode(d["routing_mode"])  # migrate legacy China value
+            if ruleng.is_selective(d["routing_mode"]):
                 d["_rules"] = ruleng.list_rules(client)
                 d["_nodes"] = nodeng.list_nodes(client)
             return d
@@ -209,8 +239,10 @@ class RulesScreen(ctk.CTkFrame):
         self._mode_menu.set(cur_label or offered[0])
         self._mode_menu.grid(row=0, column=1, padx=(0, 16), pady=(12, 6), sticky="ew")
 
-        if mode == "proxy_banned_ru":
-            ctk.CTkLabel(self._card, text=_(_SPLIT_TUNNEL_HELP), font=fonts.small(),
+        help_text = (_SPLIT_TUNNEL_HELP if mode == "proxy_banned_ru"
+                     else _BYPASS_HELP.get(mode))
+        if help_text:
+            ctk.CTkLabel(self._card, text=_(help_text), font=fonts.small(),
                          text_color=p.text_muted, wraplength=560, justify="left",
                          anchor="w").grid(row=1, column=0, columnspan=2, padx=16, pady=(2, 8),
                                           sticky="w")
@@ -227,11 +259,11 @@ class RulesScreen(ctk.CTkFrame):
             row += 1
         ctk.CTkLabel(self._card, text="", height=4).grid(row=row, column=0)
 
-        if mode == "proxy_banned_ru":
+        if ruleng.is_selective(mode):
             self._build_traffic_card(d)
             self._nodes = d.get("_nodes") or []
             self._rules = d.get("_rules") or []
-            self._build_bindings()
+            self._build_bindings(mode)
         else:
             self._traffic_card.grid_remove()
             self._bind_card.grid_remove()
@@ -285,21 +317,16 @@ class RulesScreen(ctk.CTkFrame):
 
     # ----- service→node bindings ----------------------------------------
 
-    def _build_bindings(self) -> None:
+    def _build_bindings(self, mode: str) -> None:
         p = self.p
+        self._mode = mode
         for w in self._bind_card.winfo_children():
             w.destroy()
         self._bind_card.grid()
         kit.SectionHeader(self._bind_card, p, "links", _("Привязка сервисов к серверам")).grid(
             row=0, column=0, padx=16, pady=(12, 2), sticky="w")
-        ctk.CTkLabel(self._bind_card,
-                     text=_("Маршрут по умолчанию — прямой. Добавленные правила проксируются с "
-                     "автоматическим приоритетом:\n"
-                     "1. Небольшие списки (YouTube, Discord и т.д.)\n"
-                     "2. Russia Inside (1000+ доменов, itdoginfo) — общий набор небольших списков "
-                     "(YouTube, Discord, Telegram, Meta…)\n"
-                     "3. Re:filter (60000+ доменов + 25000+ IP) — список заблокированных в России "
-                     "доменов и IP (Роскомнадзор, от сообщества)"),
+        desc = _BINDINGS_DESC["proxy_banned_ru"] if mode == "proxy_banned_ru" else _BINDINGS_DESC["_bypass"]
+        ctk.CTkLabel(self._bind_card, text=_(desc),
                      font=fonts.small(), text_color=p.text_muted, wraplength=540,
                      justify="left").grid(row=1, column=0, padx=16, pady=(0, 8), sticky="w")
 
@@ -330,7 +357,7 @@ class RulesScreen(ctk.CTkFrame):
 
         # Add-rule row: source + node + add.
         used = {r.source for r in self._rules}
-        avail = [(v, _(lbl)) for v, lbl in ruleng.SERVICE_SOURCES if v not in used]
+        avail = [(v, _(lbl)) for v, lbl in ruleng.sources_for_mode(mode) if v not in used]
         add = ctk.CTkFrame(self._bind_card, fg_color="transparent")
         add.grid(row=3, column=0, padx=8, pady=(8, 12), sticky="ew")
         add.grid_columnconfigure((0, 1), weight=1)

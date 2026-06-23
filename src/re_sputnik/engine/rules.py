@@ -55,6 +55,80 @@ NODE_SPECIAL: list[tuple[str, str]] = [
 ]
 _SPECIAL_LABELS = dict(NODE_SPECIAL)
 
+# Selective routing modes the app understands. proxy_banned_ru = forward (RU:
+# default Direct, lists -> proxy); bypass_cn / bypass_ir = reverse (default proxy,
+# region geosite/geoip -> Direct, per-service overrides). Mirrors generate_client.uc
+# REGION / client.js.
+SELECTIVE_MODES = ("proxy_banned_ru", "bypass_cn", "bypass_ir")
+
+# Domestic DNS resolver presets per selective mode for the app's «Дополнительно»
+# picker: (uci_key, default_value, [(value, label)…]). Mirrors client.js; the
+# backend also defaults these, so leaving a field unset is fine.
+DNS_PRESETS: dict[str, tuple[str, str, list[tuple[str, str]]]] = {
+    "proxy_banned_ru": ("russia_dns_server", "77.88.8.8", [
+        ("77.88.8.8", "Yandex (77.88.8.8)"),
+        ("193.58.251.251", "SkyDNS (193.58.251.251)"),
+        ("83.220.169.155", "Comss.one (83.220.169.155)"),
+        ("1.1.1.1", "Cloudflare (1.1.1.1)"),
+        ("8.8.8.8", "Google (8.8.8.8)"),
+    ]),
+    "bypass_cn": ("china_dns_server", "223.5.5.5", [
+        ("223.5.5.5", "AliDNS (223.5.5.5)"),
+        ("210.2.4.8", "CNNIC (210.2.4.8)"),
+        ("119.29.29.29", "Tencent (119.29.29.29)"),
+        ("117.50.10.10", "ThreatBook (117.50.10.10)"),
+    ]),
+    "bypass_ir": ("iran_dns_server", "178.22.122.100", [
+        ("178.22.122.100", "Shecan (178.22.122.100)"),
+        ("185.51.200.2", "Shecan #2 (185.51.200.2)"),
+        ("78.157.42.100", "Electro/Begzar (78.157.42.100)"),
+        ("10.202.10.202", "403.online (10.202.10.202)"),
+        ("10.202.10.10", "Radar (10.202.10.10)"),
+    ]),
+}
+
+# Legacy China routing_mode values (pre-rework) -> the mode they map to now, so a
+# router still set to one (e.g. from old LuCI) migrates cleanly to bypass_cn.
+_LEGACY_MODE_MAP = {
+    "gfwlist": "bypass_cn",
+    "bypass_mainland_china": "bypass_cn",
+    "proxy_mainland_china": "bypass_cn",
+}
+
+# Bulk RU blocklists — only meaningful in the RU forward mode. In the reverse
+# modes the region geosite/geoip is baked into the engine baseline, so here those
+# modes only offer per-service overrides.
+_RU_ONLY_SOURCES = {"refilter", "russia-inside"}
+
+
+def is_selective(mode: str) -> bool:
+    return mode in SELECTIVE_MODES
+
+
+def normalize_mode(mode: str) -> str:
+    """Map legacy China modes to the current bypass_cn; pass everything else through."""
+    return _LEGACY_MODE_MAP.get(mode, mode)
+
+
+def sources_for_mode(mode: str) -> list[tuple[str, str]]:
+    """Service sources offered for a mode: RU gets the bulk blocklists too; the
+    reverse modes (cn/ir) only get the per-service overrides."""
+    if mode == "proxy_banned_ru":
+        return list(SERVICE_SOURCES)
+    return [(v, lbl) for v, lbl in SERVICE_SOURCES if v not in _RU_ONLY_SOURCES]
+
+
+def default_mode_for_lang() -> str:
+    """Quick-setup default region from the app's UI language: zh -> China,
+    fa -> Iran, everything else -> Russia. User can switch on the rules screen."""
+    from ..i18n import current_language
+    lang = (current_language() or "").lower()
+    if lang.startswith("zh"):
+        return "bypass_cn"
+    if lang.startswith("fa"):
+        return "bypass_ir"
+    return "proxy_banned_ru"
+
 
 @dataclass(slots=True)
 class RuRule:
@@ -126,29 +200,47 @@ def remove_rule(client: RouterClient, section: str) -> None:
     client.uci_commit("homeproxy")
 
 
-def ensure_ru_defaults(client: RouterClient) -> None:
+def ensure_mode_defaults(client: RouterClient, mode: str | None = None) -> None:
     """Quick-setup seeding so the guided flow yields a WORKING selective config.
 
-    Idempotent and non-destructive: if no routing mode is set yet, switch to RU
-    selective ('proxy_banned_ru', default route Direct); and if there are no rules
-    yet, route the Re:filter RU blocklist through the main pool. Never clobbers an
-    existing mode choice or existing rules.
+    Idempotent and non-destructive:
+     - migrate a legacy China mode (gfwlist/bypass_mainland_china/proxy_mainland_china)
+       to the current ``bypass_cn`` so the reworked backend recognizes it;
+     - if no routing mode is set yet, switch to ``mode`` (default: by app language
+       — zh->China, fa->Iran, else Russia);
+     - for the RU forward mode only, if there are no rules yet, route the Re:filter
+       blocklist through the main pool (reverse modes get the region geosite/geoip
+       from the engine baseline, so no seed rule is needed).
+    Never clobbers an existing (non-legacy) mode choice or existing rules.
     """
-    mode = client.uci_get("homeproxy.config.routing_mode") or ""
-    if not mode:
-        client.uci_set("homeproxy.config.routing_mode", "proxy_banned_ru")
-        # Recommended defaults on a fresh setup:
+    target = normalize_mode(mode or default_mode_for_lang())
+
+    raw = client.uci_get("homeproxy.config.routing_mode") or ""
+    if raw in _LEGACY_MODE_MAP:  # migrate stale China value in place
+        client.uci_set("homeproxy.config.routing_mode", _LEGACY_MODE_MAP[raw])
+        client.uci_commit("homeproxy")
+        raw = _LEGACY_MODE_MAP[raw]
+
+    if not raw:
+        client.uci_set("homeproxy.config.routing_mode", target)
+        # Recommended defaults on a fresh setup (all selective modes):
         #  - messenger calls THROUGH the proxy (WhatsApp/Telegram voice is often
-        #    throttled/blocked in RU, so proxying it by default is the safe choice);
+        #    throttled/blocked, so proxying it by default is the safe choice);
         #  - torrents BYPASS the proxy (they saturate the link and get banned on
-        #    exit nodes). Both are user-overridable on this screen.
-        #  - IPv6 OFF: the RU lists carry no v6 CIDRs, so v6 would leak past the
-        #    proxy/rules — keep the data plane v4-only by default.
+        #    exit nodes). Both are user-overridable on the rules screen.
+        #  - IPv6 OFF: the region lists carry no v6 CIDRs, so v6 would leak past
+        #    the proxy/rules — keep the data plane v4-only by default.
         client.uci_set("homeproxy.config.proxy_calls", "1")
         client.uci_set("homeproxy.config.no_proxy_torrents", "1")
         client.uci_set("homeproxy.config.ipv6_support", "0")
         client.uci_commit("homeproxy")
-        mode = "proxy_banned_ru"
-    if mode == "proxy_banned_ru" and not list_rules(client):
+        raw = target
+
+    if raw == "proxy_banned_ru" and not list_rules(client):
         # One preset list: Re:filter (РКН registry) through the main server pool.
         add_rule(client, "refilter", "main-out")
+
+
+# Back-compat alias (legacy call sites): seed defaults for the RU forward mode.
+def ensure_ru_defaults(client: RouterClient) -> None:
+    ensure_mode_defaults(client, "proxy_banned_ru")
