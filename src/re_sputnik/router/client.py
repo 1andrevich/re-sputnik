@@ -130,7 +130,10 @@ class RouterClient:
         """
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        no_key = self._pkey is None and self._key_filename is None
+        # NEVER use the user's PERSONAL SSH keys or agent: the app authenticates only
+        # with ITS OWN key (pkey), a password, or the fresh-router 'none' method.
+        # Leaving allow_agent/look_for_keys on offered the user's ~/.ssh + agent
+        # identities to the server — an info leak to a malicious/MITM router.
         try:
             ssh.connect(
                 hostname=self.host,
@@ -140,8 +143,8 @@ class RouterClient:
                 key_filename=self._key_filename,
                 pkey=self._pkey,
                 timeout=self._connect_timeout,
-                allow_agent=no_key,
-                look_for_keys=no_key,
+                allow_agent=False,
+                look_for_keys=False,
             )
             self._ssh = ssh
         except paramiko.AuthenticationException as exc:
