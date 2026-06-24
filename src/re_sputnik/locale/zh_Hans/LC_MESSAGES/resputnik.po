@@ -3838,12 +3838,12 @@ msgid "Россия (раздельное туннелирование)"
 msgstr "俄罗斯（分流隧道）"
 
 #: src/re_sputnik/ui/rules_screen.py:30
-msgid "Китай (обход материкового)"
-msgstr "中国（绕过大陆）"
+msgid "Китай (местное — напрямую)"
+msgstr "中国（本地直连）"
 
 #: src/re_sputnik/ui/rules_screen.py:31
-msgid "Иран (обход внутреннего)"
-msgstr "伊朗（绕过国内）"
+msgid "Иран (местное — напрямую)"
+msgstr "伊朗（本地直连）"
 
 #: src/re_sputnik/ui/rules_screen.py:32
 msgid "Глобальный (весь трафик через прокси)"

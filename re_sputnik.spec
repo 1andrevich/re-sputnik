@@ -26,6 +26,13 @@ datas += ck_datas
 binaries += ck_binaries
 hiddenimports += ck_hidden
 
+# Pillow's Tk bridge: ImageTk.PhotoImage (used by every CTkImage + the window
+# icon) imports PIL._tkinter_finder DYNAMICALLY, so PyInstaller's PIL hook misses
+# it and the freeze raises "No module named 'PIL._tkinter_finder'" the moment a
+# logo renders (e.g. the mode picker right after the EULA gate). Windows happened
+# to resolve it; Linux did not. Force it in.
+hiddenimports += ["PIL._tkinter_finder"]
+
 # keyring discovers its OS backend via entry-point metadata at runtime. Pull in
 # the backend for THIS platform (Windows Credential Locker / macOS Keychain).
 hiddenimports += collect_submodules("keyring")

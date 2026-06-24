@@ -3783,11 +3783,11 @@ msgid "Россия (раздельное туннелирование)"
 msgstr ""
 
 #: src/re_sputnik/ui/rules_screen.py:30
-msgid "Китай (обход материкового)"
+msgid "Китай (местное — напрямую)"
 msgstr ""
 
 #: src/re_sputnik/ui/rules_screen.py:31
-msgid "Иран (обход внутреннего)"
+msgid "Иран (местное — напрямую)"
 msgstr ""
 
 #: src/re_sputnik/ui/rules_screen.py:32

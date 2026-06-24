@@ -27,8 +27,8 @@ from ..i18n import N_, _
 # Labels are N_-marked and translated with _() at the render/lookup sites.
 _MODE_LABELS = {
     "proxy_banned_ru": N_("Россия (раздельное туннелирование)"),
-    "bypass_cn": N_("Китай (обход материкового)"),
-    "bypass_ir": N_("Иран (обход внутреннего)"),
+    "bypass_cn": N_("Китай (местное — напрямую)"),
+    "bypass_ir": N_("Иран (местное — напрямую)"),
     "global": N_("Глобальный (весь трафик через прокси)"),
     "custom": N_("Своя маршрутизация"),
     "custom_json": N_("Свой JSON"),
