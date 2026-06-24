@@ -442,6 +442,7 @@ class DiagnosticsScreen(ctk.CTkFrame):
         box.grid(row=2, column=0, padx=16, pady=(0, 8), sticky="ew")
         box.insert("1.0", self._report_text or _("(пусто)"))
         box.configure(state="disabled")
+        self._trap_wheel(box)
         btns = ctk.CTkFrame(card, fg_color="transparent")
         btns.grid(row=3, column=0, padx=16, pady=(0, 12), sticky="w")
         ctk.CTkButton(btns, text=_("📋 Копировать"), font=fonts.small(), width=120,
@@ -451,6 +452,26 @@ class DiagnosticsScreen(ctk.CTkFrame):
                       fg_color="transparent", hover_color=self.p.surface_hover,
                       command=self._save_report).grid(row=0, column=1, padx=(8, 0))
         return row + 1
+
+    @staticmethod
+    def _trap_wheel(box: ctk.CTkTextbox) -> None:
+        """Keep the mouse-wheel inside the report box.
+
+        The page body is a CTkScrollableFrame whose bind_all("<MouseWheel>")
+        also fires when the cursor is over this textbox, so scrolling moved
+        both the box and the whole page. Scrolling the inner Text ourselves
+        and returning "break" stops the later "all" bindtag (where the frame's
+        handler lives), so the page no longer chains along.
+        """
+        inner = box._textbox  # underlying tkinter.Text
+
+        def _wheel(ev: Any) -> str:
+            inner.yview_scroll(int(-ev.delta / 120), "units")
+            return "break"
+
+        inner.bind("<MouseWheel>", _wheel)                                   # Win/Mac
+        inner.bind("<Button-4>", lambda e: (inner.yview_scroll(-1, "units"), "break")[1])  # Linux up
+        inner.bind("<Button-5>", lambda e: (inner.yview_scroll(1, "units"), "break")[1])   # Linux down
 
     # ----- actions ------------------------------------------------------
 

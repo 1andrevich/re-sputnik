@@ -2283,6 +2283,10 @@ msgstr "包管理器"
 msgid "Свободно /tmp"
 msgstr "/tmp 可用空间"
 
+#: src/re_sputnik/ui/core_screen.py:298
+msgid "Свободно overlay"
+msgstr "overlay 可用空间"
+
 #: src/re_sputnik/ui/core_screen.py:299
 msgid "Версия ядра"
 msgstr "内核版本"

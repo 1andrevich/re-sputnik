@@ -291,17 +291,17 @@ class CoreScreen(ctk.CTkFrame):
         else:
             self._fail_card.grid_remove()
 
+        overlay_low = (self._state.free_overlay_mb is not None
+                       and self._state.free_overlay_mb < 10)
         rows = [
-            (_("Менеджер пакетов"), self._state.package_manager.value),
-            (_("Архитектура"), self._state.arch or "—"),
-            (_("Свободно /tmp"), f"{self._state.free_tmp_mb} MB" if self._state.free_tmp_mb is not None else "—"),
-            ("Свободно overlay", f"{self._state.free_overlay_mb} MB" if self._state.free_overlay_mb is not None else "—"),
-            (_("Версия ядра"), _clean_version(info.get("version", ""))),
+            (_("Менеджер пакетов"), self._state.package_manager.value, False),
+            (_("Архитектура"), self._state.arch or "—", False),
+            (_("Свободно /tmp"), f"{self._state.free_tmp_mb} MB" if self._state.free_tmp_mb is not None else "—", False),
+            (_("Свободно overlay"), f"{self._state.free_overlay_mb} MB" if self._state.free_overlay_mb is not None else "—", overlay_low),
+            (_("Версия ядра"), _clean_version(info.get("version", "")), False),
         ]
-        for i, (k, v) in enumerate(rows):
-            color = p.text
-            if k == "Свободно overlay" and self._state.free_overlay_mb is not None and self._state.free_overlay_mb < 10:
-                color = p.fail
+        for i, (k, v, warn) in enumerate(rows):
+            color = p.fail if warn else p.text
             ctk.CTkLabel(self._info_rows, text=k, font=fonts.small(), text_color=p.text_muted).grid(
                 row=i, column=0, padx=(0, 12), pady=3, sticky="w"
             )

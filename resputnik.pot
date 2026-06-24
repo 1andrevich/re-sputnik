@@ -2254,6 +2254,10 @@ msgstr ""
 msgid "Свободно /tmp"
 msgstr ""
 
+#: src/re_sputnik/ui/core_screen.py:298
+msgid "Свободно overlay"
+msgstr ""
+
 #: src/re_sputnik/ui/core_screen.py:299
 msgid "Версия ядра"
 msgstr ""

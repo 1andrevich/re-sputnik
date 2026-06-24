@@ -2457,6 +2457,10 @@ msgstr "مدیر بسته"
 msgid "Свободно /tmp"
 msgstr "فضای آزاد /tmp"
 
+#: src/re_sputnik/ui/core_screen.py:298
+msgid "Свободно overlay"
+msgstr "فضای آزاد overlay"
+
 #: src/re_sputnik/ui/core_screen.py:299
 msgid "Версия ядра"
 msgstr "نسخهٔ هسته"

@@ -2527,9 +2527,12 @@ msgid "Менеджер пакетов"
 msgstr "Package manager"
 
 #: src/re_sputnik/ui/core_screen.py:297
-#, fuzzy
 msgid "Свободно /tmp"
-msgstr "Free RAM"
+msgstr "Free /tmp"
+
+#: src/re_sputnik/ui/core_screen.py:298
+msgid "Свободно overlay"
+msgstr "Free overlay"
 
 #: src/re_sputnik/ui/core_screen.py:299
 msgid "Версия ядра"
