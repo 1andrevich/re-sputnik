@@ -219,8 +219,15 @@ def load_or_create_app_identity() -> AppIdentity:
 # ----- per-router root password ----------------------------------------
 
 
-def store_router_password(host: str, password: str) -> None:
-    _kr_set(f"root@{host}", password)
+def store_router_password(host: str, password: str) -> bool:
+    """Best-effort. Returns False if the OS keychain is unavailable (Linux without
+    a Secret Service) — callers must NOT treat that as a connection failure.
+    Windows/macOS always have a backend, so this returns True there as before."""
+    try:
+        _kr_set(f"root@{host}", password)
+        return True
+    except SecretsError:
+        return False
 
 
 def get_router_password(host: str) -> str | None:
@@ -246,8 +253,16 @@ def get_hostkey_pin(host: str) -> str | None:
         return None
 
 
-def pin_hostkey(host: str, fingerprint: str) -> None:
-    _kr_set(f"hostkey@{host}", fingerprint)
+def pin_hostkey(host: str, fingerprint: str) -> bool:
+    """Best-effort TOFU pin. Returns False if no keychain backend (Linux without a
+    Secret Service); the caller must NOT treat that as a connection failure — a
+    keyless box simply can't persist the pin, so we skip it rather than abort the
+    connect. Windows/macOS always have a backend, so behaviour is unchanged there."""
+    try:
+        _kr_set(f"hostkey@{host}", fingerprint)
+        return True
+    except SecretsError:
+        return False
 
 
 def forget_hostkey(host: str) -> None:

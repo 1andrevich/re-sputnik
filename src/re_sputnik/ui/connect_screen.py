@@ -566,8 +566,10 @@ class ConnectScreen(ctk.CTkFrame):
         if self._remember.get() == "1" and getattr(self, "_pending", None):
             host, port, user, password = self._pending
             app_profiles.save_profile(host, port, user)
-            if password:
-                app_secrets.store_router_password(host, password)
+            if password and not app_secrets.store_router_password(host, password):
+                # Keyless Linux (no Secret Service): router remembered, password not.
+                self._set_status(
+                    _("Подключено. Пароль не сохранён — в системе нет хранилища ключей."), "warn")
             self._build_saved()
         # A hard block (e.g. no nftables) means HomeProxy can't work — warn loudly
         # but don't trap: an exotic-yet-working firmware shouldn't be a dead end.

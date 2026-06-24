@@ -4722,3 +4722,7 @@ msgstr ""
 #~ msgid "Китай — Proxy"
 #~ msgstr "China — Proxy"
 
+
+#: src/re_sputnik/ui/connect_screen.py:570
+msgid "Подключено. Пароль не сохранён — в системе нет хранилища ключей."
+msgstr "Connected. Password not saved — no OS keychain available."
