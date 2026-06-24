@@ -284,8 +284,59 @@ def _core_mgmt(client: RouterClient, *args: str, timeout: int = 300, attempts: i
         return {"error": f"non-JSON: {text[:160] or out.stderr.strip()[:160]}"}
 
 
-def _wget(client: RouterClient, url: str, dest: str, *, timeout: int = 300) -> bool:
-    return client.run(f"wget -qO {dest} '{url}'", timeout=timeout).ok
+def _wget(client: RouterClient, url: str, dest: str, *, timeout: int = 300) -> tuple[bool, str]:
+    """Download ``url`` to ``dest`` on the router. Returns ``(ok, detail)``.
+
+    On failure ``detail`` is wget's OWN last output line — the real reason (HTTP
+    status, TLS/cert error, DNS, connection refused) — so the caller surfaces the
+    exact cause instead of a generic "download failed". A timeout is reported as
+    such rather than swallowed. ``detail`` stays raw (wget's output is English and
+    not worth translating); callers prepend a localized prefix."""
+    try:
+        r = client.run(f"wget -O {dest} '{url}' 2>&1", timeout=timeout)
+    except TimeoutError:
+        return False, f"timeout >{timeout}s"
+    if r.ok:
+        return True, ""
+    # busybox/uclient-fetch print the real error on the LAST line (progress uses \r).
+    lines = [ln.strip() for chunk in r.stdout.splitlines()
+             for ln in chunk.split("\r") if ln.strip()]
+    detail = lines[-1] if lines else (r.stderr.strip() or f"wget exit {r.exit_code}")
+    return False, detail
+
+
+def _clock_ok(client: RouterClient) -> bool:
+    """Is the router clock plausibly correct? A router with no RTC boots at the
+    epoch / year 2000 until NTP syncs, which makes TLS cert validation (GitHub)
+    fail with a confusing error long before any package is fetched."""
+    y = client.run("date +%Y 2>/dev/null").stdout.strip()
+    try:
+        return 2024 <= int(y) <= 2037
+    except ValueError:
+        return False
+
+
+def ensure_clock(client: RouterClient, say: Optional[Progress] = None) -> tuple[bool, str]:
+    """Sync the router clock BEFORE any HTTPS download if it's clearly wrong.
+
+    A bad clock fails GitHub's TLS cert, so we check the year and, if implausible,
+    do a one-shot NTP sync (busybox ``ntpd -q`` — unauthenticated UDP, so it needs
+    no correct time itself). IP literals are tried alongside a pool hostname so it
+    works even when DNS is also unset. Non-fatal: returns ``(ok, detail)`` and the
+    caller may proceed and let the now-informative download error explain a clock
+    that still couldn't be fixed."""
+    if _clock_ok(client):
+        return True, ""
+    if say:
+        say(_("Часы роутера сбиты — синхронизирую время (нужно для TLS)…"))
+    client.run(
+        "ntpd -q -n -p 162.159.200.123 -p 216.239.35.0 -p pool.ntp.org 2>/dev/null; true",
+        timeout=40)
+    if _clock_ok(client):
+        if say:
+            say(_("Время синхронизировано."))
+        return True, ""
+    return False, _("не удалось синхронизировать время роутера (NTP недоступен?)")
 
 
 # ----- LuCI interface language ------------------------------------------
@@ -421,6 +472,11 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     pm = ti.pkg_manager
 
     try:
+        # --- Pre-flight: clock — a wrong router time fails GitHub's TLS cert ---
+        clk_ok, clk_why = ensure_clock(client, say)
+        if not clk_ok:
+            say("⚠ " + clk_why + _(" — установка по HTTPS может не пройти."))
+
         # --- A. LuCI app (+ language pack) -----------------------------
         say(f"Роутер: {ti.version} · {ti.arch} ({pm}). Определяю пакеты приложения…")
         assets = resolve_app_assets(ti, language)
@@ -435,8 +491,9 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                 f"wget -qO /tmp/hp.pub '{assets.pubkey_url}' && "
                 f"cp /tmp/hp.pub /etc/apk/keys/ 2>/dev/null && echo OK; rm -f /tmp/hp.pub"
             ).stdout.strip().endswith("OK")
-        if not _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}"):
-            res.error = _("не удалось скачать пакет приложения на роутер")
+        ok_app, why_app = _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}")
+        if not ok_app:
+            res.error = _("не удалось скачать пакет приложения на роутер") + f": {why_app}"
             return res
         # Clean replacement if the router still has the pre-rename package.
         remove_legacy_app(client, pm, say)
@@ -460,12 +517,15 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
 
         if assets.i18n_url:
             say(f"Устанавливаю языковой пакет HomeProxy ({language})…")
-            if _wget(client, assets.i18n_url, f"/tmp/i18n{ti.ext}"):
+            ok_i18n, why_i18n = _wget(client, assets.i18n_url, f"/tmp/i18n{ti.ext}")
+            if ok_i18n:
                 flag = "--allow-untrusted " if (pm == "apk" and not trusted) else ""
                 add = f"apk add {flag}" if pm == "apk" else "opkg install "
                 if client.run_stream(f"{add}/tmp/i18n{ti.ext} 2>&1; rm -f /tmp/i18n{ti.ext}",
                                      on_line=say_line, timeout=120).ok:
                     res.steps.append(f"Языковой пакет HomeProxy ({language})")
+            else:
+                say(f"Языковой пакет HomeProxy ({language}) не скачался: {why_i18n}")
 
         # LuCI interface language: base + firewall + package-manager packs (from the
         # OpenWrt feed), so the whole UI can be localized — not just HomeProxy. The UI
@@ -524,16 +584,18 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             bp = client.ubus_homeproxy("byedpi_prepare_install", timeout=60)
             if bp.get("error") or not bp.get("dl_url"):
                 say(f"ByeDPI: не удалось подготовить ({bp.get('error', 'нет ссылки')}).")
-            elif not _wget(client, bp["dl_url"], bp["tmp_path"]):
-                say(_("ByeDPI: не удалось скачать пакет."))
             else:
-                bi = client.ubus_homeproxy(
-                    "byedpi_install_pkg",
-                    {"tmp_path": bp["tmp_path"], "pkg_manager": bp["pkg_manager"]}, timeout=120)
-                if bi.get("result"):
-                    res.steps.append("ByeDPI")
+                ok_bp, why_bp = _wget(client, bp["dl_url"], bp["tmp_path"])
+                if not ok_bp:
+                    say(_("ByeDPI: не удалось скачать пакет.") + f" {why_bp}")
                 else:
-                    say(_("ByeDPI: установка не удалась."))
+                    bi = client.ubus_homeproxy(
+                        "byedpi_install_pkg",
+                        {"tmp_path": bp["tmp_path"], "pkg_manager": bp["pkg_manager"]}, timeout=120)
+                    if bi.get("result"):
+                        res.steps.append("ByeDPI")
+                    else:
+                        say(_("ByeDPI: установка не удалась."))
 
         # --- E2. Zapret (zapret2/nfqws2 — pulls kmod-nft-queue via depends) --
         if with_zapret:
@@ -541,16 +603,18 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             zp = client.ubus_homeproxy("zapret_prepare_install", timeout=60)
             if zp.get("error") or not zp.get("dl_url"):
                 say(f"Zapret: не удалось подготовить ({zp.get('error', 'нет ссылки')}).")
-            elif not _wget(client, zp["dl_url"], zp["tmp_path"]):
-                say(_("Zapret: не удалось скачать пакет."))
             else:
-                zi = client.ubus_homeproxy(
-                    "zapret_install_pkg",
-                    {"tmp_path": zp["tmp_path"], "pkg_manager": zp["pkg_manager"]}, timeout=180)
-                if zi.get("result"):
-                    res.steps.append("Zapret")
+                ok_zp, why_zp = _wget(client, zp["dl_url"], zp["tmp_path"])
+                if not ok_zp:
+                    say(_("Zapret: не удалось скачать пакет.") + f" {why_zp}")
                 else:
-                    say(_("Zapret: установка не удалась."))
+                    zi = client.ubus_homeproxy(
+                        "zapret_install_pkg",
+                        {"tmp_path": zp["tmp_path"], "pkg_manager": zp["pkg_manager"]}, timeout=180)
+                    if zi.get("result"):
+                        res.steps.append("Zapret")
+                    else:
+                        say(_("Zapret: установка не удалась."))
 
         # --- F. select core + start ------------------------------------
         say(_("Выбираю ядро и запускаю сервис…"))
@@ -587,6 +651,7 @@ def install_core(client: RouterClient, ti: TargetInfo, core: str, *,
         if progress:
             progress(m)
 
+    ensure_clock(client, say)  # a wrong router clock fails GitHub's TLS cert
     say(f"Готовлю установку ядра ({core})…")
     prep = _core_mgmt(client, "prepare_install", core, "")
     if prep.get("error"):
@@ -654,6 +719,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
             say(line.rstrip())
 
     pm = ti.pkg_manager
+    ensure_clock(client, say)  # a wrong router clock fails GitHub's TLS cert
     say(_("Определяю последнюю версию приложения…"))
     assets = resolve_app_assets(ti, language, use_latest=True)
     say(f"Устанавливаю приложение Re:HomeProxy {assets.version}…")
@@ -663,8 +729,9 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
             f"wget -qO /tmp/hp.pub '{assets.pubkey_url}' && "
             f"cp /tmp/hp.pub /etc/apk/keys/ 2>/dev/null && echo OK; rm -f /tmp/hp.pub"
         ).stdout.strip().endswith("OK")
-    if not _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}"):
-        return False, _("не удалось скачать пакет приложения")
+    ok_app, why_app = _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}")
+    if not ok_app:
+        return False, _("не удалось скачать пакет приложения") + f": {why_app}"
     remove_legacy_app(client, pm, say)  # clean replacement if old-name pkg present
     if pm == "apk":
         flag = "" if trusted else "--allow-untrusted "
@@ -693,7 +760,8 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
         if not a.i18n_url:
             continue
         say(f"Языковой пакет HomeProxy ({lang})…")
-        if _wget(client, a.i18n_url, f"/tmp/i18n{ti.ext}"):
+        ok_i, _why_i = _wget(client, a.i18n_url, f"/tmp/i18n{ti.ext}")
+        if ok_i:
             client.run_stream(f"{add}/tmp/i18n{ti.ext} 2>&1; rm -f /tmp/i18n{ti.ext}",
                               on_line=say_line, timeout=120)
     say(_("Перезапускаю rpcd…"))
