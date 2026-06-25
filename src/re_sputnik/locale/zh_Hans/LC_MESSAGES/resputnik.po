@@ -805,8 +805,8 @@ msgid "Основной пул серверов"
 msgstr "主服务器池"
 
 #: src/re_sputnik/engine/rules.py:52
-msgid "Отдельный URLTest (авто)"
-msgstr "独立 URLTest（自动）"
+msgid "Отдельный пул (авто)"
+msgstr "独立服务器池（自动）"
 
 #: src/re_sputnik/engine/sqm.py:100
 msgid "нет ответа"

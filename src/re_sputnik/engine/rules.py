@@ -49,7 +49,7 @@ _SOURCE_LABELS = dict(SERVICE_SOURCES)
 # Special node targets (besides actual proxy nodes).
 NODE_SPECIAL: list[tuple[str, str]] = [
     ("main-out",    N_("Основной пул серверов")),
-    ("urltest",     N_("Отдельный URLTest (авто)")),
+    ("urltest",     N_("Отдельный пул (авто)")),
     ("byedpi-out",  "ByeDPI"),
     ("zapret-out",  "Zapret"),
 ]

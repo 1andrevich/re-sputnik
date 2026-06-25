@@ -855,8 +855,8 @@ msgid "Основной пул серверов"
 msgstr "مجموعهٔ اصلی سرورها"
 
 #: src/re_sputnik/engine/rules.py:52
-msgid "Отдельный URLTest (авто)"
-msgstr "URLTest جدا (خودکار)"
+msgid "Отдельный пул (авто)"
+msgstr "مجموعهٔ جدا (خودکار)"
 
 #: src/re_sputnik/engine/sqm.py:100
 msgid "нет ответа"

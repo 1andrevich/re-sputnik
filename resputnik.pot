@@ -790,7 +790,7 @@ msgid "Основной пул серверов"
 msgstr ""
 
 #: src/re_sputnik/engine/rules.py:52
-msgid "Отдельный URLTest (авто)"
+msgid "Отдельный пул (авто)"
 msgstr ""
 
 #: src/re_sputnik/engine/sqm.py:100

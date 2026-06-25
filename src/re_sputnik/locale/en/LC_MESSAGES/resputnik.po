@@ -888,8 +888,8 @@ msgid "Основной пул серверов"
 msgstr "Main server pool"
 
 #: src/re_sputnik/engine/rules.py:52
-msgid "Отдельный URLTest (авто)"
-msgstr "Separate URLTest (auto)"
+msgid "Отдельный пул (авто)"
+msgstr "Separate pool (auto)"
 
 #: src/re_sputnik/engine/sqm.py:100
 msgid "нет ответа"
