@@ -337,18 +337,22 @@ class RulesScreen(ctk.CTkFrame):
             ctk.CTkLabel(rows, text=_("Пока нет привязок."), font=fonts.small(),
                          text_color=p.text_muted).grid(row=0, column=0, padx=8, pady=4, sticky="w")
         for i, r in enumerate(self._rules):
+            # Applied rule: solid filled card + a green ✓ so it reads as committed
+            # (vs. the outlined "draft" composer below).
             line = ctk.CTkFrame(rows, fg_color=p.surface_hover, corner_radius=8)
             line.grid(row=i, column=0, padx=8, pady=3, sticky="ew")
-            line.grid_columnconfigure(1, weight=1)
+            line.grid_columnconfigure(2, weight=1)
+            ctk.CTkLabel(line, text="✓", width=14, font=fonts.body(), text_color=p.ok).grid(
+                row=0, column=0, padx=(10, 0), pady=6)
             ctk.CTkLabel(line, text="", image=service_icon(r.source)).grid(
-                row=0, column=0, padx=(12, 8), pady=6)
+                row=0, column=1, padx=(6, 8), pady=6)
             ctk.CTkLabel(line, text=f"{ruleng.source_label(r.source)}  →  "
                          f"{ruleng.node_label(r.node, self._nodes)}", font=fonts.body(),
-                         text_color=p.text, anchor="w").grid(row=0, column=1, padx=0, pady=6, sticky="w")
+                         text_color=p.text, anchor="w").grid(row=0, column=2, padx=0, pady=6, sticky="w")
             ctk.CTkButton(line, text="✕", width=32, font=fonts.body(), fg_color="transparent",
                           hover_color=p.fail, text_color=p.text_muted,
                           command=lambda sec=r.section: self._remove_binding(sec)).grid(
-                row=0, column=2, padx=(0, 8), pady=4)
+                row=0, column=3, padx=(0, 8), pady=4)
 
         ctk.CTkLabel(self._bind_card, text=_("Логотипы — товарные знаки соответствующих владельцев, "
                      "используются лишь для обозначения сервиса."), font=fonts.small(),
@@ -365,21 +369,27 @@ class RulesScreen(ctk.CTkFrame):
             ctk.CTkLabel(add, text=_("Все сервисы уже добавлены."), font=fonts.small(),
                          text_color=p.text_muted).grid(row=0, column=0, sticky="w", padx=8)
             return
+        # Draft composer: accent outline (not a filled card) + a muted caption so the
+        # user feels this row is being built, not yet applied — unlike the ✓ rows above.
+        add.configure(fg_color=p.surface, border_width=1, border_color=p.accent, corner_radius=10)
+        ctk.CTkLabel(add, text=_("Новое правило — ещё не добавлено"), font=fonts.small(),
+                     text_color=p.text_muted).grid(row=0, column=0, columnspan=3,
+                                                   padx=12, pady=(8, 0), sticky="w")
         self._src_labels = {lbl: v for v, lbl in avail}
         self._src_menu = ctk.CTkOptionMenu(add, values=[lbl for _v, lbl in avail], font=fonts.body(),
                                            fg_color=p.surface_hover, button_color=p.accent,
                                            button_hover_color=p.accent_hover)
-        self._src_menu.grid(row=0, column=0, padx=8, pady=4, sticky="ew")
+        self._src_menu.grid(row=1, column=0, padx=(12, 8), pady=(4, 12), sticky="ew")
         node_opts = [(v, _(lbl)) for v, lbl in ruleng.NODE_SPECIAL] + [(n.section, f"{n.label or n.section} ({n.type})")
                                                  for n in self._nodes]
         self._node_labels = {lbl: v for v, lbl in node_opts}
         self._node_menu = ctk.CTkOptionMenu(add, values=[lbl for _v, lbl in node_opts], font=fonts.body(),
                                             fg_color=p.surface_hover, button_color=p.accent,
                                             button_hover_color=p.accent_hover)
-        self._node_menu.grid(row=0, column=1, padx=8, pady=4, sticky="ew")
+        self._node_menu.grid(row=1, column=1, padx=8, pady=(4, 12), sticky="ew")
         ctk.CTkButton(add, text=_("+ Добавить"), font=fonts.body(), fg_color=p.accent, text_color=p.accent_fg,
                       hover_color=p.accent_hover, width=110, command=self._add_binding).grid(
-            row=0, column=2, padx=8, pady=4)
+            row=1, column=2, padx=(8, 12), pady=(4, 12))
 
     def _add_binding(self) -> None:
         source = self._src_labels.get(self._src_menu.get())

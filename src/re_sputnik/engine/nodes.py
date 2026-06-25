@@ -189,6 +189,36 @@ def list_nodes(client: RouterClient) -> list[Node]:
 MAIN_NODE_KEY = "homeproxy.config.main_node"
 URLTEST_NODES_KEY = "homeproxy.config.main_urltest_nodes"
 
+
+def delete_nodes(client: RouterClient, sections: list[str]) -> int:
+    """Delete node sections by uci id; clean up any selection references.
+
+    Removes each ``homeproxy.<section>`` (a ``=node`` section), drops it from the
+    URLTest pool, and clears ``main_node`` if it pointed at a deleted node. One
+    commit at the end. Returns how many sections were removed. The caller applies
+    (apply_and_restart) so a multi-delete restarts the service only once.
+    """
+    sections = [s for s in sections if s and all(
+        c.isalnum() or c in "_-" for c in s)]  # uci section ids only
+    if not sections:
+        return 0
+    deleted = 0
+    for s in sections:
+        res = client.run(f"uci -q delete {shlex.quote('homeproxy.' + s)}")
+        if res.ok:
+            deleted += 1
+        client.run(f"uci -q del_list {shlex.quote(URLTEST_NODES_KEY)}={shlex.quote(s)}")
+    if client.uci_get(MAIN_NODE_KEY) in sections:
+        client.run(f"uci -q delete {shlex.quote(MAIN_NODE_KEY)}")
+    client.uci_commit("homeproxy")
+    return deleted
+
+
+def delete_node(client: RouterClient, section: str) -> bool:
+    """Delete a single node section (see :func:`delete_nodes`)."""
+    return delete_nodes(client, [section]) == 1
+
+
 # Node types that break a given core's config generation, so they must be kept
 # out of the URLTest pool — ONE incompatible node FATALs the whole config.
 # sing-box-extended is built WITHOUT NaïveProxy (its only protocol gap; SSH and

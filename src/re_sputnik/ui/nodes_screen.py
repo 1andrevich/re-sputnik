@@ -265,6 +265,12 @@ class NodesScreen(ctk.CTkFrame):
         self._set_subs_status(msg, "ok")
         self.refresh()
 
+    def _delete_node(self, section: str, label: str) -> None:
+        client = self._client
+        self._set_status(_("Удаляю сервер «{0}»…").format(label))
+        run_async(self, lambda: nodes_engine.delete_node(client, section),
+                  lambda _r: self.refresh(), self._subs_err)
+
     def _update_subs(self) -> None:
         client = self._client
         self._set_subs_status(_("Обновляю подписки (загрузка и импорт)…"))
@@ -355,6 +361,10 @@ class NodesScreen(ctk.CTkFrame):
                              anchor="w").grid(row=i, column=0, padx=6, pady=1, sticky="w")
             ctk.CTkLabel(listbox, text=node.type, font=fonts.small(), text_color=p.text_muted,
                          anchor="e").grid(row=i, column=1, padx=8, pady=1, sticky="e")
+            ctk.CTkButton(listbox, text="✕", width=30, font=fonts.body(), fg_color="transparent",
+                          text_color=p.fail, hover_color=p.surface_hover,
+                          command=lambda s=node.section, l=label: self._delete_node(s, l)).grid(
+                          row=i, column=2, padx=(2, 4), pady=1)
         if len(ordered) > self._MAX_NODES:
             ctk.CTkLabel(self._nodes_card, text=_("…и ещё {0} серверов").format(len(ordered) - self._MAX_NODES),
                          font=fonts.small(), text_color=p.text_muted).grid(

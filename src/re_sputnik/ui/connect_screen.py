@@ -157,7 +157,7 @@ class ConnectScreen(ctk.CTkFrame):
         ).grid(row=0, column=0, pady=(28, 2), padx=32, sticky="w")
         ctk.CTkLabel(
             body,
-            text=_("Подключите роутер к ПК кабелем (порт LAN) или войдите в его Wi-Fi, "
+            text=_("Подключите роутер к ПК кабелем (порт LAN) или подключитесь к его Wi-Fi, "
             "затем нажмите «Подключиться»."),
             font=fonts.body(),
             text_color=p.text_muted,

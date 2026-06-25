@@ -143,6 +143,19 @@ class OverviewScreen(ctk.CTkFrame):
         d: dict[str, Any] = {}
         d["sys"] = safe(lambda: ov_engine.system_info(client), ov_engine.SystemInfo(lan_ip=client.host))
         d["uplink"] = safe(lambda: net_engine.uplink_info(client), None)
+        # Heal a stale rpcd BEFORE the luci.homeproxy calls: on a fresh install the
+        # object/ACL is present but the running rpcd hasn't picked it up, so every
+        # luci.homeproxy method returns empty and the page paints "?" (notably the
+        # DNS row, which then sticks until a reboot). Probe once; if the object is
+        # silent, SIGHUP-reload ONLY rpcd (ACLs + ucode objects — no full daemon
+        # restart, no reboot) and re-probe, so the whole gather below sees a live
+        # object. A genuine DNS failure returns a populated dict (region_ok False),
+        # so the reload fires only on the real stale case. The probe doubles as the
+        # DNS fetch (reused as d["dns"]), so a healthy router pays no extra call.
+        dns = safe(lambda: client.ubus_homeproxy("diag_dns_ru", timeout=15), {})
+        if not dns:
+            safe(lambda: client.reload_rpcd(), None)
+            dns = safe(lambda: client.ubus_homeproxy("diag_dns_ru", timeout=15), {})
         d["active"] = safe(lambda: client.ubus_homeproxy("clash_active_node", timeout=15), {})
         d["core"] = safe(lambda: client.ubus_homeproxy("diag_core_check", timeout=15), {})
         d["core_failure"] = safe(lambda: core_health.diagnose_core_failure(client, core=d["core"]), None)
@@ -151,7 +164,7 @@ class OverviewScreen(ctk.CTkFrame):
         d["pool"] = safe(lambda: client.uci_get_list(nodes_engine.URLTEST_NODES_KEY), [])
         d["interval"] = safe(lambda: client.uci_get("homeproxy.config.main_urltest_interval"), "") or "180"
         d["tolerance"] = safe(lambda: client.uci_get("homeproxy.config.main_urltest_tolerance"), "") or "150"
-        d["dns"] = safe(lambda: client.ubus_homeproxy("diag_dns_ru", timeout=15), {})
+        d["dns"] = dns  # fetched (and healed) above, before the other homeproxy calls
         d["rules"] = safe(lambda: rules_engine.list_rules(client), [])
         d["devices"] = safe(lambda: access_engine.list_devices(client), [])
         aps = safe(lambda: net_engine.ap_credentials(client), [])

@@ -470,3 +470,14 @@ class RouterClient:
 
         self.run("/etc/init.d/rpcd restart").check()
         time.sleep(RPCD_SETTLE_SECONDS)
+
+    def reload_rpcd(self) -> None:
+        """Reload rpcd's ACLs + ucode objects via SIGHUP — WITHOUT a full daemon
+        restart. Enough to register a freshly-installed object (``luci.homeproxy``
+        right after install) and clear the stale "?" the overview shows when the
+        running rpcd hasn't picked the object up yet. Lighter and faster than
+        ``restart_rpcd`` and it doesn't drop other ubus sessions."""
+        import time
+
+        self.run("kill -HUP $(pidof rpcd) 2>/dev/null; true")
+        time.sleep(RPCD_SETTLE_SECONDS)

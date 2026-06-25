@@ -92,10 +92,12 @@ def _awg_to_conf(container: dict, label: str) -> Optional[str]:
     if cfg.get("mtu"):
         lines.append(f"MTU = {cfg['mtu']}")
     # AmneziaWG obfuscation params (only if present → marks it AWG vs plain WG).
+    # Read from the merged cfg: exports put these at the top of awg, but others
+    # (incl. the Premium gateway) carry them only inside last_config.
     for k in ("Jc", "Jmin", "Jmax", "S1", "S2", "S3", "S4",
               "H1", "H2", "H3", "H4", "I1", "I2", "I3", "I4", "I5"):
-        if awg.get(k) not in (None, ""):
-            lines.append(f"{k} = {awg[k]}")
+        if cfg.get(k) not in (None, ""):
+            lines.append(f"{k} = {cfg[k]}")
     lines += ["", "[Peer]", f"PublicKey = {pub}"]
     if cfg.get("psk_key"):
         lines.append(f"PresharedKey = {cfg['psk_key']}")

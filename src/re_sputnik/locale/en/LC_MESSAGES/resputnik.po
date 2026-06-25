@@ -2211,7 +2211,7 @@ msgstr "Connecting to the router"
 
 #: src/re_sputnik/ui/connect_screen.py:160
 msgid ""
-"Подключите роутер к ПК кабелем (порт LAN) или войдите в его Wi-Fi, затем "
+"Подключите роутер к ПК кабелем (порт LAN) или подключитесь к его Wi-Fi, затем "
 "нажмите «Подключиться»."
 msgstr ""
 "Connect the router to your PC with a cable (LAN port) or join its Wi-Fi, "

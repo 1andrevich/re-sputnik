@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
@@ -305,38 +306,60 @@ def _wget(client: RouterClient, url: str, dest: str, *, timeout: int = 300) -> t
     return False, detail
 
 
-def _clock_ok(client: RouterClient) -> bool:
-    """Is the router clock plausibly correct? A router with no RTC boots at the
-    epoch / year 2000 until NTP syncs, which makes TLS cert validation (GitHub)
-    fail with a confusing error long before any package is fetched."""
-    y = client.run("date +%Y 2>/dev/null").stdout.strip()
+# Max router-vs-PC clock skew we tolerate before correcting it. A clock can be the
+# right YEAR yet months off (user saw "30 March" when it was June) — enough to fall
+# outside a TLS cert's validity window and fail with "Invalid SSL certificate". So
+# we compare against the PC by EPOCH, not by a plausible-year check.
+_CLOCK_TOLERANCE_S = 120
+
+
+def _clock_skew(client: RouterClient) -> Optional[int]:
+    """Router clock minus THIS PC's clock, in seconds (epoch — TZ-independent), or
+    ``None`` if it can't be read. The PC's clock is the trusted reference."""
+    out = client.run("date +%s 2>/dev/null").stdout.strip()
     try:
-        return 2024 <= int(y) <= 2037
-    except ValueError:
-        return False
+        return int(out) - int(time.time())
+    except (ValueError, TypeError):
+        return None
 
 
 def ensure_clock(client: RouterClient, say: Optional[Progress] = None) -> tuple[bool, str]:
-    """Sync the router clock BEFORE any HTTPS download if it's clearly wrong.
+    """Make the router clock match THIS PC before any HTTPS download.
 
-    A bad clock fails GitHub's TLS cert, so we check the year and, if implausible,
-    do a one-shot NTP sync (busybox ``ntpd -q`` — unauthenticated UDP, so it needs
-    no correct time itself). IP literals are tried alongside a pool hostname so it
-    works even when DNS is also unset. Non-fatal: returns ``(ok, detail)`` and the
-    caller may proceed and let the now-informative download error explain a clock
-    that still couldn't be fixed."""
-    if _clock_ok(client):
+    A router with no RTC keeps a wrong time — often the right YEAR but months off —
+    and TLS fails when the clock sits outside GitHub's cert validity window,
+    surfacing as "Invalid SSL certificate". The robust fix, exactly like LuCI's
+    "sync with browser", is to push the PC's already-correct clock over the SSH
+    session: no NTP (UDP 123 is often blocked) and no prior correct time needed. We
+    act whenever the skew (compared by EPOCH, so a same-year wrong-month clock is
+    caught — a year check is NOT enough) exceeds the tolerance. NTP is only a last
+    resort. Non-fatal: returns ``(ok, detail)``."""
+    skew = _clock_skew(client)
+    if skew is not None and abs(skew) <= _CLOCK_TOLERANCE_S:
         return True, ""
     if say:
-        say(_("Часы роутера сбиты — синхронизирую время (нужно для TLS)…"))
+        say(_("Часы роутера сбиты — выставляю время с компьютера (нужно для TLS)…"))
+    # Push the PC's UTC time. Classic busybox set format MMDDhhmmCCYY.ss, falling
+    # back to @epoch for builds that prefer it; persist to the RTC if one exists.
+    stamp = time.strftime("%m%d%H%M%Y.%S", time.gmtime())
+    epoch = int(time.time())
+    client.run(f"date -u -s {stamp} 2>/dev/null || date -s @{epoch} 2>/dev/null; "
+               "hwclock -w 2>/dev/null; true", timeout=15)
+    skew = _clock_skew(client)
+    if skew is not None and abs(skew) <= _CLOCK_TOLERANCE_S:
+        if say:
+            say(_("Время синхронизировано с компьютером."))
+        return True, ""
+    # Last resort: one-shot NTP (unauthenticated UDP, IP literals + a pool host).
     client.run(
         "ntpd -q -n -p 162.159.200.123 -p 216.239.35.0 -p pool.ntp.org 2>/dev/null; true",
         timeout=40)
-    if _clock_ok(client):
+    skew = _clock_skew(client)
+    if skew is not None and abs(skew) <= _CLOCK_TOLERANCE_S:
         if say:
             say(_("Время синхронизировано."))
         return True, ""
-    return False, _("не удалось синхронизировать время роутера (NTP недоступен?)")
+    return False, _("не удалось синхронизировать время роутера")
 
 
 # ----- LuCI interface language ------------------------------------------
