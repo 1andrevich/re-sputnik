@@ -134,7 +134,8 @@ class SettingsShell(ctk.CTkFrame):
         elif key == "advanced":
             from .advanced_screen import AdvancedScreen
 
-            self._content = AdvancedScreen(self, self.p, self._client)
+            self._content = AdvancedScreen(self, self.p, self._client,
+                                           on_router_reset=self._on_exit)
         elif key == "about":
             from .about_screen import AboutScreen
 

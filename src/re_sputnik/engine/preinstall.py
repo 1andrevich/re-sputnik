@@ -84,6 +84,16 @@ class TargetInfo:
     def ext(self) -> str:
         return ".apk" if self.pkg_manager == "apk" else ".ipk"
 
+    @property
+    def snapshot_kernel(self) -> bool:
+        """True when kmods can't be pre-staged for this build: ANY snapshot-suffixed
+        version (bare ``SNAPSHOT`` or versioned like ``25.12-SNAPSHOT``) carries kmods
+        locked to an exact kernel hash that rotates on the OpenWrt mirror, so the PC
+        can't reliably fetch a matching one. Distinct from ``is_snapshot`` (bare only),
+        which gates package-feed compatibility — a versioned snapshot still uses the
+        25.12 package tree, it's only its KMODS that aren't stageable."""
+        return "SNAPSHOT" in (self.version or "").upper()
+
 
 @dataclass(slots=True)
 class Pkg:
@@ -111,6 +121,10 @@ def get_target_info(client: RouterClient) -> TargetInfo:
 
     version = f("VERSION_ID")
     pm = "apk" if client.run("command -v apk >/dev/null 2>&1").ok else "opkg"
+    # ONLY a bare rolling "SNAPSHOT" (or empty) is a true snapshot. A VERSIONED
+    # snapshot like "25.12-SNAPSHOT" is package-compatible with the 25.12 release
+    # tree and is deliberately NOT treated as a blocking snapshot — do not change
+    # this to a substring match.
     is_snapshot = (not version) or version.upper() == "SNAPSHOT"
     return TargetInfo(version=version, board=f("OPENWRT_BOARD"), arch=f("OPENWRT_ARCH"),
                       pkg_manager=pm, is_snapshot=is_snapshot)
@@ -378,12 +392,19 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             progress(m)
 
     ti = get_target_info(client)
-    if ti.is_snapshot:
+    if ti.snapshot_kernel:
+        # SNAPSHOT-suffixed build: kmods are locked to this exact kernel and can't be
+        # pre-staged from the mirror. If they're ALREADY on the router we can stage the
+        # rest; otherwise stop with a clear pointer to Quick Setup, where the router's
+        # own package manager CAN pull matching kmods (apk add kmod-…).
         if kmods_installed(client):
-            say(_("SNAPSHOT: нужные kmod уже установлены — ставлю только ядро."))
+            say(_("SNAPSHOT: нужные kmod уже установлены — ставлю остальные пакеты."))
         else:
-            res.error = (_("На устройстве SNAPSHOT — автоматическая установка kmod невозможна "
-                         "(модули привязаны к сборке). Используйте релизную прошивку."))
+            res.error = (_("На устройстве SNAPSHOT-сборка: модули ядра (kmod) ещё не "
+                         "установлены, а предустановка не может их подобрать (они "
+                         "привязаны к конкретной сборке ядра). Откройте «Пошаговую "
+                         "настройку» — роутер сам установит kmod из своего репозитория, "
+                         "после чего предустановка тоже заработает."))
             return res
     if not ti.arch or not ti.board:
         res.error = _("не удалось определить arch/board роутера")
@@ -394,7 +415,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         say(_("Определяю ссылки на пакеты…"))
         pkgs = plan_packages(client, ti, core, with_byedpi=with_byedpi,
                              with_zapret=with_zapret, with_app=with_app, language=language)
-        if ti.is_snapshot:
+        if ti.snapshot_kernel:
             pkgs = [p for p in pkgs if not p.name.startswith("kmod-")]  # kmods already present
     except Exception as exc:  # noqa: BLE001
         res.error = f"не удалось определить пакеты: {exc}"

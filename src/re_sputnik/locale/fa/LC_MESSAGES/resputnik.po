@@ -2659,9 +2659,8 @@ msgstr "از طریق پروکسی"
 
 #: src/re_sputnik/ui/diagnostics_screen.py:385
 #: src/re_sputnik/ui/overview_screen.py:57
-#, fuzzy
 msgid "Россия"
-msgstr "نسخه"
+msgstr "روسیه"
 
 #: src/re_sputnik/ui/diagnostics_screen.py:385
 #: src/re_sputnik/ui/overview_screen.py:57

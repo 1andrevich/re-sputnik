@@ -102,7 +102,7 @@ class VerifyScreen(ctk.CTkFrame):
                                     fg_color=palette.surface, hover_color=palette.surface_hover,
                                     command=self.refresh)
         self._retry.grid(row=5, column=0, padx=32, pady=(0, 6), sticky="w")
-        ctk.CTkButton(body, text=_("Готово"), font=fonts.heading(), height=42, fg_color=palette.accent, text_color=palette.accent_fg,
+        ctk.CTkButton(body, text=_("Далее"), font=fonts.heading(), height=42, fg_color=palette.ok, text_color=palette.accent_fg,
                       hover_color=palette.accent_hover, command=on_done).grid(
             row=6, column=0, padx=32, pady=(6, 6), sticky="ew")
         if on_back is not None:

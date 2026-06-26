@@ -35,6 +35,13 @@ class RouterError(RuntimeError):
     """Any failure talking to the router (connection, auth, command, JSON)."""
 
 
+class CommandTimeout(RouterError):
+    """A command exceeded its wall-clock deadline. Subclasses RouterError so broad
+    ``except RouterError`` handlers still catch it, while callers that must react to a
+    timeout specifically (e.g. the mirror throttle-probe falling back to the mirror)
+    can catch this exact type instead of treating it as a generic failure."""
+
+
 class HostKeyMismatch(RouterError):
     """The router's SSH host key differs from the fingerprint we pinned.
 
@@ -234,12 +241,17 @@ class RouterClient:
                 while not chan.exit_status_ready():
                     if time.monotonic() > deadline:
                         chan.close()
-                        raise TimeoutError(
+                        raise CommandTimeout(
                             f"command did not finish within {timeout}s: {command[:100]}")
                     time.sleep(0.1)
             exit_code = chan.recv_exit_status()
             out = stdout.read().decode("utf-8", "replace")
             err = stderr.read().decode("utf-8", "replace")
+        except CommandTimeout:
+            # Distinct, expected condition (the mirror throttle-probe catches it to
+            # fall back). Let it through instead of re-wrapping as a generic RouterError
+            # — it's already a RouterError subclass, so broad handlers still catch it.
+            raise
         except Exception as exc:  # noqa: BLE001 — surface any transport error uniformly
             raise RouterError(f"failed to run command: {exc}") from exc
         if self._log is not None and err.strip():

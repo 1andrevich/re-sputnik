@@ -110,10 +110,14 @@ class _DangerConfirm(ctk.CTkFrame):
 
 
 class AdvancedScreen(ctk.CTkFrame):
-    def __init__(self, master: ctk.CTkBaseClass, palette: Palette, client: RouterClient) -> None:
+    def __init__(self, master: ctk.CTkBaseClass, palette: Palette, client: RouterClient,
+                 on_router_reset: "Callable[[], None] | None" = None) -> None:
         super().__init__(master, fg_color="transparent")
         self.p = palette
         self._client = client
+        # Called after a factory reset so the app can drop back to the connection
+        # page — the router is wiped, so the current session is no longer valid.
+        self._on_router_reset = on_router_reset
         self._lan: lan_engine.LanSettings | None = None
         self._devices: list = []
         self._leases: list = []
@@ -197,9 +201,11 @@ class AdvancedScreen(ctk.CTkFrame):
         # package is installed) don't leave gaps.
         row = 0
         for builder in (self._build_name_card, self._build_backup_card,
-                        self._build_wifi_card, self._build_lan_card,
-                        self._build_static_card):
+                        self._build_wifi_card, self._build_static_card):
             builder(row)
+            row += 1
+        if ruleng.is_selective(self._routing.get("mode", "")):
+            self._build_routing_card(row)
             row += 1
         if self._upnp.installed:
             self._build_upnp_card(row)
@@ -207,9 +213,8 @@ class AdvancedScreen(ctk.CTkFrame):
         if self._sqm.installed:
             self._build_sqm_card(row)
             row += 1
-        if ruleng.is_selective(self._routing.get("mode", "")):
-            self._build_routing_card(row)
-            row += 1
+        self._build_lan_card(row)
+        row += 1
         self._build_reset_card(row)
         self._build_app_reset_card(row + 1)
 
@@ -1075,6 +1080,10 @@ class AdvancedScreen(ctk.CTkFrame):
         def done(_r: Any) -> None:
             dc.set_status(_("Сброс запущен. Роутер перезагрузится в заводском состоянии — "
                           "подключитесь заново как к новому устройству."), self.p.ok)
+            # The session is dead (router wiped). Drop back to the connection page so
+            # the user isn't left on settings for a device that's no longer there.
+            if self._on_router_reset is not None:
+                self.after(3000, self._on_router_reset)
 
         def err(e: BaseException) -> None:
             dc.reset()

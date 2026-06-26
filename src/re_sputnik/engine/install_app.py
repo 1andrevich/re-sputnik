@@ -30,7 +30,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
-from ..router import RouterClient, CommandResult
+from ..router import RouterClient, CommandResult, CommandTimeout
 from ._net import http_get
 from .preinstall import TargetInfo, get_target_info
 from ..i18n import _
@@ -262,7 +262,7 @@ def _run_retry(client: RouterClient, command: str, *, timeout: int, attempts: in
     for n in range(1, attempts + 1):
         try:
             return client.run(command, timeout=timeout)
-        except TimeoutError:
+        except CommandTimeout:
             if n >= attempts:
                 raise
             if say:
@@ -285,25 +285,53 @@ def _core_mgmt(client: RouterClient, *args: str, timeout: int = 300, attempts: i
         return {"error": f"non-JSON: {text[:160] or out.stderr.strip()[:160]}"}
 
 
-def _wget(client: RouterClient, url: str, dest: str, *, timeout: int = 300) -> tuple[bool, str]:
+def _wget(client: RouterClient, url: str, dest: str, *, timeout: int = 300,
+          direct: bool = False) -> tuple[bool, str]:
     """Download ``url`` to ``dest`` on the router. Returns ``(ok, detail)``.
+
+    ``direct=True`` bypasses the mirror entirely (GitHub URL as-is) — used by the
+    throttle PROBE so it can measure GitHub's own reachability.
 
     On failure ``detail`` is wget's OWN last output line — the real reason (HTTP
     status, TLS/cert error, DNS, connection refused) — so the caller surfaces the
     exact cause instead of a generic "download failed". A timeout is reported as
     such rather than swallowed. ``detail`` stays raw (wget's output is English and
-    not worth translating); callers prepend a localized prefix."""
-    try:
-        r = client.run(f"wget -O {dest} '{url}' 2>&1", timeout=timeout)
-    except TimeoutError:
-        return False, f"timeout >{timeout}s"
-    if r.ok:
-        return True, ""
-    # busybox/uclient-fetch print the real error on the LAST line (progress uses \r).
-    lines = [ln.strip() for chunk in r.stdout.splitlines()
-             for ln in chunk.split("\r") if ln.strip()]
-    detail = lines[-1] if lines else (r.stderr.strip() or f"wget exit {r.exit_code}")
+    not worth translating); callers prepend a localized prefix.
+
+    If a mirror is configured (``mirror.MIRROR_BASE``), an allow-listed GitHub
+    release URL is tried via the mirror FIRST (bypasses ISP throttling of GitHub)
+    and falls back to GitHub on failure — transparent to callers."""
+    from .mirror import download_candidates
+    candidates = [url] if direct else download_candidates(url)
+    detail = ""
+    for cand in candidates:
+        try:
+            r = client.run(f"wget -O {dest} '{cand}' 2>&1", timeout=timeout)
+        except CommandTimeout:
+            detail = f"timeout >{timeout}s"
+            continue
+        if r.ok:
+            return True, ""
+        # busybox/uclient-fetch print the real error on the LAST line (progress uses \r).
+        lines = [ln.strip() for chunk in r.stdout.splitlines()
+                 for ln in chunk.split("\r") if ln.strip()]
+        detail = lines[-1] if lines else (r.stderr.strip() or f"wget exit {r.exit_code}")
     return False, detail
+
+
+def _preplace_apk_key(client: RouterClient, key_url: str, key_name: str) -> None:
+    """Best-effort: fetch a release signing key THROUGH THE MIRROR (via _wget, so the
+    throttle latch applies) and drop it into /etc/apk/keys/. re-homeproxy's installers
+    check for the key first, so this makes them install TRUSTED and skip their own
+    GitHub key fetch entirely. Silent on failure — re-homeproxy then falls back to its
+    own short-timeout fetch / --allow-untrusted, so a missing mirror never blocks."""
+    try:
+        ok, _why = _wget(client, key_url, "/tmp/_rs_key.pub", timeout=30)
+        if ok:
+            client.run(f"[ -s /tmp/_rs_key.pub ] && cp /tmp/_rs_key.pub "
+                       f"/etc/apk/keys/{key_name}; rm -f /tmp/_rs_key.pub")
+    except Exception:  # noqa: BLE001 — pre-placing is an optimisation, never fatal
+        pass
 
 
 # Max router-vs-PC clock skew we tolerate before correcting it. A clock can be the
@@ -488,6 +516,8 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             say(line.rstrip())
 
     ti = get_target_info(client)
+    from .mirror import reset_session_mirror
+    reset_session_mirror()  # fresh GitHub-throttle decision per install
     if ti.is_snapshot:
         res.error = (_("На устройстве SNAPSHOT-сборка OpenWrt — kmod из релизного "
                      "репозитория недоступны. Используйте релизную прошивку."))
@@ -507,13 +537,26 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         say(_("Устанавливаю приложение Re:HomeProxy…"))
         trusted = False
         if pm == "apk" and assets.pubkey_url:
-            # Install the publisher key from the app's own release so apk trusts
-            # the package (and future updates) without --allow-untrusted. Falls
-            # back to untrusted (PC fetched over https) if the key is missing.
-            trusted = client.run(
-                f"wget -qO /tmp/hp.pub '{assets.pubkey_url}' && "
-                f"cp /tmp/hp.pub /etc/apk/keys/ 2>/dev/null && echo OK; rm -f /tmp/hp.pub"
-            ).stdout.strip().endswith("OK")
+            # The tiny .pub doubles as the throttle PROBE: try GitHub DIRECTLY with a
+            # 10s cap. A 451-byte file that can't arrive in 10s means GitHub is
+            # throttled on this network → latch the WHOLE session (this key + every
+            # package after it) to the mirror. BEST-EFFORT: if both GitHub and the
+            # mirror fail, install untrusted (the PC already fetched over HTTPS) —
+            # never abort the install over the key.
+            from .mirror import set_session_mirror, mirror_url
+            ok_key, _why_key = _wget(client, assets.pubkey_url, "/tmp/hp.pub",
+                                     timeout=10, direct=True)
+            if not ok_key and mirror_url(assets.pubkey_url):
+                set_session_mirror(True)
+                say(_("⚠ GitHub не отвечает или ограничивает скорость "
+                      "(контрольный файл не скачался за 10 с)."))
+                say(_("→ Переключаюсь на зеркало: ядро, приложение и пакеты "
+                      "будут скачаны через него."))
+                ok_key, _why_key = _wget(client, assets.pubkey_url, "/tmp/hp.pub", timeout=30)
+            if ok_key:
+                trusted = client.run(
+                    "cp /tmp/hp.pub /etc/apk/keys/ 2>/dev/null && echo OK; rm -f /tmp/hp.pub"
+                ).stdout.strip().endswith("OK")
         ok_app, why_app = _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}")
         if not ok_app:
             res.error = _("не удалось скачать пакет приложения на роутер") + f": {why_app}"
@@ -561,6 +604,15 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         say(_("Перезапускаю rpcd…"))
         client.run("/etc/init.d/rpcd restart 2>/dev/null; sleep 2; true", timeout=30)
 
+        # Hand the mirror to re-homeproxy too, so its OWN GitHub fetches (core/key,
+        # incl. any standalone LuCI install later) can fall back to the mirror. It's
+        # a FALLBACK there — re-homeproxy tries GitHub first; this just provides the
+        # backup URL. Mirror off → option cleared (pure GitHub).
+        from .mirror import MIRROR_BASE
+        if MIRROR_BASE:
+            client.run(f"uci set homeproxy.config.github_mirror='{MIRROR_BASE}'; "
+                       "uci commit homeproxy 2>/dev/null; true")
+
         # --- C. core ----------------------------------------------------
         say(f"Готовлю установку ядра ({core})…")
         prep = _core_mgmt(client, "prepare_install", core, "")
@@ -569,9 +621,18 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             return res
         if prep.get("note"):
             say(prep["note"])
-        say(_("Скачиваю ядро на роутер…"))
-        dl = _core_mgmt(client, "download_pkg", prep["dl_url"], prep["tmp_path"],
-                        attempts=3, say=say, what=_("скачивание ядра"))
+        from .mirror import download_candidates, session_uses_mirror
+        say(_("Скачиваю ядро на роутер…")
+            + (_(" — через зеркало") if session_uses_mirror() else ""))
+        # Feed core_mgmt's router-side download_pkg the mirror→GitHub candidates so
+        # the big core fetch also bypasses GitHub throttling (mirror-first once the
+        # session is latched; GitHub kept as fallback).
+        dl = {"result": False, "error": _("не удалось")}
+        for cand in download_candidates(prep["dl_url"]):
+            dl = _core_mgmt(client, "download_pkg", cand, prep["tmp_path"],
+                            attempts=2, say=say, what=_("скачивание ядра"))
+            if dl.get("result"):
+                break
         if not dl.get("result"):
             res.error = f"скачивание ядра: {dl.get('error', 'не удалось')}"
             return res
@@ -612,6 +673,10 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                 if not ok_bp:
                     say(_("ByeDPI: не удалось скачать пакет.") + f" {why_bp}")
                 else:
+                    if bp["pkg_manager"] == "apk":
+                        _preplace_apk_key(client,
+                            "https://github.com/1andrevich/homeproxy-hiddify/releases/latest/download/homeproxy-hiddify.pub",
+                            "homeproxy-hiddify.pub")
                     bi = client.ubus_homeproxy(
                         "byedpi_install_pkg",
                         {"tmp_path": bp["tmp_path"], "pkg_manager": bp["pkg_manager"]}, timeout=120)
@@ -631,6 +696,12 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                 if not ok_zp:
                     say(_("Zapret: не удалось скачать пакет.") + f" {why_zp}")
                 else:
+                    # Pre-place the signing key via the mirror so the install is TRUSTED
+                    # and re-homeproxy skips its own GitHub key fetch.
+                    if zp["pkg_manager"] == "apk":
+                        _preplace_apk_key(client,
+                            "https://github.com/1andrevich/zapret2-openwrt/releases/latest/download/zapret2-1andrevich.pub",
+                            "zapret2-1andrevich.pub")
                     zi = client.ubus_homeproxy(
                         "zapret_install_pkg",
                         {"tmp_path": zp["tmp_path"], "pkg_manager": zp["pkg_manager"]}, timeout=180)
@@ -669,6 +740,8 @@ def install_core(client: RouterClient, ti: TargetInfo, core: str, *,
     to latest" — reuses core_mgmt (prepare → download → install), which always
     resolves the newest build. Returns (ok, message)."""
     from .preinstall import kmods_installed
+    from .mirror import reset_session_mirror
+    reset_session_mirror()  # fresh GitHub-throttle decision per core install
 
     def say(m: str) -> None:
         if progress:
@@ -682,8 +755,14 @@ def install_core(client: RouterClient, ti: TargetInfo, core: str, *,
     if prep.get("note"):
         say(prep["note"])
     say(_("Скачиваю ядро на роутер…"))
-    if not _core_mgmt(client, "download_pkg", prep["dl_url"], prep["tmp_path"],
-                      attempts=3, say=say, what=_("скачивание ядра")).get("result"):
+    from .mirror import download_candidates
+    dl_ok = False
+    for cand in download_candidates(prep["dl_url"]):
+        if _core_mgmt(client, "download_pkg", cand, prep["tmp_path"],
+                      attempts=2, say=say, what=_("скачивание ядра")).get("result"):
+            dl_ok = True
+            break
+    if not dl_ok:
         return False, _("скачивание ядра не удалось")
     say(_("Устанавливаю ядро…"))
     ins = _core_mgmt(client, "install_pkg", core, prep["tmp_path"], prep["pkg_manager"],
@@ -741,6 +820,8 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
         if line.strip():
             say(line.rstrip())
 
+    from .mirror import reset_session_mirror, set_session_mirror, mirror_url
+    reset_session_mirror()  # fresh throttle decision per update
     pm = ti.pkg_manager
     ensure_clock(client, say)  # a wrong router clock fails GitHub's TLS cert
     say(_("Определяю последнюю версию приложения…"))
@@ -748,10 +829,21 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
     say(f"Устанавливаю приложение Re:HomeProxy {assets.version}…")
     trusted = False
     if pm == "apk" and assets.pubkey_url:
-        trusted = client.run(
-            f"wget -qO /tmp/hp.pub '{assets.pubkey_url}' && "
-            f"cp /tmp/hp.pub /etc/apk/keys/ 2>/dev/null && echo OK; rm -f /tmp/hp.pub"
-        ).stdout.strip().endswith("OK")
+        # Best-effort .pub doubles as the throttle PROBE (see install flow): GitHub
+        # direct, 10s cap → if the tiny key can't arrive, latch the session to the
+        # mirror; if both fail, update untrusted rather than abort.
+        ok_key, _why_key = _wget(client, assets.pubkey_url, "/tmp/hp.pub",
+                                 timeout=10, direct=True)
+        if not ok_key and mirror_url(assets.pubkey_url):
+            set_session_mirror(True)
+            say(_("⚠ GitHub не отвечает или ограничивает скорость "
+                  "(контрольный файл не скачался за 10 с)."))
+            say(_("→ Переключаюсь на зеркало для остальных загрузок."))
+            ok_key, _why_key = _wget(client, assets.pubkey_url, "/tmp/hp.pub", timeout=30)
+        if ok_key:
+            trusted = client.run(
+                "cp /tmp/hp.pub /etc/apk/keys/ 2>/dev/null && echo OK; rm -f /tmp/hp.pub"
+            ).stdout.strip().endswith("OK")
     ok_app, why_app = _wget(client, assets.app_url, f"/tmp/{APP_PKG}{ti.ext}")
     if not ok_app:
         return False, _("не удалось скачать пакет приложения") + f": {why_app}"

@@ -2483,9 +2483,8 @@ msgstr "通过代理"
 
 #: src/re_sputnik/ui/diagnostics_screen.py:385
 #: src/re_sputnik/ui/overview_screen.py:57
-#, fuzzy
 msgid "Россия"
-msgstr "版本"
+msgstr "俄罗斯"
 
 #: src/re_sputnik/ui/diagnostics_screen.py:385
 #: src/re_sputnik/ui/overview_screen.py:57

@@ -16,6 +16,19 @@ IS_MAC = sys.platform == "darwin"
 IS_WIN = sys.platform.startswith("win")
 # anything else (Linux) gets the Secret Service keyring backend + no icon embed.
 
+
+# Single source of truth for the version: src/re_sputnik/__init__.py. Read it here
+# (don't import the package — its deps may be unavailable in the build env) so the
+# exe's file-properties version always matches what the UI shows.
+def _read_app_version():
+    import re
+    with open(os.path.join(SRC, "__init__.py"), encoding="utf-8") as _f:
+        _m = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', _f.read())
+    return _m.group(1) if _m else "0.0.0"
+
+
+APP_VERSION = _read_app_version()
+
 datas = []
 binaries = []
 hiddenimports = []
@@ -112,6 +125,32 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
+# Windows version resource (shown in the exe's Properties → Details), derived from
+# APP_VERSION so it can never drift from the in-app version.
+version_info = None
+if IS_WIN:
+    from PyInstaller.utils.win32.versioninfo import (
+        VSVersionInfo, FixedFileInfo, StringFileInfo, StringTable, StringStruct,
+        VarFileInfo, VarStruct)
+    _nums = [int(p) for p in APP_VERSION.split(".") if p.isdigit()]
+    _vt = tuple((_nums + [0, 0, 0, 0])[:4])  # (major, minor, patch, build)
+    version_info = VSVersionInfo(
+        ffi=FixedFileInfo(filevers=_vt, prodvers=_vt, mask=0x3F, flags=0x0,
+                          OS=0x40004, fileType=0x1, subtype=0x0, date=(0, 0)),
+        kids=[
+            StringFileInfo([StringTable("040904B0", [
+                StringStruct("CompanyName", "1andrevich"),
+                StringStruct("FileDescription", "Re:Sputnik"),
+                StringStruct("FileVersion", APP_VERSION),
+                StringStruct("InternalName", "Re-Sputnik"),
+                StringStruct("LegalCopyright", "Copyright (c) 2026 1andrevich"),
+                StringStruct("OriginalFilename", "Re-Sputnik.exe"),
+                StringStruct("ProductName", "Re:Sputnik"),
+                StringStruct("ProductVersion", APP_VERSION),
+            ])]),
+            VarFileInfo([VarStruct("Translation", [0x0409, 1200])]),
+        ])
+
 exe = EXE(
     pyz,
     a.scripts,
@@ -127,6 +166,7 @@ exe = EXE(
     console=False,             # GUI app: no console window
     disable_windowed_traceback=False,
     icon=icon_path,
+    version=version_info,      # Windows file-properties version (None on mac/Linux)
 )
 
 # On macOS, wrap the executable in a proper .app bundle.

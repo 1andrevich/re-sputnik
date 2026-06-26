@@ -50,6 +50,21 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # Single source of truth is src/re_sputnik/__init__.py (__version__). A release
+      # tag that disagrees with it is almost always a mistake — fail loudly so the
+      # exe's version, the UI, and the tag can never drift apart.
+      - name: Verify tag matches __version__
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          file_ver=$(grep -oE '__version__[[:space:]]*=[[:space:]]*"[^"]+"' src/re_sputnik/__init__.py | grep -oE '[0-9][^"]*')
+          tag_ver="${GITHUB_REF_NAME#v}"
+          echo "file=$file_ver  tag=$tag_ver"
+          if [ "$file_ver" != "$tag_ver" ]; then
+            echo "::error::Tag '${GITHUB_REF_NAME}' != __version__ '${file_ver}'. Bump src/re_sputnik/__init__.py or retag."
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
