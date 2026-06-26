@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "re-sputnik"
-version = "0.1.0"
+version = "0.0.2"
 description = "Re:Sputnik — desktop wizard to set up and manage Re:HomeProxy on an OpenWRT router over SSH"
 readme = "README.md"
 requires-python = ">=3.10"

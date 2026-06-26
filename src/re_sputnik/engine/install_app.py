@@ -525,6 +525,15 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     pm = ti.pkg_manager
 
     try:
+        # A VERSIONED snapshot (25.12-SNAPSHOT) isn't blocked above (it's package-
+        # compatible with its release tree), but its kmods are kernel-locked and come
+        # from the router's OWN repo — warn so the user knows it's a hand-built build
+        # and that a missing kmod will stop the install with an exact error.
+        if ti.snapshot_kernel:
+            say(_("⚠ Прошивка-SNAPSHOT (ручная сборка): модули ядра поставлю из "
+                  "репозитория самого роутера; если их там нет, установка остановится "
+                  "с точной ошибкой."))
+
         # --- Pre-flight: clock — a wrong router time fails GitHub's TLS cert ---
         clk_ok, clk_why = ensure_clock(client, say)
         if not clk_ok:
@@ -747,6 +756,10 @@ def install_core(client: RouterClient, ti: TargetInfo, core: str, *,
         if progress:
             progress(m)
 
+    if ti.snapshot_kernel:
+        say(_("⚠ Прошивка-SNAPSHOT (ручная сборка): модули ядра поставлю из "
+              "репозитория самого роутера (если их там нет — установка остановится "
+              "с точной ошибкой)."))
     ensure_clock(client, say)  # a wrong router clock fails GitHub's TLS cert
     say(f"Готовлю установку ядра ({core})…")
     prep = _core_mgmt(client, "prepare_install", core, "")

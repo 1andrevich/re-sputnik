@@ -141,8 +141,25 @@ def kmods_installed(client: RouterClient) -> bool:
 
 
 def _http_get(url: str, timeout: int = 60) -> bytes:
-    # TLS trust (certifi) + dead-proxy bypass live in _net.http_get.
-    return http_get(url, timeout=timeout)
+    # TLS trust (certifi) + dead-proxy bypass live in _net.http_get. For allow-listed
+    # GitHub *release* URLs, fall back to the mirror (GitHub→mirror; once latched,
+    # mirror-FIRST). Non-mirrorable URLs (api.github.com, downloads.openwrt.org) have a
+    # single candidate and are fetched directly — same as before. On a successful mirror
+    # fetch after GitHub failed, latch the session so the rest of this preinstall doesn't
+    # re-hit a throttled GitHub. Keeps the FIRST (GitHub) error if every candidate fails.
+    from .mirror import download_candidates, mirror_url, set_session_mirror
+    first_exc: "Exception | None" = None
+    candidates = download_candidates(url)
+    for i, cand in enumerate(candidates):
+        try:
+            data = http_get(cand, timeout=timeout)
+            if i > 0 and mirror_url(url):
+                set_session_mirror(True)
+            return data
+        except Exception as exc:  # noqa: BLE001 — try the next candidate
+            if first_exc is None:
+                first_exc = exc
+    raise first_exc if first_exc else RuntimeError("no download candidates")
 
 
 def _links(html: str) -> list[str]:
@@ -386,6 +403,8 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     target ends up with a working Re:HomeProxy (rpcd scripts present) rather than
     just the core binary — required for the later offline node-import step."""
     res = PreinstallResult()
+    from .mirror import reset_session_mirror
+    reset_session_mirror()  # fresh GitHub-throttle decision per preinstall
 
     def say(m: str) -> None:
         if progress:

@@ -179,8 +179,8 @@ if IS_MAC:
         info_plist={
             "CFBundleName": "Re-Sputnik",
             "CFBundleDisplayName": "Re:Sputnik",
-            "CFBundleShortVersionString": "0.1.0",
-            "CFBundleVersion": "0.1.0",
+            "CFBundleShortVersionString": "0.0.2",
+            "CFBundleVersion": "0.0.2",
             "NSHighResolutionCapable": True,
             "LSMinimumSystemVersion": "11.0",
             "NSHumanReadableCopyright": "© 2026 1andrevich. All rights reserved.",
