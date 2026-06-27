@@ -870,7 +870,8 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
                                  on_line=say_line, timeout=180)
     client.run(f"rm -f /tmp/{APP_PKG}{ti.ext}")
     if not inst.ok:
-        return False, f"установка не удалась: {inst.stdout.strip()[-200:]}"
+        from .preinstall import explain_install_failure
+        return False, f"установка не удалась: {explain_install_failure(inst.stdout, pm)}"
     # Update EVERY homeproxy language pack the router already has (not just the
     # app's current UI language), so an installed translation like
     # luci-i18n-homeproxy-ru is bumped to the new version too — otherwise it stays

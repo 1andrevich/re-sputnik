@@ -898,6 +898,9 @@ msgstr "Files transferred (installation skipped)."
 msgid "Устанавливаю пакеты…"
 msgstr "Installing packages…"
 
+msgid "Роутер не смог скачать пакеты. Если доступ к ресурсам ограничен, включите VPN на этом компьютере и воспользуйтесь предустановкой («Предустановить пакеты»): она скачивает пакеты на компьютере и передаёт их на роутер."
+msgstr "The router couldn't download the packages. If access to resources is restricted, turn on a VPN on this computer and use Pre-install packages: it downloads the packages on the computer and sends them to the router."
+
 #: src/re_sputnik/engine/rules.py:24
 msgid "Re:filter — блок-лист РФ (60000+ доменов + 25000+ IP)"
 msgstr "Re:filter — RU blocklist (60000+ domains + 25000+ IPs)"

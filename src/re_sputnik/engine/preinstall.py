@@ -26,7 +26,7 @@ from ..i18n import _
 
 OPENWRT_DL = "https://downloads.openwrt.org"
 KMODS = ("kmod-nft-tproxy", "kmod-tun")
-ZAPRET_KMOD = "kmod-nft-queue"   # NFQUEUE — needed only when installing Zapret
+ZAPRET_KMOD = "kmod-nft-queue"   # NFQUEUE — hiddify-core dep + needed by Zapret (always staged)
 
 # Transitive kmod deps the OFFLINE `apk add` can't fetch (online would pull them):
 # kmod-nft-tproxy needs kmod-nf-tproxy; the sing-box-based cores (both) need
@@ -353,25 +353,55 @@ def resolve_zapret_deps(client: RouterClient, ti: TargetInfo) -> list[Pkg]:
 # ----- orchestration ----------------------------------------------------
 
 
+def _has_ucode_mod_digest(ti: TargetInfo) -> bool:
+    """`ucode-mod-digest` exists in the 24.10+ feeds only; 23.05 has no such package
+    (and its legacy app build doesn't require it). A versioned/bare SNAPSHOT parses to
+    its leading YY.MM (or, if bare, falls through to True = newest tree, which has it)."""
+    m = re.match(r"(\d+)\.(\d+)", ti.version or "")
+    return (int(m.group(1)), int(m.group(2))) >= (24, 10) if m else True
+
+
+def resolve_app_dep_pkgs(client: RouterClient, ti: TargetInfo) -> list[Pkg]:
+    """luci-app-re-homeproxy's non-default dependency `ucode-mod-digest` (LUCI_DEPENDS).
+    The offline `apk add`/`opkg install` of staged files can't fetch it, so without
+    staging it the dep is left UNSATISFIED (opkg: "cannot find dependency
+    ucode-mod-digest") and the install fails with an opaque error. firewall4 — the other
+    LUCI_DEPENDS — is on every router already. ucode-mod-digest lives in the `base` feed
+    and only on 24.10+ (skip on 23.05). Staged only if the router lacks it."""
+    if not _has_ucode_mod_digest(ti):
+        return []
+    if "ucode-mod-digest" in installed_packages(client, ti):
+        return []
+    files = _feed_files(ti, "base")
+    pat = re.compile(r"^ucode-mod-digest[-_]\d")
+    match = next((f for f in files if pat.match(f) and f.endswith(ti.ext)), None)
+    if not match:
+        raise RuntimeError("не найден пакет ucode-mod-digest в фиде base")
+    return [Pkg(name="ucode-mod-digest", url=_feed_url(ti, "base") + match)]
+
+
 def plan_packages(client: RouterClient, ti: TargetInfo, core: str,
                   *, with_byedpi: bool = False, with_zapret: bool = False,
                   with_app: bool = False, language: str = "ru") -> list[Pkg]:
     """Resolve every package URL the PC will download (core + kmods
     [+ LuCI app + i18n] [+ ByeDPI] [+ Zapret + kmod-nft-queue] [+ curl])."""
     pkgs = [Pkg(name=f"{core}-core", url=resolve_core_url(ti, core))]
-    # Zapret's `nft queue` needs the NFQUEUE module; pull it alongside the core kmods.
-    kmods = KMODS + ((ZAPRET_KMOD,) if with_zapret else ())
-    pkgs += resolve_kmod_urls(ti, kmods)
-    # Their own kmod deps (kmod-nf-tproxy, kmod-inet-diag [+ kmod-nfnetlink-queue])
-    # — the offline `apk add` can't fetch them; stage what the router lacks.
-    dep_kmods = KMOD_DEPS + ((ZAPRET_KMOD_DEP,) if with_zapret else ())
-    pkgs += resolve_kmod_deps(client, ti, dep_kmods)
+    pkgs += resolve_kmod_urls(ti, KMODS)
+    # kmod-nft-queue (NFQUEUE) + its kmod-nfnetlink-queue dep are staged ALWAYS now, not
+    # just with Zapret: hiddify-core hard-depends on kmod-nft-queue, and pre-staging also
+    # preempts an unsatisfied-dep failure when the user later enables Zapret (~14 KB total).
+    # Via the TOLERANT dep-resolver (alongside kmod-nf-tproxy, kmod-inet-diag): it's
+    # installed-aware, and a module built into the kernel (no separate package) is skipped.
+    pkgs += resolve_kmod_deps(client, ti, KMOD_DEPS + (ZAPRET_KMOD, ZAPRET_KMOD_DEP))
     if with_app:
         # Lazy import: install_app imports THIS module at top level, so importing
         # it at module load would be circular. By call time both are fully loaded.
         from .install_app import APP_PKG, resolve_app_assets
         assets = resolve_app_assets(ti, language)
         pkgs.append(Pkg(name=APP_PKG, url=assets.app_url))
+        # luci-app-re-homeproxy hard-depends on ucode-mod-digest (24.10+); the offline
+        # install can't fetch it from the feed, so stage it or the dep is unsatisfied.
+        pkgs += resolve_app_dep_pkgs(client, ti)
         if assets.i18n_url:
             pkgs.append(Pkg(name=f"luci-i18n-homeproxy-{language}", url=assets.i18n_url))
         # Base LuCI UI language packs (luci-i18n-base/firewall/package-manager-…) so
@@ -391,6 +421,52 @@ def plan_packages(client: RouterClient, ti: TargetInfo, core: str,
     if with_byedpi or with_zapret:
         pkgs += resolve_curl_pkgs(client, ti)
     return pkgs
+
+
+def explain_install_failure(output: str, pkg_manager: str) -> str:
+    """Turn raw opkg/apk install output into a SPECIFIC, actionable reason — names the
+    missing package/dependency or flags out-of-space — so a maintainer can fix it
+    without guessing, instead of a blind char-tail that hides the real cause (opkg
+    prints `Collected errors:` to stderr, which interleaves and gets scrolled out)."""
+    text = (output or "").strip()
+    low = text.lower()
+
+    # Out of space — state it plainly with the numbers opkg/apk give.
+    if "no space left on device" in low or "only have" in low:
+        m = re.search(r"only have\s+([\d.]+\s*k?b?)\s+available on filesystem\s+([^\s,]+)"
+                      r".*?pkg\s+(\S+)\s+needs\s+([\d.]+\s*k?b?)", text, re.I)
+        if m:
+            return (f"недостаточно места ({m.group(2)}): свободно {m.group(1)}, "
+                    f"пакету {m.group(3)} нужно {m.group(4)}")
+        return "недостаточно места на роутере (No space left on device)"
+
+    # opkg: the `Collected errors:` block names the failure (missing dep, bad arch, …).
+    idx = text.find("Collected errors:")
+    if idx != -1:
+        bullets = []
+        for ln in text[idx:].splitlines()[1:]:
+            s = ln.strip()
+            if not s.startswith("*"):
+                continue
+            s = re.sub(r"^\*\s*[A-Za-z_]+:\s*", "", s).strip()  # drop " * funcname:" noise
+            if s and s not in bullets:
+                bullets.append(s)
+        if bullets:
+            return "; ".join(bullets[:3])
+
+    # apk: `ERROR:` lines + "no such package" / "unsatisfiable" detail.
+    errs = [ln.strip() for ln in text.splitlines()
+            if ln.lstrip().lower().startswith("error")
+            or "no such package" in ln.lower() or "unsatisfiable" in ln.lower()]
+    if errs:
+        return "; ".join(dict.fromkeys(errs))[:300]
+
+    # Fallback: last meaningful lines, minus the chatty progress noise (so we never
+    # again surface "…to root… / Configuring …" as if it were the error).
+    noise = re.compile(r"^(Installing|Configuring|Downloading)\b", re.I)
+    meaningful = [ln.strip() for ln in text.splitlines() if ln.strip() and not noise.match(ln.strip())]
+    tail = " ".join(meaningful[-4:]) if meaningful else text
+    return tail[-300:] if tail else "неизвестная ошибка"
 
 
 def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
@@ -477,7 +553,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         cmd = f"opkg install {remotes}"
     out = client.run(f"{cmd} 2>&1; RC=$?; rm -f {remotes}; exit $RC", timeout=180)
     if not out.ok:
-        res.error = f"установка не удалась: {out.stdout.strip()[-300:]}"
+        res.error = f"установка не удалась: {explain_install_failure(out.stdout, ti.pkg_manager)}"
         return res
 
     res.ok = True

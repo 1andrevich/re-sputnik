@@ -24,6 +24,22 @@ from ..i18n import _, luci_lang
 
 OnDone = Callable[[], None]
 
+# A failure where the ROUTER couldn't download (GitHub+mirror or the OpenWrt feed
+# unreachable/throttled) is the case Pre-install solves — the PC does the download
+# (where the user can have a VPN up) and pushes to the router. Excludes causes
+# Pre-install can't help (out of space → same disk).
+_DOWNLOAD_FAIL = ("скачать", "скачивание", "download", "wget", "resolve",
+                  "temporary failure", "timed out", "timeout", "unreachable",
+                  "connection", "network")
+_NOT_CONNECTIVITY = ("места", "no space", "only have", "available on filesystem")
+
+
+def _looks_like_download_failure(err: str) -> bool:
+    low = (err or "").lower()
+    if any(s in low for s in _NOT_CONNECTIVITY):
+        return False
+    return any(s in low for s in _DOWNLOAD_FAIL)
+
 
 class SoftwareScreen(ctk.CTkFrame):
     def __init__(self, master: ctk.CTkBaseClass, palette: Palette, client: RouterClient,
@@ -209,3 +225,10 @@ class SoftwareScreen(ctk.CTkFrame):
         else:
             self._go.configure(state="normal", text=_("Повторить"))
             self._append("✗ " + (res.error or _("не удалось")))
+            # The error stays above; this only ADDS a path forward when the router
+            # couldn't reach the download servers (restricted network).
+            if _looks_like_download_failure(res.error or ""):
+                self._append(_("Роутер не смог скачать пакеты. Если доступ к ресурсам "
+                               "ограничен, включите VPN на этом компьютере и воспользуйтесь "
+                               "предустановкой («Предустановить пакеты»): она скачивает "
+                               "пакеты на компьютере и передаёт их на роутер."))
