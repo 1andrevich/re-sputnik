@@ -47,8 +47,8 @@ APP_PKG = "luci-app-re-homeproxy"
 #   • non-legacy → GitHub `releases/latest` (newest non-prerelease);
 #   • legacy (23.05) → the newest `*-legacy` release (latest legacy, kept current).
 # (See the matching TODO in the version-ranking block below.)
-PINNED_TAG: Optional[str] = "2026.06.22-beta"              # 24.10+ / non-legacy (beta)
-PINNED_TAG_LEGACY: Optional[str] = "2026.06.22-legacy-beta"  # OpenWrt 23.05 (legacy .ipk, beta)
+PINNED_TAG: Optional[str] = "2026.06.28-beta"              # 24.10+ / non-legacy (beta)
+PINNED_TAG_LEGACY: Optional[str] = "2026.06.28-legacy-beta"  # OpenWrt 23.05 (legacy .ipk, beta)
 
 Progress = Callable[[str], None]
 
