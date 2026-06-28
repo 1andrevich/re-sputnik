@@ -3695,6 +3695,11 @@ msgstr " GHz"
 msgid "{0} Мбит/с"
 msgstr "{0} Mbps"
 
+#: src/re_sputnik/engine/network.py:140
+#, python-brace-format
+msgid "{0} Гбит/с"
+msgstr "{0} Gbps"
+
 #: src/re_sputnik/ui/overview_screen.py:394
 msgid "Кабель"
 msgstr "Cable"

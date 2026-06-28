@@ -137,8 +137,8 @@ def link_speed_label(mbps: int) -> str:
     if mbps <= 0:
         return ""
     if mbps >= 1000:
-        return f"{mbps / 1000:g} Гбит/с"
-    return f"{mbps} Мбит/с"
+        return _("{0} Гбит/с").format(f"{mbps / 1000:g}")
+    return _("{0} Мбит/с").format(mbps)
 
 
 def uplink_info(client: RouterClient) -> UplinkInfo:

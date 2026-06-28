@@ -11,6 +11,9 @@ commit, then push the matching tag.
 ## [Unreleased]
 
 ## [0.0.9] — 2026-06-28
+- Fixed the link-speed unit showing untranslated Cyrillic ("Гбит/с" / "Мбит/с") in
+  other languages — it was a hardcoded f-string. Now localized (EN/ZH "Gbps/Mbps",
+  FA "گیگابیت/مگابیت بر ثانیه").
 - Fixed intermittent "failed to run command: Channel closed" errors (seen e.g. on the
   AntiDPI page's Zapret2 card). Screens fire their status reads on background threads,
   and several screens load two sections at once — those threads were opening SSH
