@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import shlex
 import socket
+import threading
 import time
 from dataclasses import dataclass
 from typing import Any, Callable, Optional
@@ -24,6 +25,17 @@ import paramiko
 
 # Where Dropbear (OpenWRT's default SSH server) keeps authorized keys.
 AUTHORIZED_KEYS_PATH = "/etc/dropbear/authorized_keys"
+
+
+def _load_key_file(path: str) -> "paramiko.PKey":
+    """Load a private key file, trying the supported types — same set SSHClient
+    auto-detected internally. Only the app's OWN key is ever loaded this way."""
+    for key_type in (paramiko.Ed25519Key, paramiko.ECDSAKey, paramiko.RSAKey):
+        try:
+            return key_type.from_private_key_file(path)
+        except paramiko.SSHException:
+            continue
+    raise RouterError(f"could not load key file {path}")
 
 # rpcd needs a moment after a restart before its objects answer (project note).
 RPCD_SETTLE_SECONDS = 2
@@ -115,7 +127,14 @@ class RouterClient:
         self._log = log
         self._connect_timeout = connect_timeout
         self._expected_fingerprint = expected_fingerprint
-        self._ssh: Optional[paramiko.SSHClient] = None
+        self._transport: Optional[paramiko.Transport] = None
+        # One SSH transport is shared across UI worker threads (screens fire status
+        # reads in parallel — e.g. the AntiDPI page loads its ByeDPI and Zapret
+        # sections at once). dropbear closes a colliding concurrent session with
+        # "Channel closed", so every channel-opening method below serializes on this
+        # lock: exactly one command on the wire at a time. Correctness over a little
+        # latency — the worker threads queue, the Tk thread never touches this lock.
+        self._cmd_lock = threading.Lock()
 
     # ----- lifecycle ----------------------------------------------------
 
@@ -129,51 +148,57 @@ class RouterClient:
     def connect(self) -> None:
         """Open the SSH session.
 
-        TOFU is done at the APP layer, not via the system known_hosts: we accept
-        whatever key the server offers (AutoAddPolicy, no system host keys loaded
-        — so a regenerated key after a factory reset doesn't raise paramiko's
-        cryptic BadHostKeyException), then compare its fingerprint to the one the
-        app pinned. A mismatch raises HostKeyMismatch for the UI to handle.
+        We drive a paramiko Transport directly rather than SSHClient: the
+        high-level client can't attempt the SSH 'none' method a factory-fresh
+        OpenWrt uses, and we already do TOFU at the APP layer (comparing the
+        server key fingerprint to the app-pinned one) instead of via system
+        known_hosts — so a regenerated key after a factory reset doesn't raise
+        paramiko's cryptic BadHostKeyException. The server host key is available
+        right after start_client, BEFORE auth, so the pinned-fingerprint check
+        runs up front and a mismatch raises HostKeyMismatch for the UI.
+
+        NEVER uses the user's personal SSH keys/agent — only the app's own key
+        (pkey / key_filename), a password, or the fresh-router 'none' method.
         """
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        # NEVER use the user's PERSONAL SSH keys or agent: the app authenticates only
-        # with ITS OWN key (pkey), a password, or the fresh-router 'none' method.
-        # Leaving allow_agent/look_for_keys on offered the user's ~/.ssh + agent
-        # identities to the server — an info leak to a malicious/MITM router.
         try:
-            ssh.connect(
-                hostname=self.host,
-                port=self.port,
-                username=self.username,
-                password=self._password,
-                key_filename=self._key_filename,
-                pkey=self._pkey,
-                timeout=self._connect_timeout,
-                allow_agent=False,
-                look_for_keys=False,
-            )
-            self._ssh = ssh
-        except paramiko.AuthenticationException as exc:
-            # A factory-fresh OpenWrt has no root password, and dropbear then
-            # grants access via the SSH "none" method — which paramiko's
-            # high-level connect never attempts. Fall back to it whenever no
-            # password was given (an empty-password router), EVEN IF we also
-            # offered a key: a returning app already has a key in the keychain,
-            # but a freshly reset router doesn't have it installed yet, so the
-            # key auth fails and 'none' is the right path. A provided-but-wrong
-            # password still fails fast (auth_none only succeeds if dropbear
-            # actually offers it).
-            if not self._password:
-                try:
-                    self._ssh = self._connect_none()
-                except Exception:  # noqa: BLE001 — keep the original auth error
-                    raise RouterError("authentication failed — wrong password or key") from exc
-            else:
-                raise RouterError("authentication failed — wrong password or key") from exc
-        except OSError as exc:
+            transport = paramiko.Transport((self.host, self.port))
+            transport.start_client(timeout=self._connect_timeout)
+        except (OSError, paramiko.SSHException) as exc:
             raise RouterError(f"cannot reach {self.host}:{self.port} — {exc}") from exc
+        self._transport = transport
+        try:
+            self._authenticate(transport)
+        except paramiko.AuthenticationException as exc:
+            transport.close()
+            self._transport = None
+            raise RouterError("authentication failed — wrong password or key") from exc
+        except Exception:
+            transport.close()
+            self._transport = None
+            raise
         self._check_pinned_hostkey()
+
+    def _authenticate(self, transport: "paramiko.Transport") -> None:
+        """Dispatch SSH auth on a started transport — password, else the app key,
+        else 'none'. A given password is authoritative (a wrong one fails fast).
+        Without a password we try the app key first (a returning router already
+        has it installed), then fall back to 'none' (a factory-fresh / just-reset
+        router is passwordless and dropbear grants root via 'none', but the app's
+        key isn't installed there yet)."""
+        if self._password:
+            transport.auth_password(self.username, self._password)
+            return
+        pkey = self._pkey or (
+            _load_key_file(self._key_filename) if self._key_filename else None)
+        if pkey is not None:
+            try:
+                transport.auth_publickey(self.username, pkey)
+                return
+            except paramiko.AuthenticationException:
+                pass  # key not installed yet (fresh/reset router) — fall to 'none'
+        transport.auth_none(self.username)
+        if not transport.is_authenticated():
+            raise paramiko.AuthenticationException("server did not grant access")
 
     def _check_pinned_hostkey(self) -> None:
         """Compare the connected server key against the app's pinned fingerprint.
@@ -189,32 +214,17 @@ class RouterClient:
             self.close()
             raise HostKeyMismatch(self.host, expected, got)
 
-    def _connect_none(self) -> "paramiko.SSHClient":
-        """Authenticate via the SSH 'none' method (password-less fresh router)."""
-        transport = paramiko.Transport((self.host, self.port))
-        transport.start_client(timeout=self._connect_timeout)
-        transport.auth_none(self.username)  # raises if 'none' is not offered
-        if not transport.is_authenticated():
-            transport.close()
-            raise paramiko.AuthenticationException("'none' auth not sufficient")
-        ssh = paramiko.SSHClient()
-        ssh._transport = transport  # drive exec_command through our authed transport
-        return ssh
-
     def close(self) -> None:
-        if self._ssh is not None:
-            self._ssh.close()
-            self._ssh = None
+        if self._transport is not None:
+            self._transport.close()
+            self._transport = None
 
     @property
     def host_key_fingerprint(self) -> Optional[str]:
         """SHA256 fingerprint of the server key, for UI pinning/display."""
-        if self._ssh is None:
+        if self._transport is None:
             return None
-        transport = self._ssh.get_transport()
-        if transport is None:
-            return None
-        key = transport.get_remote_server_key()
+        key = self._transport.get_remote_server_key()
         import base64
         import hashlib
 
@@ -225,35 +235,39 @@ class RouterClient:
 
     def run(self, command: str, *, timeout: Optional[int] = 30) -> CommandResult:
         """Run a shell command on the router and capture its result."""
-        if self._ssh is None:
+        if self._transport is None:
             raise RouterError("not connected")
         if self._log is not None:
             self._log(f"$ {command}")
-        try:
-            _stdin, stdout, stderr = self._ssh.exec_command(command, timeout=timeout)
-            chan = stdout.channel
-            # exec_command's timeout only bounds channel *reads*; recv_exit_status()
-            # waits on the command-completion event and ignores it, so a hung
-            # command would block here forever (no timeout error ever surfaces).
-            # Enforce a real wall-clock deadline against exit_status_ready().
-            if timeout is not None:
-                deadline = time.monotonic() + timeout
-                while not chan.exit_status_ready():
-                    if time.monotonic() > deadline:
-                        chan.close()
-                        raise CommandTimeout(
-                            f"command did not finish within {timeout}s: {command[:100]}")
-                    time.sleep(0.1)
-            exit_code = chan.recv_exit_status()
-            out = stdout.read().decode("utf-8", "replace")
-            err = stderr.read().decode("utf-8", "replace")
-        except CommandTimeout:
-            # Distinct, expected condition (the mirror throttle-probe catches it to
-            # fall back). Let it through instead of re-wrapping as a generic RouterError
-            # — it's already a RouterError subclass, so broad handlers still catch it.
-            raise
-        except Exception as exc:  # noqa: BLE001 — surface any transport error uniformly
-            raise RouterError(f"failed to run command: {exc}") from exc
+        with self._cmd_lock:
+            try:
+                chan = self._transport.open_session(timeout=self._connect_timeout)
+                chan.settimeout(timeout)
+                chan.exec_command(command)
+                stdout = chan.makefile("r", -1)
+                stderr = chan.makefile_stderr("r", -1)
+                # exec_command's timeout only bounds channel *reads*; recv_exit_status()
+                # waits on the command-completion event and ignores it, so a hung
+                # command would block here forever (no timeout error ever surfaces).
+                # Enforce a real wall-clock deadline against exit_status_ready().
+                if timeout is not None:
+                    deadline = time.monotonic() + timeout
+                    while not chan.exit_status_ready():
+                        if time.monotonic() > deadline:
+                            chan.close()
+                            raise CommandTimeout(
+                                f"command did not finish within {timeout}s: {command[:100]}")
+                        time.sleep(0.1)
+                exit_code = chan.recv_exit_status()
+                out = stdout.read().decode("utf-8", "replace")
+                err = stderr.read().decode("utf-8", "replace")
+            except CommandTimeout:
+                # Distinct, expected condition (the mirror throttle-probe catches it to
+                # fall back). Let it through instead of re-wrapping as a generic RouterError
+                # — it's already a RouterError subclass, so broad handlers still catch it.
+                raise
+            except Exception as exc:  # noqa: BLE001 — surface any transport error uniformly
+                raise RouterError(f"failed to run command: {exc}") from exc
         if self._log is not None and err.strip():
             self._log(err.rstrip())
         return CommandResult(command=command, exit_code=exit_code, stdout=out, stderr=err)
@@ -268,44 +282,42 @@ class RouterClient:
         after that many seconds with *no* output, so a slow-but-progressing download
         (which keeps printing) is never killed, while a genuinely wedged command is.
         """
-        if self._ssh is None:
+        if self._transport is None:
             raise RouterError("not connected")
         if self._log is not None:
             self._log(f"$ {command}")
-        transport = self._ssh.get_transport()
-        if transport is None:
-            raise RouterError("not connected")
-        try:
-            chan = transport.open_session(timeout=self._connect_timeout)
-            chan.set_combine_stderr(True)
-            chan.settimeout(0.5)
-            chan.exec_command(command)
-            captured: list[str] = []
-            buf = ""
-            last = time.monotonic()
-            while True:
-                try:
-                    data = chan.recv(8192)
-                except socket.timeout:
-                    if timeout is not None and time.monotonic() - last > timeout:
-                        chan.close()
-                        raise TimeoutError(
-                            f"no output for {timeout}s (stalled): {command[:100]}")
-                    continue
-                if not data:
-                    break  # EOF — command finished and channel drained
+        with self._cmd_lock:
+            try:
+                chan = self._transport.open_session(timeout=self._connect_timeout)
+                chan.set_combine_stderr(True)
+                chan.settimeout(0.5)
+                chan.exec_command(command)
+                captured: list[str] = []
+                buf = ""
                 last = time.monotonic()
-                text = data.decode("utf-8", "replace")
-                captured.append(text)
-                buf += text
-                while "\n" in buf:
-                    line, buf = buf.split("\n", 1)
-                    on_line(line)
-            if buf.strip():
-                on_line(buf)
-            exit_code = chan.recv_exit_status()
-        except Exception as exc:  # noqa: BLE001 — surface any transport error uniformly
-            raise RouterError(f"failed to run command: {exc}") from exc
+                while True:
+                    try:
+                        data = chan.recv(8192)
+                    except socket.timeout:
+                        if timeout is not None and time.monotonic() - last > timeout:
+                            chan.close()
+                            raise TimeoutError(
+                                f"no output for {timeout}s (stalled): {command[:100]}")
+                        continue
+                    if not data:
+                        break  # EOF — command finished and channel drained
+                    last = time.monotonic()
+                    text = data.decode("utf-8", "replace")
+                    captured.append(text)
+                    buf += text
+                    while "\n" in buf:
+                        line, buf = buf.split("\n", 1)
+                        on_line(line)
+                if buf.strip():
+                    on_line(buf)
+                exit_code = chan.recv_exit_status()
+            except Exception as exc:  # noqa: BLE001 — surface any transport error uniformly
+                raise RouterError(f"failed to run command: {exc}") from exc
         return CommandResult(command=command, exit_code=exit_code,
                              stdout="".join(captured), stderr="")
 
@@ -317,17 +329,20 @@ class RouterClient:
         corrupt the data and the device may lack a ``base64`` applet to encode it.
         Returns ``(stdout_bytes, stderr_text, exit_code)``.
         """
-        if self._ssh is None:
+        if self._transport is None:
             raise RouterError("not connected")
         if self._log is not None:
             self._log(f"$ {command}")
-        try:
-            _stdin, stdout, stderr = self._ssh.exec_command(command, timeout=timeout)
-            data = stdout.read()  # bytes — read fully before exit status
-            exit_code = stdout.channel.recv_exit_status()
-            err = stderr.read().decode("utf-8", "replace")
-        except Exception as exc:  # noqa: BLE001
-            raise RouterError(f"failed to run command: {exc}") from exc
+        with self._cmd_lock:
+            try:
+                chan = self._transport.open_session(timeout=self._connect_timeout)
+                chan.settimeout(timeout)
+                chan.exec_command(command)
+                data = chan.makefile("rb", -1).read()  # bytes — read fully before exit
+                exit_code = chan.recv_exit_status()
+                err = chan.makefile_stderr("r", -1).read().decode("utf-8", "replace")
+            except Exception as exc:  # noqa: BLE001
+                raise RouterError(f"failed to run command: {exc}") from exc
         if self._log is not None and err.strip():
             self._log(err.rstrip())
         return data, err, exit_code
@@ -413,22 +428,20 @@ class RouterClient:
         The router has no sftp-server, so scp/SFTPClient fail; we stream bytes to
         ``cat > path`` via the exec channel's stdin instead.
         """
-        if self._ssh is None:
+        if self._transport is None:
             raise RouterError("not connected")
         data = content.encode("utf-8") if isinstance(content, str) else content
-        transport = self._ssh.get_transport()
-        if transport is None:
-            raise RouterError("no transport")
         if self._log is not None:
             self._log(f"$ cat > {remote_path}  ({len(data)} bytes)")
-        chan = transport.open_session()
-        try:
-            chan.exec_command(f"cat > {shlex.quote(remote_path)}")
-            chan.sendall(data)
-            chan.shutdown_write()
-            rc = chan.recv_exit_status()
-        finally:
-            chan.close()
+        with self._cmd_lock:
+            chan = self._transport.open_session()
+            try:
+                chan.exec_command(f"cat > {shlex.quote(remote_path)}")
+                chan.sendall(data)
+                chan.shutdown_write()
+                rc = chan.recv_exit_status()
+            finally:
+                chan.close()
         if rc != 0:
             raise RouterError(f"failed to write {remote_path} (exit {rc})")
 
@@ -443,17 +456,47 @@ class RouterClient:
         key_line = public_key.strip()
         if not key_line:
             raise RouterError("empty public key")
-        # Idempotent: only append if the exact key is not already present.
-        check = self.run(
+        # Idempotent: exact line already present → nothing to do.
+        if self.run(
             f"grep -qF {shlex.quote(key_line)} {AUTHORIZED_KEYS_PATH} 2>/dev/null"
-        )
-        if check.ok:
-            return  # already installed
+        ).ok:
+            return
+        # Match by key blob (type + base64), not the full line: if our key is already
+        # there under a different comment (e.g. an older brand label), drop that line
+        # first so we relabel in place instead of appending a duplicate.
+        parts = key_line.split()
+        blob = parts[1] if len(parts) >= 2 else key_line
         self.run(
-            f"mkdir -p $(dirname {AUTHORIZED_KEYS_PATH}) && "
-            f"printf '%s\\n' {shlex.quote(key_line)} >> {AUTHORIZED_KEYS_PATH} && "
-            f"chmod 600 {AUTHORIZED_KEYS_PATH}"
+            f"mkdir -p $(dirname {AUTHORIZED_KEYS_PATH}) && touch {AUTHORIZED_KEYS_PATH} && "
+            f"tmp=$(mktemp) && grep -vF {shlex.quote(blob)} {AUTHORIZED_KEYS_PATH} > \"$tmp\" 2>/dev/null; "
+            f"printf '%s\\n' {shlex.quote(key_line)} >> \"$tmp\" && "
+            f"mv \"$tmp\" {AUTHORIZED_KEYS_PATH} && chmod 600 {AUTHORIZED_KEYS_PATH}"
         ).check()
+
+    def relabel_public_key(self, public_key: str) -> bool:
+        """Relabel-only: if our key (matched by blob) is present under a different
+        comment, rewrite that line to ``public_key``. Cosmetic — it never adds a key
+        that's absent, so it grants no new access and is safe to call opportunistically
+        on reconnect. Returns True if a line was rewritten."""
+        key_line = public_key.strip()
+        parts = key_line.split()
+        if len(parts) < 2:
+            return False
+        blob = parts[1]
+        if self.run(
+            f"grep -qF {shlex.quote(key_line)} {AUTHORIZED_KEYS_PATH} 2>/dev/null"
+        ).ok:
+            return False  # already correctly labelled
+        if not self.run(
+            f"grep -qF {shlex.quote(blob)} {AUTHORIZED_KEYS_PATH} 2>/dev/null"
+        ).ok:
+            return False  # our key isn't installed — not our job to add it
+        self.run(
+            f"tmp=$(mktemp) && grep -vF {shlex.quote(blob)} {AUTHORIZED_KEYS_PATH} > \"$tmp\" 2>/dev/null; "
+            f"printf '%s\\n' {shlex.quote(key_line)} >> \"$tmp\" && "
+            f"mv \"$tmp\" {AUTHORIZED_KEYS_PATH} && chmod 600 {AUTHORIZED_KEYS_PATH}"
+        ).check()
+        return True
 
     def revoke_public_key(self, public_key: str) -> bool:
         """Remove the app's SSH public key from authorized_keys (revoke access).

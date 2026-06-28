@@ -155,13 +155,16 @@ def detect_state(client: RouterClient, *, our_public_key: Optional[str] = None) 
     st.free_tmp_mb = _avail_mb(client, "/tmp")
     st.free_overlay_mb = _avail_mb(client, "/overlay")
 
-    # Is our SSH key already trusted?
+    # Is our SSH key already trusted? Match by key blob (comment-independent), so a
+    # key installed under an older label still counts as present.
     if our_public_key:
         from .client import AUTHORIZED_KEYS_PATH
         import shlex
 
+        from ..secrets import pubkey_blob
+
         st.our_key_installed = client.run(
-            f"grep -qF {shlex.quote(our_public_key.strip())} {AUTHORIZED_KEYS_PATH} 2>/dev/null"
+            f"grep -qF {shlex.quote(pubkey_blob(our_public_key))} {AUTHORIZED_KEYS_PATH} 2>/dev/null"
         ).ok
 
     if st.free_overlay_mb is not None and st.free_overlay_mb < 10:

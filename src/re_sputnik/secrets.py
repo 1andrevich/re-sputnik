@@ -11,7 +11,9 @@ is stored — the UI is responsible for that prompt; this module just persists.
 from __future__ import annotations
 
 import io
+import re
 import secrets as _secrets
+import socket
 import string
 from dataclasses import dataclass
 
@@ -22,10 +24,31 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from .i18n import _, N_
 
-SERVICE = "re-companion"
+SERVICE = "re-sputnik"
+# Pre-rebrand keychain service name. Existing installs stored their SSH key,
+# passwords and host-key pins under this; _kr_get migrates each entry to SERVICE
+# on first read so the rename doesn't silently log anyone out. Remove once no
+# meaningful population is still on the old name.
+_LEGACY_SERVICE = "re-companion"
 _KEY_PRIV = "ssh-private-key"
 _KEY_PUB = "ssh-public-key"
-_KEY_COMMENT = "re-companion"
+_KEY_COMMENT = "re-sputnik"  # prefix/fallback; the live comment is re-sputnik@<host>
+
+
+def _key_comment() -> str:
+    """SSH public-key comment: ``re-sputnik@<hostname>`` so each PC's key is
+    recognizable in the router's key list (a user managing one router from two
+    computers gets two distinctly-labelled keys). Falls back to the bare prefix when
+    the hostname is unreadable. Sanitised to a single safe token and stable per
+    machine — a comment that changed each call would re-relabel the router on every
+    connect."""
+    try:
+        host = socket.gethostname() or ""
+    except OSError:
+        host = ""
+    host = host.split(".", 1)[0].strip()           # drop any domain suffix (.local/.lan)
+    host = re.sub(r"[^A-Za-z0-9._-]", "-", host).strip("-")  # keep the line single-token
+    return f"{_KEY_COMMENT}@{host}" if host else _KEY_COMMENT
 
 
 class SecretsError(RuntimeError):
@@ -121,8 +144,8 @@ def generate_wifi_passphrase(words: int = 3) -> str:
     password, while still readable.
     """
     words = max(words, 2)
-    picked = [_secrets.choice(_WIFI_WORDS) for _ in range(words)]
-    for _ in range(2):  # two digits, each into a random interior spot of a random word
+    picked = [_secrets.choice(_WIFI_WORDS) for _i in range(words)]
+    for _i in range(2):  # two digits, each into a random interior spot of a random word
         w = _secrets.randbelow(len(picked))
         word = picked[w]
         pos = _secrets.randbelow(len(word) - 1) + 1  # 1..len-1: keep a letter each side
@@ -141,7 +164,7 @@ class AppIdentity:
     public_line: str          # OpenSSH "ssh-ed25519 AAAA... comment" line
 
 
-def _generate_openssh_keypair(comment: str = _KEY_COMMENT) -> tuple[str, str]:
+def _generate_openssh_keypair(comment: str | None = None) -> tuple[str, str]:
     priv = Ed25519PrivateKey.generate()
     priv_pem = priv.private_bytes(
         encoding=serialization.Encoding.PEM,
@@ -152,7 +175,25 @@ def _generate_openssh_keypair(comment: str = _KEY_COMMENT) -> tuple[str, str]:
         encoding=serialization.Encoding.OpenSSH,
         format=serialization.PublicFormat.OpenSSH,
     ).decode("ascii")
-    return priv_pem, f"{pub} {comment}"
+    return priv_pem, f"{pub} {comment or _key_comment()}"
+
+
+def _normalize_pub_comment(pub: str) -> str:
+    """Force the public-key trailing comment to the current per-machine label
+    (``re-sputnik@<host>``), relabelling an older key generated under a previous
+    brand name or a bare-prefix label. The comment is cosmetic — not part of the key
+    blob — so this never changes the fingerprint / host pin."""
+    parts = pub.split()
+    if len(parts) < 2:
+        return pub
+    return f"{parts[0]} {parts[1]} {_key_comment()}"
+
+
+def pubkey_blob(public_line: str) -> str:
+    """The key material (type + base64), comment stripped — the stable identity for
+    matching a key in authorized_keys regardless of its label."""
+    parts = public_line.split()
+    return " ".join(parts[:2]) if len(parts) >= 2 else public_line.strip()
 
 
 def _load_paramiko_key(priv_pem: str) -> paramiko.PKey:
@@ -181,6 +222,19 @@ def _kr_get(name: str) -> str | None:
         return cached  # type: ignore[return-value]
     try:
         val = keyring.get_password(SERVICE, name)
+        if val is None:
+            # Migrate from the pre-rebrand service name: copy the legacy entry to
+            # the new name (and drop the old) so an existing install keeps its
+            # keys/passwords/pins after the rename. Best-effort — if the copy
+            # fails we still return the value, and retry next launch.
+            legacy = keyring.get_password(_LEGACY_SERVICE, name)
+            if legacy is not None:
+                try:
+                    keyring.set_password(SERVICE, name, legacy)
+                    keyring.delete_password(_LEGACY_SERVICE, name)
+                except keyring.errors.KeyringError:
+                    pass
+                val = legacy
     except keyring.errors.KeyringError as exc:
         _kr_cache[name] = _KR_DENIED  # don't re-prompt for this item this session
         raise SecretsError(f"keychain not available: {exc}") from exc
@@ -196,10 +250,24 @@ def _kr_set(name: str, value: str) -> None:
     _kr_cache[name] = value  # keep the cache coherent with the new value
 
 
+def _relabel_stored_pub(pub: str | None) -> str | None:
+    """Normalize a stored public key's comment to the current label and persist the
+    change (best-effort). Keeps an older key's keychain copy in sync with the brand."""
+    if not pub:
+        return pub
+    norm = _normalize_pub_comment(pub)
+    if norm != pub:
+        try:
+            _kr_set(_KEY_PUB, norm)
+        except SecretsError:
+            pass  # retry next launch; return the normalized value regardless
+    return norm
+
+
 def existing_public_key() -> str | None:
     """Return the stored public key WITHOUT creating one (for state detection)."""
     try:
-        return _kr_get(_KEY_PUB)
+        return _relabel_stored_pub(_kr_get(_KEY_PUB))
     except SecretsError:
         return None
 
@@ -209,6 +277,7 @@ def load_or_create_app_identity() -> AppIdentity:
     priv = _kr_get(_KEY_PRIV)
     pub = _kr_get(_KEY_PUB)
     if priv and pub:
+        pub = _relabel_stored_pub(pub) or pub
         return AppIdentity(pkey=_load_paramiko_key(priv), public_line=pub)
     priv, pub = _generate_openssh_keypair()
     _kr_set(_KEY_PRIV, priv)

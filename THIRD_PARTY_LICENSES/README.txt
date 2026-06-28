@@ -18,6 +18,8 @@ Bundled license texts in this directory:
   certifi-MPL-2.0.txt        certifi           (MPL-2.0)
   Lucide-ISC.txt             Lucide icons      (ISC, + Feather MIT)
   Phosphor-MIT.txt           Phosphor Icons    (MIT)
+  JetBrainsMono-OFL-1.1.txt  JetBrains Mono    (OFL-1.1)
+  Vazirmatn-OFL-1.1.txt      Vazirmatn font    (OFL-1.1)
 
 Linux-only dependencies — bundled only in the .AppImage, but their texts are
 shipped on every platform (harmless extra attribution):
@@ -25,5 +27,6 @@ shipped on every platform (harmless extra attribution):
   SecretStorage-BSD-3-Clause.txt   SecretStorage   (BSD-3-Clause)
   jeepney-MIT.txt                  jeepney         (MIT)
 
-Icons and fonts (see NOTICE section 2 for details and trademark status):
-  Simple Icons (CC0-1.0), Lucide/Phosphor (ISC/MIT), Twemoji flags (CC-BY 4.0).
+Bundled fonts are documented in NOTICE section 2; icon/brand artwork in section 3.
+Artwork without a bundled license text here (public-domain / CC):
+  Simple Icons (CC0-1.0), Twemoji flags (CC-BY 4.0).

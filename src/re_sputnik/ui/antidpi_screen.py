@@ -42,7 +42,7 @@ class AntiDPIScreen(ctk.CTkFrame):
         body.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(body, text="AntiDPI", font=fonts.title(), text_color=palette.text,
-                     image=kit.icon(kit._ICON_FOR["byedpi"], 26), compound="left").grid(
+                     image=kit.icon(kit.ICON_FOR["byedpi"], 26), compound="left").grid(
             row=0, column=0, pady=(4, 4), sticky="w")
         ctk.CTkLabel(body, text=_("Обход DPI для сервисов, где не нужен полный VPN. "
                      "Два инструмента — попробуйте оба, что сработает, зависит от провайдера."),
@@ -134,7 +134,7 @@ class _ByeDPISection(ctk.CTkFrame):
 
         ctk.CTkLabel(self._cfg_card, text=_("Стратегия (аргументы ciadpi):"), font=fonts.small(),
                      text_color=p.text_muted).grid(row=3, column=0, padx=16, sticky="w")
-        self._cmd = ctk.CTkEntry(self._cfg_card, font=ctk.CTkFont(family="Consolas", size=12))
+        self._cmd = ctk.CTkEntry(self._cfg_card, font=fonts.mono(12))
         self._cmd.insert(0, cfg["cmd_opts"])
         self._cmd.grid(row=4, column=0, padx=16, pady=(4, 6), sticky="ew")
         row = ctk.CTkFrame(self._cfg_card, fg_color="transparent")
@@ -339,7 +339,7 @@ class _ZapretSection(ctk.CTkFrame):
 
         ctk.CTkLabel(self._cfg_card, text=_("Стратегия (опции nfqws2):"), font=fonts.small(),
                      text_color=p.text_muted).grid(row=3, column=0, padx=16, sticky="w")
-        self._cmd = ctk.CTkEntry(self._cfg_card, font=ctk.CTkFont(family="Consolas", size=12))
+        self._cmd = ctk.CTkEntry(self._cfg_card, font=fonts.mono(12))
         self._cmd.insert(0, cfg["cmd_opts"])
         self._cmd.grid(row=4, column=0, padx=16, pady=(4, 6), sticky="ew")
 

@@ -19,7 +19,7 @@ from . import kit
 from .core_screen import CORE_OPTIONS
 from .theme import Palette, fonts
 from .worker import post_to, run_async
-from ..i18n import _, luci_lang
+from ..i18n import LANG_NAMES, _, current_language, luci_lang
 
 OnDone = Callable[[], None]
 
@@ -35,7 +35,6 @@ class PreinstallScreen(ctk.CTkFrame):
         # the device can be deployed with minimal work on-site.
         self._on_continue = on_continue
         self._core = ctk.StringVar(value="singbox")
-        self._app = ctk.StringVar(value="1")
         self._byedpi = ctk.StringVar(value="0")
         self._zapret = ctk.StringVar(value="0")
         self._busy = False
@@ -82,13 +81,18 @@ class PreinstallScreen(ctk.CTkFrame):
         app_card = ctk.CTkFrame(body, fg_color=palette.surface, corner_radius=12)
         app_card.grid(row=4, column=0, padx=32, pady=(12, 0), sticky="ew")
         app_card.grid_columnconfigure(0, weight=1)
-        ctk.CTkSwitch(app_card, text=_("Установить LuCI-приложение Re:HomeProxy (+ русский язык)"),
-                      font=fonts.body(), variable=self._app, onvalue="1", offvalue="0",
-                      progress_color=palette.accent).grid(row=0, column=0, padx=16, pady=(12, 2),
-                                                          sticky="w")
+        # Re:HomeProxy is mandatory — the whole app drives its LuCI/ubus backend — so
+        # this is shown as information, not a toggle. The language pack follows the
+        # app's UI language (English needs none; LuCI ships it natively).
+        _cur = current_language()
+        _lang_suffix = f"  (+ {LANG_NAMES.get(_cur, '')})" if _cur != "en" else ""
+        ctk.CTkLabel(app_card,
+                     text="✓  " + _("Установить LuCI-приложение Re:HomeProxy{0}").format(_lang_suffix),
+                     font=fonts.body(), text_color=palette.text).grid(
+            row=0, column=0, padx=16, pady=(12, 2), sticky="w")
         ctk.CTkLabel(app_card, text=_("Без него на роутере будет только ядро, но не сам HomeProxy "
-                     "(веб-настройки и импорт серверов работать не будут). Оставьте включённым для "
-                     "полной офлайн-установки."), font=fonts.small(), text_color=palette.text_muted,
+                     "(веб-настройки и импорт серверов работать не будут)."),
+                     font=fonts.small(), text_color=palette.text_muted,
                      wraplength=520, justify="left").grid(row=1, column=0, padx=16, pady=(0, 12),
                                                           sticky="w")
 
@@ -118,7 +122,7 @@ class PreinstallScreen(ctk.CTkFrame):
                                  command=self._run)
         self._go.grid(row=6, column=0, padx=32, pady=(16, 6), sticky="ew")
 
-        self._log = ctk.CTkTextbox(body, font=ctk.CTkFont(family="Consolas", size=12),
+        self._log = ctk.CTkTextbox(body, font=fonts.mono(12),
                                    fg_color=palette.bg, text_color=palette.text_muted, height=180)
         self._log.grid(row=7, column=0, padx=32, pady=(0, 6), sticky="ew")
         self._log.configure(state="disabled")
@@ -151,7 +155,6 @@ class PreinstallScreen(ctk.CTkFrame):
     def _render_status(self, st) -> None:  # st: install_app.SoftwareStatus
         if st.core:
             self._core.set(st.core)
-        self._app.set("0" if st.app else "1")
         if st.byedpi:
             self._byedpi.set("1")
         if st.zapret:
@@ -201,7 +204,7 @@ class PreinstallScreen(ctk.CTkFrame):
         core = self._core.get()
         with_byedpi = self._byedpi.get() == "1"
         with_zapret = self._zapret.get() == "1"
-        with_app = self._app.get() == "1"
+        with_app = True  # Re:HomeProxy is always installed (mandatory backend)
         client = self._client
 
         def progress(m: str) -> None:

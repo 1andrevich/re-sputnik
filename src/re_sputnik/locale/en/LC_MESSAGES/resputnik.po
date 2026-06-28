@@ -341,6 +341,14 @@ msgstr ""
 msgid "Нужна прошивка OpenWrt с firewall4 (nftables)."
 msgstr "An OpenWrt firmware with firewall4 (nftables) is required."
 
+#, python-brace-format
+msgid ""
+"На роутере OpenWrt {0} — нужна версия 23.05 или новее. Обновите прошивку "
+"роутера."
+msgstr ""
+"The router runs OpenWrt {0} — version 23.05 or newer is required. Update "
+"the router's firmware."
+
 #: src/re_sputnik/engine/firmware.py:86
 msgid "nftables не отвечает"
 msgstr "nftables not responding"
@@ -898,8 +906,14 @@ msgstr "Files transferred (installation skipped)."
 msgid "Устанавливаю пакеты…"
 msgstr "Installing packages…"
 
-msgid "Роутер не смог скачать пакеты. Если доступ к ресурсам ограничен, включите VPN на этом компьютере и воспользуйтесь предустановкой («Предустановить пакеты»): она скачивает пакеты на компьютере и передаёт их на роутер."
-msgstr "The router couldn't download the packages. If access to resources is restricted, turn on a VPN on this computer and use Pre-install packages: it downloads the packages on the computer and sends them to the router."
+msgid ""
+"Роутер не смог скачать пакеты. Если доступ к ресурсам ограничен, включите"
+" VPN на этом компьютере и воспользуйтесь предустановкой («Предустановить "
+"пакеты»): она скачивает пакеты на компьютере и передаёт их на роутер."
+msgstr ""
+"The router couldn't download the packages. If access to resources is "
+"restricted, turn on a VPN on this computer and use Pre-install packages: "
+"it downloads the packages on the computer and sends them to the router."
 
 #: src/re_sputnik/engine/rules.py:24
 msgid "Re:filter — блок-лист РФ (60000+ доменов + 25000+ IP)"
@@ -1899,8 +1913,9 @@ msgstr ""
 
 #: src/re_sputnik/ui/advanced_screen.py:1120
 #: src/re_sputnik/ui/connect_screen.py:322
-msgid "Данные приложения удалены с этого компьютера. Перезапустите Re:Sputnik."
-msgstr "Application data has been deleted from this computer. Restart Re:Sputnik."
+#, python-brace-format
+msgid "Данные приложения удалены. Re:Sputnik закроется через {0}…"
+msgstr "Application data deleted. Re:Sputnik will close in {0}…"
 
 #: src/re_sputnik/ui/advanced_screen.py:1125
 #: src/re_sputnik/ui/connect_screen.py:329
@@ -3042,10 +3057,22 @@ msgstr "Generate a strong one (recommended)"
 msgid "↻ Сгенерировать заново"
 msgstr "↻ Regenerate"
 
-#: src/re_sputnik/ui/firstrun_screen.py:119
+#: src/re_sputnik/app.py:262 src/re_sputnik/ui/firstrun_screen.py:119
 #: src/re_sputnik/ui/security_screen.py:272
 msgid "Копировать"
 msgstr "Copy"
+
+#: src/re_sputnik/app.py:261
+msgid "Вырезать"
+msgstr "Cut"
+
+#: src/re_sputnik/app.py:263
+msgid "Вставить"
+msgstr "Paste"
+
+#: src/re_sputnik/app.py:265
+msgid "Выделить всё"
+msgstr "Select all"
 
 #: src/re_sputnik/ui/firstrun_screen.py:122
 msgid "Задать свой пароль"
@@ -3874,18 +3901,44 @@ msgid "Обязательно: kmod-nft-tproxy + kmod-tun."
 msgstr "Required: kmod-nft-tproxy + kmod-tun."
 
 #: src/re_sputnik/ui/preinstall_screen.py:85
-msgid "Установить LuCI-приложение Re:HomeProxy (+ русский язык)"
-msgstr "Install the Re:HomeProxy LuCI app (+ Russian language)"
+#, python-brace-format
+msgid "Установить LuCI-приложение Re:HomeProxy{0}"
+msgstr "Install the Re:HomeProxy LuCI app{0}"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:46
+#, python-brace-format
+msgid ""
+"Не удалось собрать авто-пул.\n"
+"\n"
+"Все добавленные серверы — типа {0}, а текущее ядро роутера «{1}» их не "
+"поддерживает, поэтому ни один не попал в пул. Серверы этого типа умеет "
+"только ядро «{2}».\n"
+"\n"
+"Как исправить:\n"
+"• откройте раздел «Ядро», переключите ядро на «{2}», вернитесь сюда и "
+"нажмите «Применить» снова; либо\n"
+"• добавьте серверы других типов (VLESS, Hysteria2, Trojan, Shadowsocks), "
+"которые поддерживает «{1}»."
+msgstr ""
+"Couldn't build the auto-pool.\n"
+"\n"
+"All the servers you added are {0}, but the router's current core «{1}» "
+"doesn't support them, so none made it into the pool. Servers of this type"
+" only work with the «{2}» core.\n"
+"\n"
+"How to fix:\n"
+"• open the «Core» section, switch the core to «{2}», come back here and "
+"press «Apply» again; or\n"
+"• add servers of other types (VLESS, Hysteria2, Trojan, Shadowsocks) that"
+" «{1}» supports."
 
 #: src/re_sputnik/ui/preinstall_screen.py:89
 msgid ""
 "Без него на роутере будет только ядро, но не сам HomeProxy (веб-настройки"
-" и импорт серверов работать не будут). Оставьте включённым для полной "
-"офлайн-установки."
+" и импорт серверов работать не будут)."
 msgstr ""
 "Without it the router will only have the core, not HomeProxy itself (the "
-"web settings and server import won't work). Leave it enabled for a "
-"complete offline install."
+"web settings and server import won't work)."
 
 #: src/re_sputnik/ui/preinstall_screen.py:99
 #: src/re_sputnik/ui/software_screen.py:87
@@ -4057,18 +4110,6 @@ msgstr "Auto — pick the fastest (recommended)"
 #: src/re_sputnik/ui/quick_nodes_screen.py:139
 msgid "Выбрать конкретный сервер"
 msgstr "Select a specific server"
-
-#: src/re_sputnik/ui/quick_nodes_screen.py:150
-msgid "У меня белые списки"
-msgstr "I have whitelists"
-
-#: src/re_sputnik/ui/quick_nodes_screen.py:154
-msgid ""
-"Белые списки - режим фильтрации интернета провайдером когда работают "
-"только разрешенные сайты одобренные государством - Яндекс, ВК и прочие."
-msgstr ""
-"Whitelists — an ISP internet-filtering mode where only allowed, state-"
-"approved sites work — Yandex, VK and the like."
 
 #: src/re_sputnik/ui/quick_nodes_screen.py:161
 #: src/re_sputnik/ui/quick_nodes_screen.py:384
@@ -4668,6 +4709,69 @@ msgid ""
 msgstr ""
 " This most often happens with 6 GHz — due to outdated allowed-frequency "
 "settings in the router's firmware."
+
+#, python-brace-format
+msgid "Роутер: {0} · {1} · {2} ({3})"
+msgstr "Router: {0} · {1} · {2} ({3})"
+
+#, python-brace-format
+msgid "Скачиваю {0}…"
+msgstr "Downloading {0}…"
+
+#, python-brace-format
+msgid "Передаю {0} на роутер ({1} КБ)…"
+msgstr "Sending {0} to the router ({1} KB)…"
+
+#, python-brace-format
+msgid "Медленный интернет — повтор {0}/{1}: {2}…"
+msgstr "Slow connection — retry {0}/{1}: {2}…"
+
+#, python-brace-format
+msgid "Устанавливаю язык интерфейса LuCI ({0})…"
+msgstr "Installing the LuCI interface language ({0})…"
+
+#, python-brace-format
+msgid "Удаляю старый пакет {0}…"
+msgstr "Removing old package {0}…"
+
+#, python-brace-format
+msgid "Роутер: {0} · {1} ({2}). Определяю пакеты приложения…"
+msgstr "Router: {0} · {1} ({2}). Resolving the app's packages…"
+
+#, python-brace-format
+msgid "Устанавливаю языковой пакет HomeProxy ({0})…"
+msgstr "Installing the HomeProxy language pack ({0})…"
+
+#, python-brace-format
+msgid "Языковой пакет HomeProxy ({0}) не скачался: {1}"
+msgstr "The HomeProxy language pack ({0}) didn't download: {1}"
+
+#, python-brace-format
+msgid "Готовлю установку ядра ({0})…"
+msgstr "Preparing the core install ({0})…"
+
+#, python-brace-format
+msgid "ByeDPI: не удалось подготовить ({0})."
+msgstr "ByeDPI: couldn't prepare ({0})."
+
+#, python-brace-format
+msgid "Zapret: не удалось подготовить ({0})."
+msgstr "Zapret: couldn't prepare ({0})."
+
+#, python-brace-format
+msgid "Устанавливаю приложение Re:HomeProxy {0}…"
+msgstr "Installing the Re:HomeProxy app {0}…"
+
+#, python-brace-format
+msgid "Языковой пакет HomeProxy ({0})…"
+msgstr "HomeProxy language pack ({0})…"
+
+#, python-brace-format
+msgid "Пароль установлен, но не сохранён в хранилище: {0}"
+msgstr "Password set, but not saved to the keychain: {0}"
+
+msgid "нет ссылки"
+msgstr "no link"
 
 #~ msgid "Россия — mail.ru"
 #~ msgstr "Russia — tested on mail.ru"

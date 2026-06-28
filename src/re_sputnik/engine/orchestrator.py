@@ -13,7 +13,7 @@ The concrete per-phase recipes (YAML) and their executors land incrementally.
 from __future__ import annotations
 
 import enum
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, Optional
 
 from ..router import RouterClient, RouterState, Readiness

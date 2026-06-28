@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "re-sputnik"
-version = "0.0.2"
+dynamic = ["version"]   # read from src/re_sputnik/__init__.py __version__ (single source)
 description = "Re:Sputnik — desktop wizard to set up and manage Re:HomeProxy on an OpenWRT router over SSH"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -51,6 +51,9 @@ re-sputnik = "re_sputnik.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "re_sputnik.__version__" }
 
 [tool.ruff]
 line-length = 100

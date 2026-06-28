@@ -861,7 +861,7 @@ def configure_ap(client: RouterClient, *, ssid: str, key: str, country: str = "R
         client.run(
             f"uci set wireless.{iface}=wifi-iface; "
             f"uci set wireless.{iface}.device={shlex.quote(r.name)}; "
-            "uci set wireless.{0}.mode=ap; uci set wireless.{0}.network=lan; ".format(iface)
+            f"uci set wireless.{iface}.mode=ap; uci set wireless.{iface}.network=lan; "
             + f"uci set wireless.{iface}.ssid={shlex.quote(ssid)}; "
             + (f"uci set wireless.{iface}.encryption=psk2; "
                f"uci set wireless.{iface}.key={shlex.quote(key)}; " if key

@@ -4,8 +4,8 @@
 
 One source of truth for the wizard's look: a branded titlebar band, a 9-step
 progress strip, a footer action bar, and standardized controls (section header,
-card, field, dropdown, check, radio, toggle, buttons, saved-router row, log
-panel, orbital loader, status line). Screens compose these instead of styling
+card, field, dropdown, check, radio, toggle, buttons, orbital loader, status
+line). Screens compose these instead of styling
 widgets ad-hoc — that's where the "one crafted product" consistency comes from.
 
 Styling targets the design handoff (CLAUDE_DESIGN_RESPUTNIK.md). customtkinter
@@ -39,7 +39,7 @@ GLYPH = {
 }
 
 # Section-header glyph key -> line-icon file name (resources/icons_line/<name>.png).
-_ICON_FOR = {
+ICON_FOR = {
     "ssh": "key", "password": "lock", "core": "package", "links": "link",
     "file": "file", "network": "globe", "wifi": "wifi", "wired": "connect",
     "nodes": "nodes", "verify": "verify", "finalize": "finalize", "resource": "resource",
@@ -220,7 +220,7 @@ class SectionHeader(ctk.CTkFrame):
         chip = ctk.CTkFrame(self, width=30, height=30, corner_radius=9, fg_color=p.chip_bg)
         chip.grid(row=0, column=0, padx=(0, 10))
         chip.grid_propagate(False)
-        img = icon(_ICON_FOR.get(glyph, glyph), 16)
+        img = icon(ICON_FOR.get(glyph, glyph), 16)
         if img is not None:
             ctk.CTkLabel(chip, image=img, text="").place(relx=0.5, rely=0.5, anchor="center")
         else:  # emoji fallback if the line-icon PNG isn't present
@@ -314,77 +314,6 @@ def link_button(master: ctk.CTkBaseClass, p: Palette, text: str,
         master, text=text, command=command, font=fonts.small(), height=24,
         fg_color="transparent", hover_color=p.surface_hover,
         text_color=p.accent if accent else p.text_muted, **kw)
-
-
-class RouterRow(ctk.CTkFrame):
-    """Saved-router row (§4.9): icon chip + name + mono endpoint + delete."""
-
-    def __init__(self, master: ctk.CTkBaseClass, p: Palette, *, name: str, endpoint: str,
-                 wired: bool = False, on_open: Optional[Callable[[], None]] = None,
-                 on_delete: Optional[Callable[[], None]] = None) -> None:
-        super().__init__(master, fg_color=p.field_bg, corner_radius=9,
-                         border_width=1, border_color=p.border_row)
-        self.grid_columnconfigure(1, weight=1)
-        chip = ctk.CTkFrame(self, width=28, height=28, corner_radius=7, fg_color=p.chip_bg)
-        chip.grid(row=0, column=0, rowspan=2, padx=(9, 12), pady=9)
-        chip.grid_propagate(False)
-        ctk.CTkLabel(chip, text="🔌" if wired else "🌐", font=fonts.small(),
-                     text_color=p.accent).place(relx=0.5, rely=0.5, anchor="center")
-        ctk.CTkLabel(self, text=name, font=fonts.body(), text_color=p.text, anchor="w").grid(
-            row=0, column=1, sticky="w", pady=(9, 0))
-        ctk.CTkLabel(self, text=endpoint, font=fonts.mono(11), text_color=p.text_dim,
-                     anchor="w").grid(row=1, column=1, sticky="w", pady=(0, 9))
-        if on_delete is not None:
-            ctk.CTkButton(self, text="✕", width=26, height=26, font=fonts.body(),
-                          fg_color="transparent", hover_color=p.surface_hover,
-                          text_color=p.text_faint, command=on_delete).grid(
-                row=0, column=2, rowspan=2, padx=(0, 8))
-        if on_open is not None:
-            for w in (self, *self.winfo_children()):
-                if not isinstance(w, ctk.CTkButton):
-                    w.bind("<Button-1>", lambda _e: on_open())
-
-
-class LogPanel(ctk.CTkFrame):
-    """Titled log/console panel (§4.10) — replaces raw black voids."""
-
-    def __init__(self, master: ctk.CTkBaseClass, p: Palette, title: str,
-                 *, empty: str = "Журнал появится здесь…", height: int = 90) -> None:
-        super().__init__(master, fg_color=p.console_bg, corner_radius=10,
-                         border_width=1, border_color=p.border_dim)
-        self.p = p
-        self.grid_columnconfigure(0, weight=1)
-        head = ctk.CTkFrame(self, fg_color=p.console_head_bg, corner_radius=0, height=30)
-        head.grid(row=0, column=0, sticky="ew")
-        head.grid_propagate(False)
-        ctk.CTkLabel(head, text="●", font=fonts.mono(10), text_color=p.text_faint).grid(
-            row=0, column=0, padx=(13, 6), pady=8)
-        ctk.CTkLabel(head, text=title, font=fonts.mono(10), text_color=p.text_faint).grid(
-            row=0, column=1, sticky="w")
-        self._box = ctk.CTkTextbox(self, fg_color=p.console_bg, text_color=p.text_faint,
-                                   font=fonts.mono(11), wrap="word", height=height,
-                                   border_width=0, activate_scrollbars=True)
-        self._box.grid(row=1, column=0, sticky="nsew", padx=2, pady=(0, 2))
-        self._empty = empty
-        self._box.insert("1.0", empty)
-        self._box.configure(state="disabled")
-        self._dirty = False
-
-    def append(self, line: str) -> None:
-        self._box.configure(state="normal")
-        if not self._dirty:
-            self._box.delete("1.0", "end")
-            self._dirty = True
-        self._box.insert("end", line.rstrip("\n") + "\n")
-        self._box.see("end")
-        self._box.configure(state="disabled")
-
-    def set_text(self, text: str) -> None:
-        self._box.configure(state="normal")
-        self._box.delete("1.0", "end")
-        self._box.insert("1.0", text or self._empty)
-        self._dirty = bool(text)
-        self._box.configure(state="disabled")
 
 
 class OrbitLoader(ctk.CTkFrame):

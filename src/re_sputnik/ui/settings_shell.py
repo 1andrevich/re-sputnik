@@ -73,7 +73,7 @@ class SettingsShell(ctk.CTkFrame):
         )
         for i, (key, label) in enumerate(_SECTIONS, start=1):
             glyph = {"about": "info", "advanced": "mode_advanced"}.get(key, key)
-            img = kit.icon(kit._ICON_FOR.get(glyph, glyph), 18)
+            img = kit.icon(kit.ICON_FOR.get(glyph, glyph), 18)
             btn = ctk.CTkButton(
                 nav, text=_(label), font=fonts.body(), anchor="w",
                 image=img, compound="left",

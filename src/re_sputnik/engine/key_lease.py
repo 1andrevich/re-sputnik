@@ -51,7 +51,7 @@ if grep -vF "$blob" "$A" > "$tmp" 2>/dev/null; then
     cat "$tmp" > "$A"
 fi
 rm -f "$tmp" "$L" "$B"
-logger -t re-companion "expired app SSH key pruned from authorized_keys" 2>/dev/null
+logger -t re-sputnik "expired app SSH key pruned from authorized_keys" 2>/dev/null
 exit 0
 """
 

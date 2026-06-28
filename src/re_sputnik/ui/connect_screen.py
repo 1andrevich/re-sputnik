@@ -319,10 +319,10 @@ class ConnectScreen(ctk.CTkFrame):
 
     def _do_app_reset(self, dc: "object") -> None:
         def done(_r: object) -> None:
-            dc.set_status(_("Данные приложения удалены с этого компьютера. "
-                          "Перезапустите Re:Sputnik."), self.p.ok)
+            from .advanced_screen import countdown_close  # lazy: avoid engine load
             self._build_saved()  # registry now empty → the saved picker hides itself
             self._reset_btn.grid_remove()  # nothing left to wipe
+            countdown_close(self, dc.set_status, self.p.ok)
 
         def err(e: BaseException) -> None:
             dc.reset()
@@ -507,6 +507,10 @@ class ConnectScreen(ctk.CTkFrame):
             state = detect_state(client, our_public_key=pub)
             report = firmware.check_compat(client)  # warn about broken firmware early
             if pub:
+                try:
+                    client.relabel_public_key(pub)  # fix an old brand label in place (cosmetic)
+                except Exception:  # noqa: BLE001 — best-effort, never block connect
+                    pass
                 key_lease.renew(client)  # bump the 1-year lease on every connect (best-effort)
             return client, state, report
 

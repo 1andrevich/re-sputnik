@@ -27,8 +27,24 @@ permissions:
   contents: read            # GITHUB_TOKEN isn't used to publish (we use RELEASE_PAT cross-repo)
 
 jobs:
+  # Gate: a tagged release must not build/publish if the tests fail. Runs once on
+  # a single runner (the build matrix below `needs` it), so it's cheap insurance.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: |
+          python -m pip install --upgrade pip
+          pip install ".[dev]"
+      - run: python -m compileall -q src
+      - run: pytest -q
+
   build:
     name: ${{ matrix.label }}
+    needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

@@ -44,7 +44,7 @@ def http_get(url: str, *, timeout: int = 60, headers: dict[str, str] | None = No
     A real HTTP status (404 etc.) propagates as ``HTTPError`` — a bypass won't
     change it.
     """
-    req = urllib.request.Request(url, headers=headers or {"User-Agent": "re-companion"})
+    req = urllib.request.Request(url, headers=headers or {"User-Agent": "re-sputnik"})
     try:
         with urllib.request.urlopen(req, timeout=timeout, context=_SSL) as r:  # noqa: S310
             return r.read()

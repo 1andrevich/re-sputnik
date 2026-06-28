@@ -69,8 +69,10 @@ def _gather(client: RouterClient, progress: Optional[Progress] = None) -> dict[s
             progress(done / _TOTAL_STEPS, label)
 
     data: dict[str, Any] = {}
-    step(_("ядро")); data["core"] = safe("diag_core_check")
-    step(_("конфиг")); data["config"] = safe("diag_config_check")
+    step(_("ядро"))
+    data["core"] = safe("diag_core_check")
+    step(_("конфиг"))
+    data["config"] = safe("diag_config_check")
     # If the core is down because the config won't parse, identify the offending
     # server by name (reuses the core/config dicts just fetched — no extra RPC).
     data["core_failure"] = None
@@ -81,16 +83,21 @@ def _gather(client: RouterClient, progress: Optional[Progress] = None) -> dict[s
                 client, core=data["core"], config=data["config"])
         except Exception:  # noqa: BLE001 — diagnosis is best-effort
             data["core_failure"] = None
-    step(_("активный сервер")); data["active_node"] = safe("clash_active_node")
+    step(_("активный сервер"))
+    data["active_node"] = safe("clash_active_node")
     step(_("серверы"))
     try:
         data["nodes"] = nodes_engine.list_nodes(client)
     except Exception:  # noqa: BLE001 — names just won't resolve, not fatal
         data["nodes"] = []
-    step("IP"); data["ip"] = safe("clash_ip_info")
-    step("DNS"); data["dns"] = safe("diag_dns_ru")
-    step("nftables"); data["nft"] = safe("diag_nftables")
-    step(_("отчёт")); data["report"] = safe("diag_report").get("report", "")
+    step("IP")
+    data["ip"] = safe("clash_ip_info")
+    step("DNS")
+    data["dns"] = safe("diag_dns_ru")
+    step("nftables")
+    data["nft"] = safe("diag_nftables")
+    step(_("отчёт"))
+    data["report"] = safe("diag_report").get("report", "")
     # clash_ip_info relies on the Clash API "ipinfo" field, which sing-box-extended
     # doesn't populate → empty IP card. If the proxy IP is missing, fetch it
     # ourselves (directly + through the mixed proxy), which works on any core.
@@ -144,7 +151,7 @@ class DiagnosticsScreen(ctk.CTkFrame):
         bar.grid(row=0, column=0, padx=24, pady=(20, 4), sticky="ew")
         bar.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(bar, text=_("Диагностика"), font=fonts.title(), text_color=p.text,
-                     image=kit.icon(kit._ICON_FOR["diagnostics"], 26), compound="left").grid(
+                     image=kit.icon(kit.ICON_FOR["diagnostics"], 26), compound="left").grid(
             row=0, column=0, sticky="w"
         )
         self._refresh_btn = ctk.CTkButton(
@@ -333,7 +340,7 @@ class DiagnosticsScreen(ctk.CTkFrame):
         # barely-working or dead node → orange warning (65535 ms is the URLTest
         # timeout sentinel, just a special case). No delay at all = not probed yet
         # → yellow "нет отклика" (could be a fresh start, so no removal advice).
-        slow = delay and delay >= _SLOW_MS and delay < _NODE_TIMEOUT_MS
+        slow = delay and _SLOW_MS <= delay < _NODE_TIMEOUT_MS
         color: Optional[str] = None
         if delay == _NODE_TIMEOUT_MS:
             # CONFIRMED timeout: the core positively reported 65535 ms → red.
@@ -437,7 +444,7 @@ class DiagnosticsScreen(ctk.CTkFrame):
                      "проверку — пароли и ключи из отчёта автоматически удалены."),
                      font=fonts.small(), text_color=self.p.text_muted, wraplength=560,
                      justify="left", anchor="w").grid(row=1, column=0, padx=16, pady=(0, 6), sticky="w")
-        box = ctk.CTkTextbox(card, font=ctk.CTkFont(family="Consolas", size=12),
+        box = ctk.CTkTextbox(card, font=fonts.mono(12),
                              fg_color=self.p.bg, text_color=self.p.text_muted, height=220, wrap="none")
         box.grid(row=2, column=0, padx=16, pady=(0, 8), sticky="ew")
         box.insert("1.0", self._report_text or _("(пусто)"))

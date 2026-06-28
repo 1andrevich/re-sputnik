@@ -14,7 +14,7 @@ offer a deliberate restart rather than doing it silently.
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import customtkinter as ctk
 
@@ -86,7 +86,7 @@ class CoreScreen(ctk.CTkFrame):
     def _build_static(self) -> None:
         p = self.p
         ctk.CTkLabel(self._body, text=_("Ядро"), font=fonts.title(), text_color=p.text,
-                     image=kit.icon(kit._ICON_FOR["core"], 26), compound="left").grid(
+                     image=kit.icon(kit.ICON_FOR["core"], 26), compound="left").grid(
             row=0, column=0, pady=(4, 12), sticky="w"
         )
         self._status = ctk.CTkLabel(
@@ -203,7 +203,7 @@ class CoreScreen(ctk.CTkFrame):
         # screen (a direct child of self, NOT the scrollable body) so it stays fully
         # visible while an action runs, instead of being clipped below the fold of
         # the scroll frame. Hidden until one runs.
-        self._oplog = ctk.CTkTextbox(self, font=ctk.CTkFont(family="Consolas", size=12),
+        self._oplog = ctk.CTkTextbox(self, font=fonts.mono(12),
                                      height=150, fg_color=p.surface, text_color=p.text_muted,
                                      wrap="word", corner_radius=10)
         self._oplog.grid(row=1, column=0, sticky="ew", padx=24, pady=(0, 16))

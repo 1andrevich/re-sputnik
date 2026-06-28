@@ -125,7 +125,7 @@ def software_status(client: RouterClient) -> SoftwareStatus:
 def _gh(url: str) -> object:
     # TLS trust (certifi) + dead-proxy bypass live in _net.http_get.
     return json.loads(http_get(
-        url, headers={"User-Agent": "re-companion", "Accept": "application/vnd.github+json"}))
+        url, headers={"User-Agent": "re-sputnik", "Accept": "application/vnd.github+json"}))
 
 
 @dataclass(slots=True)
@@ -266,7 +266,8 @@ def _run_retry(client: RouterClient, command: str, *, timeout: int, attempts: in
             if n >= attempts:
                 raise
             if say:
-                say(f"Медленный интернет — повтор {n + 1}/{attempts}: {what or command[:40]}…")
+                say(_("Медленный интернет — повтор {0}/{1}: {2}…").format(
+                    n + 1, attempts, what or command[:40]))
     raise AssertionError("unreachable")  # loop body either returns or raises
 
 
@@ -420,7 +421,7 @@ def _install_luci_i18n(client: RouterClient, pm: str, language: str,
     interface is actually localized. Returns True if packs were tried."""
     if not language or language == "en":
         return False
-    say(f"Устанавливаю язык интерфейса LuCI ({language})…")
+    say(_("Устанавливаю язык интерфейса LuCI ({0})…").format(language))
     # 180s caps + retry: on a slow uplink the repo refresh alone can run past 90s
     # without ever stalling, and the index download is all-or-nothing — so give it
     # ~3 min and retry a couple of times before giving up (rather than aborting the
@@ -492,7 +493,7 @@ def remove_legacy_app(client: RouterClient, pm: str, say: "Optional[Progress]" =
             cmd = f"opkg remove --force-depends {old}"
         if present:
             if say:
-                say(f"Удаляю старый пакет {old}…")
+                say(_("Удаляю старый пакет {0}…").format(old))
             client.run(f"{cmd} 2>/dev/null; true", timeout=90)
 
 
@@ -518,6 +519,11 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     ti = get_target_info(client)
     from .mirror import reset_session_mirror
     reset_session_mirror()  # fresh GitHub-throttle decision per install
+    from .preinstall import unsupported_version_error
+    too_old = unsupported_version_error(ti)
+    if too_old:
+        res.error = too_old
+        return res
     if ti.is_snapshot:
         res.error = (_("На устройстве SNAPSHOT-сборка OpenWrt — kmod из релизного "
                      "репозитория недоступны. Используйте релизную прошивку."))
@@ -540,7 +546,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             say("⚠ " + clk_why + _(" — установка по HTTPS может не пройти."))
 
         # --- A. LuCI app (+ language pack) -----------------------------
-        say(f"Роутер: {ti.version} · {ti.arch} ({pm}). Определяю пакеты приложения…")
+        say(_("Роутер: {0} · {1} ({2}). Определяю пакеты приложения…").format(ti.version, ti.arch, pm))
         assets = resolve_app_assets(ti, language)
 
         say(_("Устанавливаю приложение Re:HomeProxy…"))
@@ -591,7 +597,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         res.steps.append(_("Приложение установлено"))
 
         if assets.i18n_url:
-            say(f"Устанавливаю языковой пакет HomeProxy ({language})…")
+            say(_("Устанавливаю языковой пакет HomeProxy ({0})…").format(language))
             ok_i18n, why_i18n = _wget(client, assets.i18n_url, f"/tmp/i18n{ti.ext}")
             if ok_i18n:
                 flag = "--allow-untrusted " if (pm == "apk" and not trusted) else ""
@@ -600,7 +606,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                                      on_line=say_line, timeout=120).ok:
                     res.steps.append(f"Языковой пакет HomeProxy ({language})")
             else:
-                say(f"Языковой пакет HomeProxy ({language}) не скачался: {why_i18n}")
+                say(_("Языковой пакет HomeProxy ({0}) не скачался: {1}").format(language, why_i18n))
 
         # LuCI interface language: base + firewall + package-manager packs (from the
         # OpenWrt feed), so the whole UI can be localized — not just HomeProxy. The UI
@@ -623,7 +629,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                        "uci commit homeproxy 2>/dev/null; true")
 
         # --- C. core ----------------------------------------------------
-        say(f"Готовлю установку ядра ({core})…")
+        say(_("Готовлю установку ядра ({0})…").format(core))
         prep = _core_mgmt(client, "prepare_install", core, "")
         if prep.get("error"):
             res.error = f"подготовка ядра: {prep['error']}"
@@ -676,7 +682,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             say(_("Устанавливаю ByeDPI…"))
             bp = client.ubus_homeproxy("byedpi_prepare_install", timeout=60)
             if bp.get("error") or not bp.get("dl_url"):
-                say(f"ByeDPI: не удалось подготовить ({bp.get('error', 'нет ссылки')}).")
+                say(_("ByeDPI: не удалось подготовить ({0}).").format(bp.get("error") or _("нет ссылки")))
             else:
                 ok_bp, why_bp = _wget(client, bp["dl_url"], bp["tmp_path"])
                 if not ok_bp:
@@ -699,7 +705,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             say(_("Устанавливаю Zapret…"))
             zp = client.ubus_homeproxy("zapret_prepare_install", timeout=60)
             if zp.get("error") or not zp.get("dl_url"):
-                say(f"Zapret: не удалось подготовить ({zp.get('error', 'нет ссылки')}).")
+                say(_("Zapret: не удалось подготовить ({0}).").format(zp.get("error") or _("нет ссылки")))
             else:
                 ok_zp, why_zp = _wget(client, zp["dl_url"], zp["tmp_path"])
                 if not ok_zp:
@@ -761,7 +767,7 @@ def install_core(client: RouterClient, ti: TargetInfo, core: str, *,
               "репозитория самого роутера (если их там нет — установка остановится "
               "с точной ошибкой)."))
     ensure_clock(client, say)  # a wrong router clock fails GitHub's TLS cert
-    say(f"Готовлю установку ядра ({core})…")
+    say(_("Готовлю установку ядра ({0})…").format(core))
     prep = _core_mgmt(client, "prepare_install", core, "")
     if prep.get("error"):
         return False, f"подготовка: {prep['error']}"
@@ -839,7 +845,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
     ensure_clock(client, say)  # a wrong router clock fails GitHub's TLS cert
     say(_("Определяю последнюю версию приложения…"))
     assets = resolve_app_assets(ti, language, use_latest=True)
-    say(f"Устанавливаю приложение Re:HomeProxy {assets.version}…")
+    say(_("Устанавливаю приложение Re:HomeProxy {0}…").format(assets.version))
     trusted = False
     if pm == "apk" and assets.pubkey_url:
         # Best-effort .pub doubles as the throttle PROBE (see install flow): GitHub
@@ -871,7 +877,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
     client.run(f"rm -f /tmp/{APP_PKG}{ti.ext}")
     if not inst.ok:
         from .preinstall import explain_install_failure
-        return False, f"установка не удалась: {explain_install_failure(inst.stdout, pm)}"
+        return False, f"установка не удалась: {explain_install_failure(inst.stdout)}"
     # Update EVERY homeproxy language pack the router already has (not just the
     # app's current UI language), so an installed translation like
     # luci-i18n-homeproxy-ru is bumped to the new version too — otherwise it stays
@@ -888,7 +894,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
         a = assets if lang == language else resolve_app_assets(ti, lang, use_latest=True)
         if not a.i18n_url:
             continue
-        say(f"Языковой пакет HomeProxy ({lang})…")
+        say(_("Языковой пакет HomeProxy ({0})…").format(lang))
         ok_i, _why_i = _wget(client, a.i18n_url, f"/tmp/i18n{ti.ext}")
         if ok_i:
             client.run_stream(f"{add}/tmp/i18n{ti.ext} 2>&1; rm -f /tmp/i18n{ti.ext}",

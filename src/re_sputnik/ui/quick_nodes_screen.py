@@ -20,12 +20,39 @@ from ..engine import nodes as nd
 from ..router import RouterClient
 from . import kit
 from .theme import Palette, fonts
-from .worker import post_to, run_async
-from ..i18n import _
+from .worker import run_async
+from ..i18n import _, current_language
 
 OnDone = Callable[[], None]
 
 MAX_VISIBLE = 254  # cap on node rows shown in the list (rest collapsed to a tail)
+
+# Friendly names for the empty-auto-pool diagnostic.
+_CORE_LABELS = {"hiddify": "hiddify-core", "singbox": "sing-box-extended"}
+_NODE_TYPE_LABELS = {"amneziawg": "AmneziaWG", "naive": "NaïveProxy"}
+
+
+def _empty_pool_reason(nodes: list[nd.Node], core: str) -> str:
+    """A verbose, specific reason the auto pool is empty — most often the active core
+    can't run the only server types the user added (e.g. AmneziaWG on hiddify-core),
+    which is impossible to guess from a bare 'nothing found'."""
+    kind, types = nd.pool_failure_kind(nodes, core)
+    if kind == "core_incompat":
+        names = ", ".join(_NODE_TYPE_LABELS.get(t, t) for t in types)
+        cur = _CORE_LABELS.get(core, core)
+        alt = _CORE_LABELS["singbox" if core == "hiddify" else "hiddify"]
+        return _(
+            "Не удалось собрать авто-пул.\n\n"
+            "Все добавленные серверы — типа {0}, а текущее ядро роутера «{1}» их не "
+            "поддерживает, поэтому ни один не попал в пул. Серверы этого типа умеет "
+            "только ядро «{2}».\n\n"
+            "Как исправить:\n"
+            "• откройте раздел «Ядро», переключите ядро на «{2}», вернитесь сюда и "
+            "нажмите «Применить» снова; либо\n"
+            "• добавьте серверы других типов (VLESS, Hysteria2, Trojan, "
+            "Shadowsocks), которые поддерживает «{1}»."
+        ).format(names, cur, alt)
+    return _("Подходящих серверов для авто-пула не найдено в подписках.")
 
 
 class QuickNodesScreen(ctk.CTkFrame):
@@ -82,7 +109,7 @@ class QuickNodesScreen(ctk.CTkFrame):
             "Приложение само определит, где подписка, а где ключ."),
             font=fonts.small(), text_color=palette.text_muted, wraplength=540,
             justify="left").grid(row=1, column=0, padx=16, pady=(0, 4), sticky="w")
-        self._links = ctk.CTkTextbox(lk, font=ctk.CTkFont(family="Consolas", size=12), height=74,
+        self._links = ctk.CTkTextbox(lk, font=fonts.mono(12), height=74,
                                      fg_color=palette.bg, text_color=palette.text)
         self._links.grid(row=2, column=0, padx=16, pady=4, sticky="ew")
         btnrow = ctk.CTkFrame(lk, fg_color="transparent")
@@ -145,18 +172,21 @@ class QuickNodesScreen(ctk.CTkFrame):
                                             button_hover_color=palette.accent_hover)
         self._node_menu.grid(row=5, column=0, padx=(40, 16), pady=4, sticky="w")
 
-        # "У меня белые списки": build the auto pool from up to 5 servers whose name
-        # contains "Whitelist"/"белые списки" (the provider's whitelist-routing servers).
-        ctk.CTkCheckBox(self._mn_card, text=_("У меня белые списки"), font=fonts.body(),
-                        variable=self._whitelist, onvalue="1", offvalue="0",
-                        fg_color=palette.accent, hover_color=palette.accent_hover).grid(
-            row=6, column=0, padx=16, pady=(8, 0), sticky="w")
-        ctk.CTkLabel(self._mn_card, text=_("Белые списки - режим фильтрации интернета провайдером "
-                     "когда работают только разрешенные сайты одобренные государством - Яндекс, ВК "
-                     "и прочие."),
-                     font=fonts.small(), text_color=palette.text_muted, wraplength=520,
-                     justify="left", anchor="w").grid(row=7, column=0, padx=(40, 16), pady=(0, 4),
-                                                       sticky="w")
+        # "У меня белые списки" — RU-only. Whitelist filtering (only state-approved
+        # sites like Yandex/VK work) is a Russian ISP regime; it doesn't apply to the
+        # CN/IR modes, so the option is offered only when the UI language is Russian.
+        # Builds the auto pool from up to 5 "Whitelist"/"белые списки"-named servers.
+        if current_language() == "ru":
+            ctk.CTkCheckBox(self._mn_card, text=_("У меня белые списки"), font=fonts.body(),
+                            variable=self._whitelist, onvalue="1", offvalue="0",
+                            fg_color=palette.accent, hover_color=palette.accent_hover).grid(
+                row=6, column=0, padx=16, pady=(8, 0), sticky="w")
+            ctk.CTkLabel(self._mn_card, text=_("Белые списки - режим фильтрации интернета провайдером "
+                         "когда работают только разрешенные сайты одобренные государством - Яндекс, ВК "
+                         "и прочие."),
+                         font=fonts.small(), text_color=palette.text_muted, wraplength=520,
+                         justify="left", anchor="w").grid(row=7, column=0, padx=(40, 16), pady=(0, 4),
+                                                           sticky="w")
 
         self._apply_btn = ctk.CTkButton(self._mn_card, text=_("Применить и продолжить"),
                                         font=fonts.heading(), height=40, fg_color=palette.ok,
@@ -366,7 +396,7 @@ class QuickNodesScreen(ctk.CTkFrame):
                 core = nd.active_core(client)
                 pool = nd.build_urltest_pool(nodes, core, whitelist=whitelist)
                 if not pool:
-                    raise ValueError(_("Подходящих серверов для авто-пула не найдено в подписках."))
+                    raise ValueError(_empty_pool_reason(nodes, core))
                 nd.set_main_node(client, "urltest", urltest_nodes=pool)
                 return nd.apply_and_restart(client)
         else:

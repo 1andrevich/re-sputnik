@@ -40,7 +40,26 @@ Full license texts for the redistributed components are included in the
 THIRD_PARTY_LICENSES/ directory of the distribution.
 
 
-2. Icons and Brand Logos
+2. Bundled Fonts
+----------------
+
+Re:Sputnik bundles the following fonts for its interface. Both are licensed
+under the SIL Open Font License, Version 1.1; full license texts are in the
+THIRD_PARTY_LICENSES/ directory. They are redistributed unmodified, are not sold
+on their own, and their Reserved Font Names are not used by any derivative. They
+live in re_sputnik/assets/fonts/.
+
+  JetBrains Mono  — OFL-1.1 — https://github.com/JetBrains/JetBrainsMono
+                    Monospace for technical text (addresses, keys, logs).
+  Vazirmatn       — OFL-1.1 — https://github.com/rastikerdar/vazirmatn
+                    Persian/Arabic UI face for the Farsi locale.
+
+The Latin/Cyrillic UI uses Roboto, customtkinter's built-in font (Apache License
+2.0); Re:Sputnik does not bundle it separately. If a bundled font is absent at
+runtime, the app falls back gracefully (e.g. JetBrains Mono to a system monospace).
+
+
+3. Icons and Brand Logos
 ------------------------
 
 Re:Sputnik's routing screens display small icons to help the user
@@ -112,7 +131,7 @@ respective owners. If you are a rights holder and believe an icon is used
 improperly, please open an issue and it will be addressed promptly.
 
 
-3. Routing Lists and Rule-sets
+4. Routing Lists and Rule-sets
 ------------------------------
 
 Re:Sputnik configures Re:HomeProxy to route traffic using community-
@@ -135,7 +154,7 @@ The service names and trademarks above are used nominatively to identify
 which traffic each list affects (see section 2).
 
 
-4. Router-Side DPI-Bypass Tools
+5. Router-Side DPI-Bypass Tools
 -------------------------------
 
 Re:Sputnik can install and configure two on-router DPI-circumvention
@@ -157,7 +176,7 @@ projects:
 Consult each upstream project for its license and terms of use.
 
 
-5. Notes for Redistributors and Branded Builds
+6. Notes for Redistributors and Branded Builds
 ----------------------------------------------
 
 - The brand logos above may continue to be used as service identifiers in

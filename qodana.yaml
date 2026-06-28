@@ -1,0 +1,56 @@
+#-------------------------------------------------------------------------------#
+#               Qodana analysis is configured by qodana.yaml file               #
+#             https://www.jetbrains.com/help/qodana/qodana-yaml.html            #
+#-------------------------------------------------------------------------------#
+
+#################################################################################
+#              WARNING: Do not store sensitive information in this file,        #
+#               as its contents will be included in the Qodana report.          #
+#################################################################################
+version: "1.0"
+
+#Specify inspection profile for code analysis
+profile:
+  name: qodana.starter
+
+#Enable inspections
+#include:
+#  - name: <SomeEnabledInspectionId>
+
+#Disable inspections
+exclude:
+  # FALSE POSITIVE (verified): PyDunderSlotsInspection flags every field access on our
+  # @dataclass(slots=True) classes as "object has no attribute" — even on files
+  # UNCHANGED since the last commit (e.g. engine/firmware.py: CompatReport.distro at
+  # the `rep.distro = …` lines, with `distro` plainly declared). The code is correct;
+  # the app runs and tests pass. It survived marking `src` as a Sources Root and a
+  # full Invalidate-Caches + Restart. Produced by Qodana/PyCharm build 253.x (2025.3,
+  # plugin 2.1.0); an earlier same-session run on the same code did NOT flag these, but
+  # that report was auto-deleted so this is NOT confirmed to be a version regression —
+  # only that the current build false-flags valid code. Remove if a build stops doing so.
+  - name: PyDunderSlotsInspection
+
+#Execute shell command before Qodana execution (Applied in CI/CD pipeline).
+# Install the package + its dependencies so Qodana resolves `re_sputnik` imports and
+# analyzes types correctly. Without it, unresolved-reference errors cascade into bogus
+# "object has no attribute" warnings on our @dataclass(slots=True) classes.
+bootstrap: pip install -e .
+
+#Install IDE plugins before Qodana execution (Applied in CI/CD pipeline)
+#plugins:
+#  - id: <plugin.id> #(plugin id can be found at https://plugins.jetbrains.com)
+
+# Quality gate. Will fail the CI/CD pipeline if any condition is not met
+# severityThresholds - configures maximum thresholds for different problem severities
+# testCoverageThresholds - configures minimum code coverage on a whole project and newly added code
+# Code Coverage is available in Ultimate and Ultimate Plus plans
+#failureConditions:
+#  severityThresholds:
+#    any: 15
+#    critical: 5
+#  testCoverageThresholds:
+#    fresh: 70
+#    total: 50
+
+#Specify Qodana linter for analysis (Applied in CI/CD pipeline)
+linter: jetbrains/qodana-python:2025.2

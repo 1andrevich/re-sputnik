@@ -42,11 +42,8 @@ Existing brand tokens are unchanged (see the warning above). The redesign only a
 | `field_bg` | `#141925` | text inputs, recessed rows (darker than surface) | **new** |
 | `chrome_bg` | `#0B0E14` | titlebar background | **new** |
 | `strip_bg` | `#0E121A` | progress strip + footer background | **new** |
-| `console_bg` | `#0A0D13` | log/console panel + textarea | **new** |
-| `console_head_bg` | `#0D1018` | log panel header bar | **new** |
 | `border` | `#2B3547` | card borders, field borders | existing |
 | `border_dim` | `#1C2330` | chrome dividers (titlebar/strip/footer) | **new** |
-| `border_row` | `#242E3D` | inner row borders (saved routers) | **new** |
 | `text` | `#E7E8EA` | primary text, entered values | existing |
 | `text_strong` | `#CDD5DF` | control labels next to checkboxes/toggles | **new (tint)** |
 | `text_mid` | `#AEB9C6` | strip "Быстрая настройка" label, deselected radio label | **new (tint)** |

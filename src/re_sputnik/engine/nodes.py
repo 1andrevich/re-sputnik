@@ -21,8 +21,8 @@ UPDATE_SUBS_SCRIPT = "/etc/homeproxy/scripts/update_subscriptions.uc"
 IMPORT_CONF_SCRIPT = "/usr/share/homeproxy/scripts/import_conf.uc"
 # import_link.uc lives in /etc/homeproxy/scripts so it can import the node_parse module.
 IMPORT_LINK_SCRIPT = "/etc/homeproxy/scripts/import_link.uc"
-_IMPORT_TMP = "/tmp/re-companion-import.conf"
-_LINKS_TMP = "/tmp/re-companion-links.txt"
+_IMPORT_TMP = "/tmp/re-sputnik-import.conf"
+_LINKS_TMP = "/tmp/re-sputnik-links.txt"
 
 
 @dataclass(slots=True)
@@ -360,6 +360,26 @@ def build_urltest_pool(nodes: list[Node], core: str, *, cap: int = URLTEST_POOL_
         # when there is no ordinary server at all.
         pool = _round_robin({"_wl": wl_nodes}, ["_wl"], pool, cap)
     return pool
+
+
+def pool_failure_kind(nodes: list[Node], core: str) -> tuple[str, list[str]]:
+    """Diagnose why ``build_urltest_pool`` came out empty, so the UI can show a
+    specific reason instead of a blank "nothing found":
+
+    - ``("core_incompat", [types])`` — the ONLY servers present are protocol types
+      the active core can't run (e.g. AmneziaWG on hiddify-core), so they were all
+      dropped. ``types`` lists those node types.
+    - ``("none", [])`` — empty for some other reason (e.g. every server is
+      Russia-located, or the list is genuinely empty)."""
+    bad = _CORE_INCOMPATIBLE.get(core, set())
+    incompat = sorted({n.type for n in nodes if n.type and n.type in bad})
+    has_usable = any(
+        n.type and n.type not in bad and not _RU_NAME_RE.search(n.label or "")
+        for n in nodes
+    )
+    if incompat and not has_usable:
+        return "core_incompat", incompat
+    return "none", []
 
 
 # Back-compat alias: older call sites used this name (now diversity-aware).

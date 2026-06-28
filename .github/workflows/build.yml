@@ -11,8 +11,11 @@ name: Build (Windows + macOS + Linux)
 # Private repo: GitHub Actions runs the same; releases need `contents: write`.
 #
 # Triggers:
-#   - push a tag like `v0.1.0`  → builds + attaches binaries to a GitHub Release
-#   - manual "Run workflow"     → builds + uploads artifacts only (no release)
+#   - manual "Run workflow"  → builds + uploads artifacts only (no release)
+#
+# Tag releases are owned by release.yml (which gates on tests and publishes to the
+# public showcase repo) — this workflow is purely for on-demand CI artifact builds,
+# so there's no tag trigger / Release step here (that double-released before).
 #
 # NOTE: builds are UNSIGNED. Windows shows a SmartScreen warning; macOS Gatekeeper
 # quarantines the .app (users right-click → Open, or `xattr -dr com.apple.quarantine`).
@@ -20,12 +23,10 @@ name: Build (Windows + macOS + Linux)
 # commented placeholders near each build step).
 
 on:
-  push:
-    tags: ["v*"]
-  workflow_dispatch:
+  workflow_dispatch:   # on-demand artifact builds only; tag releases live in release.yml
 
 permissions:
-  contents: write   # needed to create the Release on tag builds
+  contents: read
 
 jobs:
   build:
@@ -153,13 +154,3 @@ jobs:
         with:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.artifact }}.AppImage
-
-      - name: Attach to Release (tag builds only)
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v3
-        with:
-          files: |
-            dist/Re-Sputnik.exe
-            ${{ matrix.artifact }}.zip
-            ${{ matrix.artifact }}.AppImage
-          fail_on_unmatched_files: false

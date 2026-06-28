@@ -13,7 +13,6 @@ from __future__ import annotations
 import re
 import shlex
 from dataclasses import dataclass
-from typing import Optional
 
 from ..router import RouterClient
 from ..i18n import _

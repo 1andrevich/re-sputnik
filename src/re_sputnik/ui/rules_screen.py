@@ -119,7 +119,7 @@ class RulesScreen(ctk.CTkFrame):
         self._body.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(self._body, text=_("Правила"), font=fonts.title(), text_color=palette.text,
-                     image=kit.icon(kit._ICON_FOR["rules"], 26), compound="left").grid(
+                     image=kit.icon(kit.ICON_FOR["rules"], 26), compound="left").grid(
             row=0, column=0, pady=(4, 8), sticky="w")
         self._status = ctk.CTkLabel(self._body, text=_("Считываю правила…"), font=fonts.small(),
                                     text_color=palette.text_muted, anchor="w")

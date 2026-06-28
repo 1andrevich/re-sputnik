@@ -4,7 +4,7 @@
 
 Currently just the chosen UI language; kept separate from ``profiles`` (router
 list) so unrelated concerns don't share a file. Reuses the same config dir
-(%APPDATA%/re-companion on Windows).
+(%APPDATA%/re-sputnik on Windows).
 """
 
 from __future__ import annotations

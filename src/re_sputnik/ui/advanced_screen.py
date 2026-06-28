@@ -109,6 +109,26 @@ class _DangerConfirm(ctk.CTkFrame):
         self._status.configure(text=text, text_color=color)
 
 
+def countdown_close(widget: ctk.CTkBaseClass, set_status: "Callable[[str, str], None]",
+                    ok_color: str, seconds: int = 4) -> None:
+    """Tick a "closing in N…" countdown via ``set_status``, then destroy the app
+    window. Used after an app-data wipe: the running app holds now-stale state, so a
+    clean restart is required — closing for the user is clearer than asking them to."""
+    msg = _("Данные приложения удалены. Re:Sputnik закроется через {0}…")
+
+    def tick(n: int) -> None:
+        if n <= 0:
+            try:
+                widget.winfo_toplevel().destroy()
+            except Exception:  # noqa: BLE001 — window may already be gone
+                pass
+            return
+        set_status(msg.format(n), ok_color)
+        widget.after(1000, lambda: tick(n - 1))
+
+    tick(seconds)
+
+
 class AdvancedScreen(ctk.CTkFrame):
     def __init__(self, master: ctk.CTkBaseClass, palette: Palette, client: RouterClient,
                  on_router_reset: "Callable[[], None] | None" = None) -> None:
@@ -473,7 +493,7 @@ class AdvancedScreen(ctk.CTkFrame):
         width_var = None
         width_map = {lbl: hm for lbl, hm in rw.widths}
         if rw.widths:
-            width_opts = [lbl for lbl, _ in rw.widths]
+            width_opts = [lbl for lbl, _hm in rw.widths]
             digits = "".join(ch for ch in rw.htmode if ch.isdigit())
             cur_w = _("{0} МГц").format(digits) if digits and _("{0} МГц").format(digits) in width_map else width_opts[-1]
             width_var = ctk.StringVar(value=cur_w)
@@ -565,8 +585,8 @@ class AdvancedScreen(ctk.CTkFrame):
         self._lan_vars: dict[str, ctk.StringVar] = {}
         self._lan_row = 0
         # digits-only filter for the lease-time fields (idiot-proofing).
-        digits3 = (self.register(lambda P: P == "" or (P.isdigit() and len(P) <= 3)), "%P")
-        digits2 = (self.register(lambda P: P == "" or (P.isdigit() and len(P) <= 2)), "%P")
+        digits3 = (self.register(lambda v: v == "" or (v.isdigit() and len(v) <= 3)), "%P")
+        digits2 = (self.register(lambda v: v == "" or (v.isdigit() and len(v) <= 2)), "%P")
 
         # Address fields differ by OpenWrt version: one CIDR field (>= 25.12) vs a
         # separate IP + netmask pair (<= 24.10).
@@ -705,7 +725,7 @@ class AdvancedScreen(ctk.CTkFrame):
         ctk.CTkLabel(c, text=_("Закрепите за устройством его текущий адрес — роутер всегда будет "
                      "выдавать ему один и тот же IP."), font=fonts.small(), text_color=p.text_muted,
                      wraplength=560, justify="left", anchor="w").grid(row=1, column=0, padx=16, sticky="w")
-        pinned = {l.mac.strip().lower() for l in self._leases}
+        pinned = {lease.mac.strip().lower() for lease in self._leases}
         free = [d for d in self._devices if d.mac and d.mac.strip().lower() not in pinned]
         pick = ctk.CTkFrame(c, fg_color="transparent")
         pick.grid(row=2, column=0, padx=16, pady=(8, 6), sticky="w")
@@ -731,16 +751,16 @@ class AdvancedScreen(ctk.CTkFrame):
             box.grid_columnconfigure(0, weight=1)
             ctk.CTkLabel(box, text=_("Закреплённые:"), font=fonts.small(), text_color=p.text_muted,
                          anchor="w").grid(row=0, column=0, sticky="w", pady=(0, 2))
-            for i, l in enumerate(self._leases, start=1):
+            for i, lease in enumerate(self._leases, start=1):
                 line = ctk.CTkFrame(box, fg_color="transparent")
                 line.grid(row=i, column=0, sticky="ew", pady=1)
                 line.grid_columnconfigure(0, weight=1)
-                ctk.CTkLabel(line, text=f"{l.name or l.mac} → {l.ip}", font=fonts.small(),
+                ctk.CTkLabel(line, text=f"{lease.name or lease.mac} → {lease.ip}", font=fonts.small(),
                              text_color=p.text, anchor="w").grid(row=0, column=0, sticky="w")
                 ctk.CTkButton(line, text=_("Убрать"), font=fonts.small(), width=70, height=24,
                               fg_color="transparent", hover_color=p.surface_hover,
                               text_color=p.text_muted, border_width=1, border_color=p.text_muted,
-                              command=lambda mac=l.mac: self._unpin_device(mac)).grid(row=0, column=1)
+                              command=lambda mac=lease.mac: self._unpin_device(mac)).grid(row=0, column=1)
         else:
             ctk.CTkLabel(c, text="", height=2).grid(row=4, column=0, pady=(0, 8))
 
@@ -833,8 +853,8 @@ class AdvancedScreen(ctk.CTkFrame):
         grid.grid(row=2, column=0, padx=16, pady=(6, 4), sticky="ew")
         grid.grid_columnconfigure(0, weight=1)
         self._sqm_row = 0
-        digits = (self.register(lambda P: P == "" or (P.isdigit() and len(P) <= 9)), "%P")
-        digits3 = (self.register(lambda P: P == "" or (P.isdigit() and len(P) <= 3)), "%P")
+        digits = (self.register(lambda v: v == "" or (v.isdigit() and len(v) <= 9)), "%P")
+        digits3 = (self.register(lambda v: v == "" or (v.isdigit() and len(v) <= 3)), "%P")
 
         # WAN interface — default to the detected/resolved device (s.interface),
         # ensuring it's selectable even if it's not a plain physical netdev
@@ -1117,8 +1137,7 @@ class AdvancedScreen(ctk.CTkFrame):
 
     def _do_app_reset(self, dc: _DangerConfirm) -> None:
         def done(_r: Any) -> None:
-            dc.set_status(_("Данные приложения удалены с этого компьютера. "
-                          "Перезапустите Re:Sputnik."), self.p.ok)
+            countdown_close(self, dc.set_status, self.p.ok)
 
         def err(e: BaseException) -> None:
             dc.reset()

@@ -306,7 +306,8 @@ def remove_static_lease(client: RouterClient, mac: str) -> None:
     """Remove the reservation matching ``mac`` (looked up fresh to avoid stale
     indices), then reload dnsmasq."""
     mac = mac.strip().lower()
-    target = next((l for l in list_static_leases(client) if l.mac.strip().lower() == mac), None)
+    target = next((lease for lease in list_static_leases(client)
+                   if lease.mac.strip().lower() == mac), None)
     if target is None:
         raise RouterError(_("Закрепление для этого устройства не найдено."))
     client.run(

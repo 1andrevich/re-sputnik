@@ -208,6 +208,102 @@ class App(ctk.CTk):
         except Exception:  # noqa: BLE001 — must never break startup
             pass
 
+    def _install_context_menu(self) -> None:
+        """Right-click (Cut / Copy / Paste / Select all) menu for every text field.
+
+        Complements the keyboard bindings above so users who reach for the mouse get
+        the same actions. A single native ``tk.Menu`` is bound class-wide to the
+        ``Entry`` / ``Text`` widget classes, so every field gets it without per-screen
+        wiring. Items fire the standard ``<<Cut>>`` / ``<<Copy>>`` / ``<<Paste>>``
+        virtual events on the clicked widget, so they work under any keyboard layout
+        and respect Tk's own undo/selection handling. Entirely additive — a failure
+        here must never block startup.
+        """
+        import tkinter as tk
+
+        menu = tk.Menu(self, tearoff=0)
+        self._ctx_menu = menu          # keep a ref (avoid GC)
+        self._ctx_widget: tk.Misc | None = None
+
+        def _has_selection(w) -> bool:  # type: ignore[no-untyped-def]
+            try:
+                return bool(w.selection_present())        # Entry
+            except Exception:  # noqa: BLE001 — Text has no selection_present
+                try:
+                    return bool(w.tag_ranges("sel"))      # Text
+                except Exception:  # noqa: BLE001
+                    return False
+
+        def _editable(w) -> bool:  # type: ignore[no-untyped-def]
+            try:
+                return str(w.cget("state")) not in ("disabled", "readonly")
+            except Exception:  # noqa: BLE001
+                return True
+
+        def _clipboard_has_text() -> bool:
+            try:
+                return bool(self.clipboard_get())
+            except Exception:  # noqa: BLE001 — empty or non-text clipboard
+                return False
+
+        def _do(action: str):  # type: ignore[no-untyped-def]
+            w = self._ctx_widget
+            if w is None:
+                return
+            if action == "select-all":
+                self._ctx_select_all(w)
+                return
+            try:
+                w.event_generate(action)
+            except Exception:  # noqa: BLE001
+                pass
+
+        menu.add_command(label=_("Вырезать"), command=lambda: _do("<<Cut>>"))
+        menu.add_command(label=_("Копировать"), command=lambda: _do("<<Copy>>"))
+        menu.add_command(label=_("Вставить"), command=lambda: _do("<<Paste>>"))
+        menu.add_separator()
+        menu.add_command(label=_("Выделить всё"), command=lambda: _do("select-all"))
+
+        def popup(event):  # type: ignore[no-untyped-def]
+            w = event.widget
+            self._ctx_widget = w
+            try:
+                w.focus_set()
+            except Exception:  # noqa: BLE001
+                pass
+            editable = _editable(w)
+            sel = _has_selection(w)
+            menu.entryconfigure(0, state="normal" if (editable and sel) else "disabled")   # Cut
+            menu.entryconfigure(1, state="normal" if sel else "disabled")                  # Copy
+            menu.entryconfigure(2, state="normal" if (editable and _clipboard_has_text())
+                                else "disabled")                                            # Paste
+            try:
+                menu.tk_popup(event.x_root, event.y_root)
+            finally:
+                menu.grab_release()
+            return "break"
+
+        try:
+            for cls in ("Entry", "Text", "TEntry"):
+                # Button-3 = Windows/Linux right-click; Button-2 / Control-Button-1 =
+                # macOS right- / Control-click. Harmless on platforms that don't fire them.
+                for seq in ("<Button-3>", "<Button-2>", "<Control-Button-1>"):
+                    self.bind_class(cls, seq, popup, add="+")
+        except Exception:  # noqa: BLE001 — must never break startup
+            pass
+
+    @staticmethod
+    def _ctx_select_all(w) -> None:  # type: ignore[no-untyped-def]
+        """Select the whole field, Entry or Text."""
+        try:
+            w.select_range(0, "end")          # Entry
+            w.icursor("end")
+        except Exception:  # noqa: BLE001 — Text widget has no select_range
+            try:
+                w.tag_add("sel", "1.0", "end")  # Text
+            except Exception:  # noqa: BLE001
+                pass
+
     def _set_window_icon(self) -> None:
         """Title-bar / taskbar icon from the Pillow-rendered Re:Sputnik mark.
 
@@ -246,6 +342,7 @@ class App(ctk.CTk):
         self.resizable(False, False)
         self.configure(fg_color=self.palette.bg)
         self._install_clipboard_bindings()
+        self._install_context_menu()
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)

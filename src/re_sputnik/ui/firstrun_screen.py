@@ -237,7 +237,7 @@ class FirstRunScreen(ctk.CTkFrame):
         self._apply_btn.configure(state="disabled", text=_("Применяю…"))
         self._set_status(_("Устанавливаю ключ и пароль…"), "muted")
 
-        client, state = self._client, self._state
+        client = self._client
 
         def task() -> FirstRunResult:
             return apply_firstrun(client, plan)

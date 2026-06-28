@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import enum
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, Optional
 
 from ..router import RouterClient
@@ -122,7 +122,6 @@ class ShellExecutor(Executor):
     def run(self, client: RouterClient, log: Optional[LogCallback] = None) -> ExecResult:
         # Push the script and execute it, streaming output. We pipe via stdin so
         # nothing is written to persistent storage unless the script itself does.
-        import shlex
 
         if log:
             log(f"running: {self._title}")

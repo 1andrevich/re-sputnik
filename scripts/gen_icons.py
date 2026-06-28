@@ -36,7 +36,7 @@ ICONS = {
 
 
 def _fetch(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": "re-companion"})
+    req = urllib.request.Request(url, headers={"User-Agent": "re-sputnik"})
     with urllib.request.urlopen(req, timeout=30) as r:  # noqa: S310 — fixed https hosts
         return r.read().decode()
 

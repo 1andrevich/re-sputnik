@@ -313,6 +313,12 @@ msgstr ""
 msgid "Нужна прошивка OpenWrt с firewall4 (nftables)."
 msgstr "需要带 firewall4（nftables）的 OpenWrt 固件。"
 
+#, python-brace-format
+msgid ""
+"На роутере OpenWrt {0} — нужна версия 23.05 или новее. Обновите прошивку "
+"роутера."
+msgstr "路由器运行的是 OpenWrt {0} — 需要 23.05 或更新的版本。请更新路由器固件。"
+
 #: src/re_sputnik/engine/firmware.py:86
 msgid "nftables не отвечает"
 msgstr "nftables 无响应"
@@ -833,7 +839,10 @@ msgstr "文件已传输（已跳过安装）。"
 msgid "Устанавливаю пакеты…"
 msgstr "正在安装软件包…"
 
-msgid "Роутер не смог скачать пакеты. Если доступ к ресурсам ограничен, включите VPN на этом компьютере и воспользуйтесь предустановкой («Предустановить пакеты»): она скачивает пакеты на компьютере и передаёт их на роутер."
+msgid ""
+"Роутер не смог скачать пакеты. Если доступ к ресурсам ограничен, включите"
+" VPN на этом компьютере и воспользуйтесь предустановкой («Предустановить "
+"пакеты»): она скачивает пакеты на компьютере и передаёт их на роутер."
 msgstr "路由器无法下载软件包。如果资源访问受限，请在这台电脑上开启 VPN，并使用「预安装软件包」：软件包将在电脑上下载，然后传输到路由器。"
 
 #: src/re_sputnik/engine/rules.py:24
@@ -1739,8 +1748,9 @@ msgstr ""
 
 #: src/re_sputnik/ui/advanced_screen.py:1120
 #: src/re_sputnik/ui/connect_screen.py:322
-msgid "Данные приложения удалены с этого компьютера. Перезапустите Re:Sputnik."
-msgstr "应用数据已从本台计算机删除。请重新启动 Re:Sputnik。"
+#, python-brace-format
+msgid "Данные приложения удалены. Re:Sputnik закроется через {0}…"
+msgstr "应用数据已删除。Re:Sputnik 将在 {0} 秒后关闭。"
 
 #: src/re_sputnik/ui/advanced_screen.py:1125
 #: src/re_sputnik/ui/connect_screen.py:329
@@ -2835,10 +2845,22 @@ msgstr "生成一个强密码（推荐）"
 msgid "↻ Сгенерировать заново"
 msgstr "↻ 重新生成"
 
-#: src/re_sputnik/ui/firstrun_screen.py:119
+#: src/re_sputnik/app.py:262 src/re_sputnik/ui/firstrun_screen.py:119
 #: src/re_sputnik/ui/security_screen.py:272
 msgid "Копировать"
 msgstr "复制"
+
+#: src/re_sputnik/app.py:261
+msgid "Вырезать"
+msgstr "剪切"
+
+#: src/re_sputnik/app.py:263
+msgid "Вставить"
+msgstr "粘贴"
+
+#: src/re_sputnik/app.py:265
+msgid "Выделить всё"
+msgstr "全选"
 
 #: src/re_sputnik/ui/firstrun_screen.py:122
 msgid "Задать свой пароль"
@@ -3625,15 +3647,38 @@ msgid "Обязательно: kmod-nft-tproxy + kmod-tun."
 msgstr "必需：kmod-nft-tproxy + kmod-tun。"
 
 #: src/re_sputnik/ui/preinstall_screen.py:85
-msgid "Установить LuCI-приложение Re:HomeProxy (+ русский язык)"
-msgstr "安装 Re:HomeProxy LuCI 应用（+ 俄语语言包）"
+#, python-brace-format
+msgid "Установить LuCI-приложение Re:HomeProxy{0}"
+msgstr "安装 Re:HomeProxy LuCI 应用{0}"
+
+#: src/re_sputnik/ui/quick_nodes_screen.py:46
+#, python-brace-format
+msgid ""
+"Не удалось собрать авто-пул.\n"
+"\n"
+"Все добавленные серверы — типа {0}, а текущее ядро роутера «{1}» их не "
+"поддерживает, поэтому ни один не попал в пул. Серверы этого типа умеет "
+"только ядро «{2}».\n"
+"\n"
+"Как исправить:\n"
+"• откройте раздел «Ядро», переключите ядро на «{2}», вернитесь сюда и "
+"нажмите «Применить» снова; либо\n"
+"• добавьте серверы других типов (VLESS, Hysteria2, Trojan, Shadowsocks), "
+"которые поддерживает «{1}»."
+msgstr ""
+"无法构建自动节点池。\n"
+"\n"
+"您添加的所有服务器都是 {0} 类型，但路由器当前的内核「{1}」不支持它们，因此没有任何一个进入节点池。此类服务器只能在「{2}」内核上运行。\n"
+"\n"
+"解决方法：\n"
+"• 打开「内核」页面，将内核切换为「{2}」，返回此处并再次点击「应用」；或\n"
+"• 添加「{1}」支持的其他类型服务器（VLESS、Hysteria2、Trojan、Shadowsocks）。"
 
 #: src/re_sputnik/ui/preinstall_screen.py:89
 msgid ""
 "Без него на роутере будет только ядро, но не сам HomeProxy (веб-настройки"
-" и импорт серверов работать не будут). Оставьте включённым для полной "
-"офлайн-установки."
-msgstr "没有它，路由器上只会有内核，而没有 HomeProxy 本身（网页设置和服务器导入将无法使用）。完整离线安装请保持启用。"
+" и импорт серверов работать не будут)."
+msgstr "没有它，路由器上只会有内核，而没有 HomeProxy 本身（网页设置和服务器导入将无法使用）。"
 
 #: src/re_sputnik/ui/preinstall_screen.py:99
 #: src/re_sputnik/ui/software_screen.py:87
@@ -3793,16 +3838,6 @@ msgstr "自动 — 选择最快的（推荐）"
 #: src/re_sputnik/ui/quick_nodes_screen.py:139
 msgid "Выбрать конкретный сервер"
 msgstr "选择特定服务器"
-
-#: src/re_sputnik/ui/quick_nodes_screen.py:150
-msgid "У меня белые списки"
-msgstr "我使用白名单"
-
-#: src/re_sputnik/ui/quick_nodes_screen.py:154
-msgid ""
-"Белые списки - режим фильтрации интернета провайдером когда работают "
-"только разрешенные сайты одобренные государством - Яндекс, ВК и прочие."
-msgstr "白名单——一种运营商的互联网过滤模式，只有国家批准的网站才能访问，例如 Yandex、VK 等。"
 
 #: src/re_sputnik/ui/quick_nodes_screen.py:161
 #: src/re_sputnik/ui/quick_nodes_screen.py:384
@@ -4356,6 +4391,69 @@ msgid ""
 " Чаще всего так бывает с 6 ГГц — из-за устаревших настроек разрешённых "
 "частот в прошивке роутера."
 msgstr " 这种情况最常见于 6 GHz 频段——因为路由器固件中允许频率的设置已过时。"
+
+#, python-brace-format
+msgid "Роутер: {0} · {1} · {2} ({3})"
+msgstr "路由器：{0} · {1} · {2}（{3}）"
+
+#, python-brace-format
+msgid "Скачиваю {0}…"
+msgstr "正在下载 {0}…"
+
+#, python-brace-format
+msgid "Передаю {0} на роутер ({1} КБ)…"
+msgstr "正在向路由器传输 {0}（{1} KB）…"
+
+#, python-brace-format
+msgid "Медленный интернет — повтор {0}/{1}: {2}…"
+msgstr "网络较慢——重试 {0}/{1}：{2}…"
+
+#, python-brace-format
+msgid "Устанавливаю язык интерфейса LuCI ({0})…"
+msgstr "正在安装 LuCI 界面语言（{0}）…"
+
+#, python-brace-format
+msgid "Удаляю старый пакет {0}…"
+msgstr "正在删除旧软件包 {0}…"
+
+#, python-brace-format
+msgid "Роутер: {0} · {1} ({2}). Определяю пакеты приложения…"
+msgstr "路由器：{0} · {1}（{2}）。正在确定应用软件包…"
+
+#, python-brace-format
+msgid "Устанавливаю языковой пакет HomeProxy ({0})…"
+msgstr "正在安装 HomeProxy 语言包（{0}）…"
+
+#, python-brace-format
+msgid "Языковой пакет HomeProxy ({0}) не скачался: {1}"
+msgstr "HomeProxy 语言包（{0}）未能下载：{1}"
+
+#, python-brace-format
+msgid "Готовлю установку ядра ({0})…"
+msgstr "正在准备内核安装（{0}）…"
+
+#, python-brace-format
+msgid "ByeDPI: не удалось подготовить ({0})."
+msgstr "ByeDPI：准备失败（{0}）。"
+
+#, python-brace-format
+msgid "Zapret: не удалось подготовить ({0})."
+msgstr "Zapret：准备失败（{0}）。"
+
+#, python-brace-format
+msgid "Устанавливаю приложение Re:HomeProxy {0}…"
+msgstr "正在安装 Re:HomeProxy 应用 {0}…"
+
+#, python-brace-format
+msgid "Языковой пакет HomeProxy ({0})…"
+msgstr "HomeProxy 语言包（{0}）…"
+
+#, python-brace-format
+msgid "Пароль установлен, но не сохранён в хранилище: {0}"
+msgstr "密码已设置，但未保存到凭据库：{0}"
+
+msgid "нет ссылки"
+msgstr "无链接"
 
 #~ msgid "Россия — mail.ru"
 #~ msgstr "俄罗斯 — mail.ru"

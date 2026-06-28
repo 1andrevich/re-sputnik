@@ -38,7 +38,7 @@ class NodesScreen(ctk.CTkFrame):
         self._body.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(self._body, text=_("Ключи и подписки VPN"), font=fonts.title(), text_color=palette.text,
-                     image=kit.icon(kit._ICON_FOR["nodes"], 26), compound="left").grid(
+                     image=kit.icon(kit.ICON_FOR["nodes"], 26), compound="left").grid(
             row=0, column=0, pady=(4, 6), sticky="w"
         )
         ctk.CTkLabel(
@@ -151,7 +151,7 @@ class NodesScreen(ctk.CTkFrame):
             font=fonts.small(), text_color=p.text_muted, wraplength=600, justify="left"
         ).grid(row=1, column=0, padx=16, pady=(0, 2), sticky="w")
 
-        self._input_box = ctk.CTkTextbox(card, font=ctk.CTkFont(family="Consolas", size=12),
+        self._input_box = ctk.CTkTextbox(card, font=fonts.mono(12),
                                          fg_color=p.bg, text_color=p.text, height=74, wrap="none")
         self._input_box.grid(row=2, column=0, padx=16, pady=(6, 6), sticky="ew")
 
@@ -363,7 +363,7 @@ class NodesScreen(ctk.CTkFrame):
                          anchor="e").grid(row=i, column=1, padx=8, pady=1, sticky="e")
             ctk.CTkButton(listbox, text="✕", width=30, font=fonts.body(), fg_color="transparent",
                           text_color=p.fail, hover_color=p.surface_hover,
-                          command=lambda s=node.section, l=label: self._delete_node(s, l)).grid(
+                          command=lambda s=node.section, lbl=label: self._delete_node(s, lbl)).grid(
                           row=i, column=2, padx=(2, 4), pady=1)
         if len(ordered) > self._MAX_NODES:
             ctk.CTkLabel(self._nodes_card, text=_("…и ещё {0} серверов").format(len(ordered) - self._MAX_NODES),

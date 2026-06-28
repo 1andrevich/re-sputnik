@@ -128,7 +128,7 @@ class SoftwareScreen(ctk.CTkFrame):
         self._next.grid(row=6, column=0, padx=32, pady=(0, 6), sticky="ew")
         self._next.grid_remove()
 
-        self._log = ctk.CTkTextbox(body, font=ctk.CTkFont(family="Consolas", size=12),
+        self._log = ctk.CTkTextbox(body, font=fonts.mono(12),
                                    fg_color=palette.bg, text_color=palette.text_muted, height=180)
         self._log.grid(row=7, column=0, padx=32, pady=(0, 6), sticky="ew")
         self._log.configure(state="disabled")

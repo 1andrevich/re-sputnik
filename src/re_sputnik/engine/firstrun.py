@@ -150,7 +150,7 @@ def apply_firstrun(
                 step(_("Пароль сохранён в хранилище Windows."))
             except app_secrets.SecretsError as exc:
                 # Non-fatal: password is set on the router, just not persisted.
-                step(f"Пароль установлен, но не сохранён в хранилище: {exc}")
+                step(_("Пароль установлен, но не сохранён в хранилище: {0}").format(exc))
 
     step(_("Первичная настройка завершена."))
     return result

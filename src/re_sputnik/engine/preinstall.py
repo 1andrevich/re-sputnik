@@ -26,7 +26,7 @@ from ..i18n import _
 
 OPENWRT_DL = "https://downloads.openwrt.org"
 KMODS = ("kmod-nft-tproxy", "kmod-tun")
-ZAPRET_KMOD = "kmod-nft-queue"   # NFQUEUE — hiddify-core dep + needed by Zapret (always staged)
+NFQUEUE_KMOD = "kmod-nft-queue"   # NFQUEUE — hiddify-core dep + needed by Zapret (always staged)
 
 # Transitive kmod deps the OFFLINE `apk add` can't fetch (online would pull them):
 # kmod-nft-tproxy needs kmod-nf-tproxy; the sing-box-based cores (both) need
@@ -34,7 +34,7 @@ ZAPRET_KMOD = "kmod-nft-queue"   # NFQUEUE — hiddify-core dep + needed by Zapr
 # modules THESE rest on are already present on any firewall4 router. Staged
 # installed-aware + tolerant (a dep absent from the feed is assumed kernel-built-in).
 KMOD_DEPS = ("kmod-nf-tproxy", "kmod-inet-diag")
-ZAPRET_KMOD_DEP = "kmod-nfnetlink-queue"
+NFQUEUE_KMOD_DEP = "kmod-nfnetlink-queue"
 BYEDPI_REPO = "1andrevich/ByeDPI-OpenWrt"
 ZAPRET_REPO = "1andrevich/zapret2-openwrt"
 
@@ -186,7 +186,8 @@ def resolve_core_url(ti: TargetInfo, core: str) -> str:
 def _kmod_dir(ti: TargetInfo) -> tuple[str, list[str]]:
     """(kernel-dir URL, file list) for the target's single kmods/<kver>/ directory."""
     base = f"{OPENWRT_DL}/releases/{ti.version}/targets/{ti.board}/kmods/"
-    subdirs = [l for l in _links(_http_get(base).decode()) if l.endswith("/") and l[0].isdigit()]
+    subdirs = [href for href in _links(_http_get(base).decode())
+               if href.endswith("/") and href[0].isdigit()]
     if not subdirs:
         raise RuntimeError(_("не найден каталог ядра в kmods/"))
     kdir = base + subdirs[0]
@@ -353,12 +354,35 @@ def resolve_zapret_deps(client: RouterClient, ti: TargetInfo) -> list[Pkg]:
 # ----- orchestration ----------------------------------------------------
 
 
+MIN_SUPPORTED = (23, 5)   # OpenWrt 23.05 — oldest release this stack targets (legacy build)
+
+
+def _version_tuple(version: str) -> "Optional[tuple[int, int]]":
+    """(major, minor) from a VERSION_ID like '24.10.2' / '23.05.5' / '25.12-SNAPSHOT',
+    or None for a bare 'SNAPSHOT' / empty / unparseable string."""
+    m = re.match(r"(\d+)\.(\d+)", version or "")
+    return (int(m.group(1)), int(m.group(2))) if m else None
+
+
+def unsupported_version_error(ti: TargetInfo) -> "Optional[str]":
+    """A user-facing reason if the router's OpenWrt is too OLD for this stack — the
+    legacy build targets 23.05, and older releases lack the cores/kmods and the app's
+    dependencies, so they'd otherwise fail deep in the install with a cryptic
+    "cannot find dependency" instead of an honest "firmware too old". A bare/parseless
+    SNAPSHOT returns None — it's handled by the separate snapshot path, not blocked here."""
+    v = _version_tuple(ti.version)
+    if v is not None and v < MIN_SUPPORTED:
+        return _("На роутере OpenWrt {0} — нужна версия 23.05 или новее. "
+                 "Обновите прошивку роутера.").format(ti.version)
+    return None
+
+
 def _has_ucode_mod_digest(ti: TargetInfo) -> bool:
     """`ucode-mod-digest` exists in the 24.10+ feeds only; 23.05 has no such package
     (and its legacy app build doesn't require it). A versioned/bare SNAPSHOT parses to
     its leading YY.MM (or, if bare, falls through to True = newest tree, which has it)."""
-    m = re.match(r"(\d+)\.(\d+)", ti.version or "")
-    return (int(m.group(1)), int(m.group(2))) >= (24, 10) if m else True
+    v = _version_tuple(ti.version)
+    return v >= (24, 10) if v is not None else True
 
 
 def resolve_app_dep_pkgs(client: RouterClient, ti: TargetInfo) -> list[Pkg]:
@@ -392,7 +416,7 @@ def plan_packages(client: RouterClient, ti: TargetInfo, core: str,
     # preempts an unsatisfied-dep failure when the user later enables Zapret (~14 KB total).
     # Via the TOLERANT dep-resolver (alongside kmod-nf-tproxy, kmod-inet-diag): it's
     # installed-aware, and a module built into the kernel (no separate package) is skipped.
-    pkgs += resolve_kmod_deps(client, ti, KMOD_DEPS + (ZAPRET_KMOD, ZAPRET_KMOD_DEP))
+    pkgs += resolve_kmod_deps(client, ti, KMOD_DEPS + (NFQUEUE_KMOD, NFQUEUE_KMOD_DEP))
     if with_app:
         # Lazy import: install_app imports THIS module at top level, so importing
         # it at module load would be circular. By call time both are fully loaded.
@@ -423,7 +447,7 @@ def plan_packages(client: RouterClient, ti: TargetInfo, core: str,
     return pkgs
 
 
-def explain_install_failure(output: str, pkg_manager: str) -> str:
+def explain_install_failure(output: str) -> str:
     """Turn raw opkg/apk install output into a SPECIFIC, actionable reason — names the
     missing package/dependency or flags out-of-space — so a maintainer can fix it
     without guessing, instead of a blind char-tail that hides the real cause (opkg
@@ -487,6 +511,10 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             progress(m)
 
     ti = get_target_info(client)
+    too_old = unsupported_version_error(ti)
+    if too_old:
+        res.error = too_old
+        return res
     if ti.snapshot_kernel:
         # SNAPSHOT-suffixed build: kmods are locked to this exact kernel and can't be
         # pre-staged from the mirror. If they're ALREADY on the router we can stage the
@@ -506,7 +534,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         return res
 
     try:
-        say(f"Роутер: {ti.board} · {ti.version} · {ti.arch} ({ti.pkg_manager})")
+        say(_("Роутер: {0} · {1} · {2} ({3})").format(ti.board, ti.version, ti.arch, ti.pkg_manager))
         say(_("Определяю ссылки на пакеты…"))
         pkgs = plan_packages(client, ti, core, with_byedpi=with_byedpi,
                              with_zapret=with_zapret, with_app=with_app, language=language)
@@ -519,10 +547,10 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     # Download on the PC, push to the router.
     for p in pkgs:
         try:
-            say(f"Скачиваю {p.name}…")
+            say(_("Скачиваю {0}…").format(p.name))
             data = _http_get(p.url, timeout=300)
             p.remote = f"/tmp/re-preinstall-{p.name}{ti.ext}"
-            say(f"Передаю {p.name} на роутер ({len(data) // 1024} КБ)…")
+            say(_("Передаю {0} на роутер ({1} КБ)…").format(p.name, len(data) // 1024))
             client.write_file(p.remote, data)
         except Exception as exc:  # noqa: BLE001
             res.error = f"{p.name}: {exc}"
@@ -553,7 +581,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
         cmd = f"opkg install {remotes}"
     out = client.run(f"{cmd} 2>&1; RC=$?; rm -f {remotes}; exit $RC", timeout=180)
     if not out.ok:
-        res.error = f"установка не удалась: {explain_install_failure(out.stdout, ti.pkg_manager)}"
+        res.error = f"установка не удалась: {explain_install_failure(out.stdout)}"
         return res
 
     res.ok = True

@@ -22,7 +22,8 @@ from dataclasses import asdict, dataclass, fields
 
 from . import secrets as app_secrets
 
-APP_DIR_NAME = "re-companion"
+APP_DIR_NAME = "re-sputnik"
+_LEGACY_DIR_NAME = "re-companion"  # pre-rebrand folder, migrated on first access
 
 
 def _config_dir() -> str:
@@ -35,6 +36,19 @@ def _config_dir() -> str:
         base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
             os.path.expanduser("~"), ".config")
     path = os.path.join(base, APP_DIR_NAME)
+    # Migrate the pre-rebrand folder so saved profiles/settings carry over: rename in
+    # place when possible, else copy its contents. Best-effort — never fatal.
+    if not os.path.isdir(path):
+        legacy = os.path.join(base, _LEGACY_DIR_NAME)
+        if os.path.isdir(legacy):
+            try:
+                os.rename(legacy, path)
+            except OSError:
+                try:
+                    import shutil
+                    shutil.copytree(legacy, path)
+                except OSError:
+                    pass
     os.makedirs(path, exist_ok=True)
     return path
 

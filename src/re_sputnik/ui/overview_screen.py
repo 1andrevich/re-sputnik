@@ -101,7 +101,7 @@ class OverviewScreen(ctk.CTkFrame):
         bar.grid(row=0, column=0, padx=24, pady=(20, 4), sticky="ew")
         bar.grid_columnconfigure(0, weight=1)
         self._host_lbl = ctk.CTkLabel(bar, text=_("Обзор"), font=fonts.title(), text_color=p.text,
-                                      image=kit.icon(kit._ICON_FOR["overview"], 26), compound="left",
+                                      image=kit.icon(kit.ICON_FOR["overview"], 26), compound="left",
                                       anchor="w")
         self._host_lbl.grid(row=0, column=0, sticky="w")
         # Auto-refresh indicator (sits where the refresh button used to be): a
@@ -288,7 +288,7 @@ class OverviewScreen(ctk.CTkFrame):
         row = self._render_dns(d, row)
         row = self._render_rules(d, row)
         row = self._render_devices(d, row)
-        row = self._render_wifi(d, row)
+        self._render_wifi(d, row)
 
         self._set_indicator()
         self._schedule_auto()
@@ -800,12 +800,27 @@ class OverviewScreen(ctk.CTkFrame):
             return row + 1
         inner = ctk.CTkFrame(card, fg_color="transparent")
         inner.grid(row=1, column=0, columnspan=2, padx=16, pady=(0, 12), sticky="ew")
-        region = _(_REGION_NAMES.get(dns.get("region_label"), dns.get("region_label") or ""))
-        domain = dns.get("region_domain") or "?"
-        region_label = (_("{0} — протестировано на {1}").format(region, domain)
-                        if region else domain)
-        self._dns_row(inner, 0, region_label, dns.get("region_ok"), dns.get("region_server"))
-        self._dns_row(inner, 1, _("Защищённый — протестировано на andrevi.ch"),
+        # Region row. Newer backends emit region_* (RU/CN/IR); backends that predate
+        # the rename emit russia_* (RU-only, fixed mail.ru anchor). Read region_*
+        # first and fall back to russia_*, so an installed backend older than the app
+        # shows a real result instead of a bogus "?". If neither is present, skip the
+        # row entirely rather than paint an empty placeholder.
+        r_label = dns.get("region_label")
+        r_domain = dns.get("region_domain")
+        r_ok = dns.get("region_ok")
+        r_server = dns.get("region_server")
+        if r_ok is None and r_server is None and r_label is None and dns.get("russia_server"):
+            r_label, r_domain = "Russia", (r_domain or "mail.ru")
+            r_ok, r_server = dns.get("russia_ok"), dns.get("russia_server")
+        next_row = 0
+        if r_ok is not None or r_server or r_label:
+            region = _(_REGION_NAMES.get(r_label, r_label or ""))
+            domain = r_domain or "?"
+            region_label = (_("{0} — протестировано на {1}").format(region, domain)
+                            if region else domain)
+            self._dns_row(inner, next_row, region_label, r_ok, r_server)
+            next_row += 1
+        self._dns_row(inner, next_row, _("Защищённый — протестировано на andrevi.ch"),
                       dns.get("secure_ok"), dns.get("secure_server"))
         return row + 1
 
@@ -912,7 +927,7 @@ class OverviewScreen(ctk.CTkFrame):
                              anchor="w").grid(row=1, column=0, sticky="w")
             if ap.key:
                 ctk.CTkLabel(txt, text=_("Пароль: {0}").format(ap.key),
-                             font=ctk.CTkFont(family="Consolas", size=13), text_color=p.text,
+                             font=fonts.mono(13), text_color=p.text,
                              anchor="w").grid(row=2, column=0, sticky="w", pady=(4, 0))
             else:
                 ctk.CTkLabel(txt, text=_("Открытая сеть (без пароля)"), font=fonts.small(),

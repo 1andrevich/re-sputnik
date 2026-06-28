@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import sys
 import types
+from typing import Callable
 from unittest.mock import MagicMock
 
 import customtkinter as ctk
@@ -34,7 +35,7 @@ def main() -> int:
     st = RouterState(reachable=True, is_openwrt=True)
     cb = lambda *a, **k: None  # noqa: E731 — trivial stub callback
 
-    cases: list[tuple[str, object]] = []
+    cases: list[tuple[str, Callable[[], ctk.CTkBaseClass]]] = []
 
     from re_sputnik.ui.connect_screen import ConnectScreen
     cases.append(("connect", lambda: ConnectScreen(root, p, on_connected=cb, on_back=cb)))

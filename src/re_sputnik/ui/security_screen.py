@@ -59,7 +59,7 @@ class SecurityScreen(ctk.CTkFrame):
         bar.grid(row=0, column=0, padx=24, pady=(20, 4), sticky="ew")
         bar.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(bar, text=_("Безопасность"), font=fonts.title(), text_color=p.text,
-                     image=kit.icon(kit._ICON_FOR["security"], 26), compound="left").grid(
+                     image=kit.icon(kit.ICON_FOR["security"], 26), compound="left").grid(
             row=0, column=0, sticky="w"
         )
         self._refresh_btn = ctk.CTkButton(
@@ -180,7 +180,7 @@ class SecurityScreen(ctk.CTkFrame):
         if key.is_app:
             ctk.CTkLabel(line, text=_("● это устройство"), font=fonts.small(),
                          text_color=self.p.accent).grid(row=0, column=1, padx=(10, 0))
-        ctk.CTkLabel(info, text=key.fingerprint, font=ctk.CTkFont(family="Consolas", size=11),
+        ctk.CTkLabel(info, text=key.fingerprint, font=fonts.mono(11),
                      text_color=self.p.text_muted, anchor="w").grid(row=1, column=0, sticky="w")
 
         btn = ctk.CTkButton(
@@ -263,7 +263,7 @@ class SecurityScreen(ctk.CTkFrame):
         rowf = ctk.CTkFrame(card, fg_color="transparent")
         rowf.grid(row=2, column=0, padx=16, pady=(0, 12), sticky="ew")
         rowf.grid_columnconfigure(0, weight=1)
-        self._stored_entry = ctk.CTkEntry(rowf, font=ctk.CTkFont(family="Consolas", size=13), show="•")
+        self._stored_entry = ctk.CTkEntry(rowf, font=fonts.mono(13), show="•")
         self._stored_entry.insert(0, pw)
         self._stored_entry.configure(state="readonly")
         self._stored_entry.grid(row=0, column=0, sticky="ew")

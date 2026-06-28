@@ -61,7 +61,7 @@ class AccessScreen(ctk.CTkFrame):
         self._body.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(self._body, text=_("Контроль доступа"), font=fonts.title(),
-                     image=kit.icon(kit._ICON_FOR["access"], 26), compound="left",
+                     image=kit.icon(kit.ICON_FOR["access"], 26), compound="left",
                      text_color=palette.text).grid(row=0, column=0, pady=(4, 8), sticky="w")
         self._status = ctk.CTkLabel(self._body, text=_("Считываю устройства…"), font=fonts.small(),
                                     text_color=palette.text_muted, anchor="w")
