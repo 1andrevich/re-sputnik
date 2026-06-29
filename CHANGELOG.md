@@ -10,6 +10,13 @@ commit, then push the matching tag.
 
 ## [Unreleased]
 
+## [0.0.10] — 2026-06-29
+- Install/update now follow the latest published Re:HomeProxy release instead of the
+  hand-pinned beta tag (`PINNED_TAG`/`PINNED_TAG_LEGACY` set to None), now that a
+  stable release has shipped. Version resolution reverted to **stable-preferred** —
+  the newest non-prerelease release is chosen (falling back to any-status only when
+  no stable exists), so a future dev/prerelease tag no longer overrides stable.
+
 ## [0.0.9] — 2026-06-28
 - Fixed the link-speed unit showing untranslated Cyrillic ("Гбит/с" / "Мбит/с") in
   other languages — it was a hardcoded f-string. Now localized (EN/ZH "Gbps/Mbps",

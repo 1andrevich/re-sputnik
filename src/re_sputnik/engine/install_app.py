@@ -47,8 +47,8 @@ APP_PKG = "luci-app-re-homeproxy"
 #   • non-legacy → GitHub `releases/latest` (newest non-prerelease);
 #   • legacy (23.05) → the newest `*-legacy` release (latest legacy, kept current).
 # (See the matching TODO in the version-ranking block below.)
-PINNED_TAG: Optional[str] = "2026.06.28-beta"              # 24.10+ / non-legacy (beta)
-PINNED_TAG_LEGACY: Optional[str] = "2026.06.28-legacy-beta"  # OpenWrt 23.05 (legacy .ipk, beta)
+PINNED_TAG: Optional[str] = None              # None → latest published release (24.10+ / non-legacy)
+PINNED_TAG_LEGACY: Optional[str] = None       # None → latest *-legacy release (OpenWrt 23.05)
 
 Progress = Callable[[str], None]
 
@@ -223,23 +223,13 @@ def resolve_app_assets(ti: TargetInfo, language: str, *, use_latest: bool = Fals
         if not rel.get("prerelease"):
             if best_stable is None or key > best_stable[0]:
                 best_stable = (key, cand)
-    # ⚠️ TEMPORARY (since 2026-06) — track the newest release in ANY status,
-    # including PRERELEASES. The project currently ships only dev prereleases, which
-    # ARE the genuine latest; preferring stable would pin the update check to an old
-    # stable (e.g. 2026.06.16) and hide a newer prerelease (2026.06.22-dev), so the
-    # app would wrongly report "you're up to date". Stable is preferred only to break
-    # a tie at the SAME version.
-    # TODO (end state, once real STABLE releases resume): BOTH install AND update
-    # must use the LATEST STABLE release, never a prerelease/dev tag —
-    #   • non-legacy → newest NON-prerelease (revert to `chosen = best_stable or
-    #     best_any`, i.e. stable-preferred);
-    #   • legacy (23.05) → newest `*-legacy` release regardless of status.
-    # Also drop PINNED_TAG/PINNED_TAG_LEGACY (set to None) so install stops targeting
-    # a hand-picked tag and follows the same latest-stable resolution as update.
-    if best_any and best_stable:
-        chosen = best_any if best_any[0] > best_stable[0] else best_stable
-    else:
-        chosen = best_stable or best_any
+    # Stable-preferred: take the newest NON-prerelease release, falling back to the
+    # newest release of ANY status only when no stable exists yet (e.g. a brand-new
+    # legacy line still in draft/prerelease). With PINNED_TAG=None, fresh install and
+    # update share this same latest-stable resolution — never a prerelease/dev tag.
+    # When legacy_ok, the asset filter above already scopes the scan to *-legacy
+    # assets, so legacy resolves to the newest legacy release.
+    chosen = best_stable or best_any
     if chosen:
         return chosen[1]
     where = f"релизе {pin}" if pin else f"релизах {HP_REPO}"
