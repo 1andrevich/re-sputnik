@@ -28,11 +28,6 @@ RouterClient (paramiko)     the ONLY door to the router: built-in scripts, ubus,
 Secrets (keyring)           router credentials in the OS keychain
 ```
 
-No AI: everything the setup assistant used to *reason* about becomes either a deterministic rule
-in the engine or an explicit choice in the UI. Connectivity checks (`connection_check`,
-`byedpi_strategy_test`) are the app's "eyes" — machine-readable signals that replace human
-judgement.
-
 ## Tech stack
 
 Pure Python + a few libraries — no web/HTML/CSS/JS:
