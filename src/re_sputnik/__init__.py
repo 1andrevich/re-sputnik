@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """Re:Sputnik — desktop wizard for Re:HomeProxy on OpenWRT."""
 
-__version__ = "0.0.10"  # single source of truth — bump on each release (semver)
+__version__ = "0.1.0"  # single source of truth — bump on each release (semver)
 APP_NAME = "Re:Sputnik"

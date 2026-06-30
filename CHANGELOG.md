@@ -10,6 +10,22 @@ commit, then push the matching tag.
 
 ## [Unreleased]
 
+## [0.1.0] — 2026-06-30
+- **Relicensed from proprietary freeware to the GNU General Public License v3.0.**
+  Re:Sputnik is now free/libre, open-source software: the source is published and
+  may be studied, modified, and shared under the GPLv3. The previous EULA
+  (`EULA.txt` / `EULA.ru.txt`) is removed and replaced by the standard `LICENSE`
+  (GPLv3); per-file headers now carry `SPDX-License-Identifier: GPL-3.0-only`.
+- First-run gate simplified to a single step: the formal EULA screen is gone, and
+  the plain-language disclaimer (works "as is", no warranty/liability, you use it
+  at your own risk and remain responsible for your country's VPN/proxy laws — none
+  of which the GPL itself addresses) is now the only acknowledgment. The in-app
+  "full text" link and About screen now show the GPLv3 `LICENSE`. Existing users
+  re-accept once (disclaimer version bumped 2 → 3).
+- Added `CONTRIBUTING.md` with a Developer Certificate of Origin (`Signed-off-by`),
+  so the project can continue to offer the same code under a separate license to
+  partners (dual-licensing) without contributions blocking that.
+
 ## [0.0.10] — 2026-06-29
 - Install/update now follow the latest published Re:HomeProxy release instead of the
   hand-pinned beta tag (`PINNED_TAG`/`PINNED_TAG_LEGACY` set to None), now that a

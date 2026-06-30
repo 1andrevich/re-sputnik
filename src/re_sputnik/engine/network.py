@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """Router internet/uplink setup — initial network configuration (not homeproxy).
 
 This is the "make the router reach the internet" piece, needed before any

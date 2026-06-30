@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """О программе / Лицензии — app info + bundled third-party NOTICE.
 
 Shows the app name, version, copyright and a scrollable view of the

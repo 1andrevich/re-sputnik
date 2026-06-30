@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """Re:Sputnik UI kit — shared chrome + components for the Quick Setup redesign.
 
 One source of truth for the wizard's look: a branded titlebar band, a 9-step

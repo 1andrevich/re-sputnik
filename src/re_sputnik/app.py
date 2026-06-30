@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """Main application window and screen navigation.
 
 The window hosts one swappable content area. The mode picker (Quick Setup vs
@@ -354,66 +354,22 @@ class App(ctk.CTk):
 
         self._content: ctk.CTkBaseClass | None = None
         self._mode = "advanced"  # quick | advanced | preinstall
-        # Mandatory first-run acceptance (once): step 1 EULA → step 2 disclaimer.
+        # Mandatory first-run acceptance (once): a single plain-language disclaimer.
         if app_secrets.disclaimer_accepted():
             self.show_mode_picker()
         else:
-            self.show_eula()
+            self.show_disclaimer()
 
-    # First-run acceptance is two steps: (1) the full formal License Agreement
-    # (the binding document, shown verbatim — Russian for a Russian UI, English
-    # otherwise, since only RU/EN are author-verified), then (2) a plain-language
-    # disclaimer with the third-party credits. Acceptance is recorded only after
-    # step 2. The footer "Дисклеймер" link re-opens step 2 in read-only review.
-
-    def show_eula(self, *, on_accept: Callable[[], None] | None = None) -> None:
-        """Step 1/2: the full formal EULA, accepted via a ticked checkbox."""
-        p = self.palette
-        frame = ctk.CTkFrame(self, fg_color="transparent")
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(2, weight=1)  # EULA box grows/scrolls
-
-        # Language picker on the gate itself: a first-run user reaches acceptance
-        # BEFORE the mode-picker footer, so this is their only chance to read the
-        # EULA + disclaimer in their language. Switching re-renders this step.
-        self._build_lang_picker(
-            frame, on_change=lambda: self.show_eula(on_accept=on_accept),
-        ).place(relx=1.0, rely=0.0, x=-24, y=16, anchor="ne")
-
-        ctk.CTkLabel(frame, text=_("Лицензионное соглашение"), font=fonts.title(),
-                     text_color=p.text).grid(row=0, column=0, pady=(26, 2))
-        ctk.CTkLabel(frame, text=_("Пожалуйста, прочитайте лицензионное соглашение."),
-                     font=fonts.small(), text_color=p.text_muted).grid(row=1, column=0, pady=(0, 8))
-
-        box = ctk.CTkTextbox(frame, font=fonts.small(), fg_color=p.surface, text_color=p.text,
-                             wrap="word", corner_radius=12, border_width=1, border_color=p.border)
-        box.grid(row=2, column=0, padx=40, pady=(0, 8), sticky="nsew")
-        box.insert("1.0", legal.load_eula(current_language()))
-        box.configure(state="disabled")
-
-        btns = ctk.CTkFrame(frame, fg_color="transparent")
-        btns.grid(row=4, column=0, pady=(4, 18))
-        next_btn = ctk.CTkButton(
-            btns, text=_("Далее"), font=fonts.heading(), height=42, width=200,
-            fg_color=p.accent, text_color=p.accent_fg, hover_color=p.accent_hover, state="disabled",
-            command=lambda: self.show_disclaimer(
-                on_accept=on_accept, on_back=lambda: self.show_eula(on_accept=on_accept)))
-        agree = ctk.CTkCheckBox(
-            frame, text=_("Я прочитал(а) и принимаю условия Лицензионного соглашения"),
-            font=fonts.body(), text_color=p.text, fg_color=p.accent, hover_color=p.accent_hover,
-            command=lambda: next_btn.configure(state="normal" if agree.get() else "disabled"))
-        agree.grid(row=3, column=0, pady=(2, 6))
-        ctk.CTkButton(btns, text=_("Выход"), font=fonts.body(), height=42, width=140,
-                      fg_color="transparent", hover_color=p.surface_hover,
-                      command=self.destroy).grid(row=0, column=0, padx=(0, 10))
-        next_btn.grid(row=0, column=1)
-        self._swap(frame)
+    # First-run acceptance is a single step: a plain-language disclaimer with the
+    # third-party credits (the software is provided "as is", no warranty/liability,
+    # used at your own risk, and you remain responsible for your country's VPN/proxy
+    # laws — none of which the GPLv3 itself addresses). Acceptance is recorded on
+    # accept. The footer "Дисклеймер" link re-opens it in read-only review.
 
     def show_disclaimer(
         self, *, on_accept: Callable[[], None] | None = None,
-        on_back: Callable[[], None] | None = None,
     ) -> None:
-        """Step 2/2: plain-language disclaimer + third-party credits.
+        """First-run gate / review: plain-language disclaimer + third-party credits.
 
         Re-view mode (footer link, already accepted, no on_accept): shows the same
         text with a single Close button and no re-accept checkbox.
@@ -425,10 +381,10 @@ class App(ctk.CTk):
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(2, weight=1)  # the disclaimer box grows/scrolls
 
-        # Same gate-level language picker as step 1, so the disclaimer can be read
-        # (and re-read) in the user's language. Re-renders this step with its params.
+        # Gate-level language picker, so the disclaimer can be read (and re-read) in
+        # the user's language. Re-renders this step with its params.
         self._build_lang_picker(
-            frame, on_change=lambda: self.show_disclaimer(on_accept=on_accept, on_back=on_back),
+            frame, on_change=lambda: self.show_disclaimer(on_accept=on_accept),
         ).place(relx=1.0, rely=0.0, x=-24, y=16, anchor="ne")
 
         ctk.CTkLabel(frame, text="Re:Sputnik", font=fonts.title(), text_color=p.text).grid(
@@ -445,21 +401,22 @@ class App(ctk.CTk):
         box.configure(state="disabled")
 
         # Third-party crediting is a core purpose of the licensing — surface it here,
-        # with buttons to re-read the full agreement and the dependency NOTICE.
+        # with buttons to read the project license and the dependency NOTICE.
         ctk.CTkLabel(
             frame,
-            text=_("Re:Sputnik — закрытое бесплатное ПО. Сторонние проекты, которые оно "
-                   "использует, и их лицензии перечислены в уведомлении о компонентах."),
+            text=_("Re:Sputnik — свободное ПО с открытым исходным кодом (GNU GPLv3). "
+                   "Сторонние проекты, которые оно использует, и их лицензии перечислены "
+                   "в уведомлении о компонентах."),
             font=fonts.small(), text_color=p.text_muted, wraplength=680, justify="center",
         ).grid(row=3, column=0, padx=40, pady=(2, 6))
 
         links = ctk.CTkFrame(frame, fg_color="transparent")
         links.grid(row=4, column=0, pady=(0, 6))
         ctk.CTkButton(
-            links, text=_("Полный текст соглашения"), font=fonts.small(), height=34, width=220,
+            links, text=_("Текст лицензии (GPLv3)"), font=fonts.small(), height=34, width=220,
             fg_color=p.surface, hover_color=p.surface_hover, text_color=p.text,
             command=lambda: self._show_legal_text(
-                _("Лицензионное соглашение"), legal.load_eula(current_language())),
+                _("Лицензия (GPLv3)"), legal.load_license()),
         ).grid(row=0, column=0, padx=6)
         ctk.CTkButton(
             links, text=_("Сторонние компоненты и лицензии"), font=fonts.small(), height=34, width=260,
@@ -486,15 +443,15 @@ class App(ctk.CTk):
                 command=lambda: accept_btn.configure(
                     state="normal" if agree.get() else "disabled"))
             agree.grid(row=5, column=0, pady=(2, 6))
-            back_cmd = on_back or self.show_mode_picker
-            ctk.CTkButton(btns, text=_("Назад"), font=fonts.body(), height=42, width=140,
+            # This is the first screen a new user sees, so the secondary action is Exit.
+            ctk.CTkButton(btns, text=_("Выход"), font=fonts.body(), height=42, width=140,
                           fg_color="transparent", hover_color=p.surface_hover,
-                          command=back_cmd).grid(row=0, column=0, padx=(0, 10))
+                          command=self.destroy).grid(row=0, column=0, padx=(0, 10))
             accept_btn.grid(row=0, column=1)
         self._swap(frame)
 
     def _show_legal_text(self, title: str, text: str) -> None:
-        """Modal, read-only viewer for a full legal document (EULA / NOTICE)."""
+        """Modal, read-only viewer for a full legal document (license / NOTICE)."""
         p = self.palette
         top = ctk.CTkToplevel(self)
         top.title(title)
@@ -700,7 +657,7 @@ class App(ctk.CTk):
         app_settings.set_language(code)
         install_language(code)
         # Rebuild the visible screen so the new catalog (and any language-specific
-        # document, like the localized EULA) is applied immediately.
+        # text, like the disclaimer) is applied immediately.
         (on_change or self.show_mode_picker)()
 
     def _connect_for(self, mode: str) -> None:

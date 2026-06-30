@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """UPnP / NAT-PMP (miniupnpd) — read state, toggle the service, list active
 port-forwards. Only meaningful when the ``miniupnpd`` package is installed; the
 Advanced screen shows the card only then.

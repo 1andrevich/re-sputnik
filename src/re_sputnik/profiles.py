@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """Saved router connection profiles (WinBox-style).
 
 A small JSON registry of routers the user has connected to — host, port, user,
@@ -134,7 +134,7 @@ def reset_app_data() -> None:
     shared or borrowed computer so the next person can't connect to your routers.
 
     Removes from the OS keychain: the app's SSH identity (private+public key), every
-    router root password and host-key pin, and the EULA-accepted flag. Deletes the
+    router root password and host-key pin, and the disclaimer-accepted flag. Deletes the
     on-disk config dir (router list + settings). The machine is left with no
     credentials and not even the LIST of routers; a fresh, useless SSH key is created
     on next use.

@@ -1,15 +1,13 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
-"""Loaders for the bundled legal texts (EULA + third-party NOTICE).
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
+"""Loaders for the bundled legal texts (the GPLv3 LICENSE + third-party NOTICE).
 
-The first-run acceptance gate and the About screen both read these. Keeping the
+The first-run disclaimer gate and the About screen both read these. Keeping the
 lookup in one place means the same resolution logic (repo root in dev, _MEIPASS
 in the frozen build) serves every caller.
 
-The EULA ships in two languages: ``EULA.txt`` (English) and ``EULA.ru.txt``
-(Russian). ``load_eula(lang)`` returns the Russian text for ``ru`` and English
-otherwise (zh/fa fall back to English — they are machine-translated UI locales
-and the authoritative legal text is EN/RU).
+``load_license()`` returns the project's license — the GNU GPLv3 ``LICENSE`` text,
+the same for every UI language.
 """
 
 from __future__ import annotations
@@ -31,7 +29,7 @@ def _candidates(filename: str) -> list[str]:
     """Possible on-disk locations for a bundled legal file, best first.
 
     Frozen (PyInstaller) build: under ``sys._MEIPASS/re_sputnik/resources`` (the
-    spec copies NOTICE/EULA there). Dev checkout: the repo root, three levels up
+    spec copies NOTICE/LICENSE there). Dev checkout: the repo root, three levels up
     from this module (``re_sputnik`` -> ``src`` -> repo).
     """
     here = os.path.dirname(os.path.abspath(__file__))
@@ -65,19 +63,13 @@ def load_notice() -> str:
     return _read_first("NOTICE") or _FALLBACK_NOTICE
 
 
-def load_eula(lang: str | None = None) -> str:
-    """EULA text for the given UI language (Russian for 'ru', else English)."""
-    if (lang or "").startswith("ru"):
-        text = _read_first("EULA.ru.txt")
-        if text:
-            return text
-    return _read_first("EULA.txt") or (
-        "END-USER LICENSE AGREEMENT — Re:Sputnik\n\n"
-        "The full agreement file (EULA.txt) could not be located. Re:Sputnik is "
-        "closed-source freeware provided \"as is\", without warranty of any kind; "
-        "you use it entirely at your own risk and remain responsible for "
-        "complying with the laws of your country. See the project repository for "
-        "the complete text."
+def load_license() -> str:
+    """The project's GNU GPLv3 license text (``LICENSE``), or a short fallback."""
+    return _read_first("LICENSE") or (
+        "Re:Sputnik is free software licensed under the GNU General Public "
+        "License v3.0. The full LICENSE file could not be located here; see the "
+        "project repository for the complete text: "
+        "https://www.gnu.org/licenses/gpl-3.0.txt"
     )
 
 

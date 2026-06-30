@@ -8,14 +8,13 @@ name: Build (Windows + macOS + Linux)
 # OpenSSL) — brittle. Windows-on-ARM runs the x64 .exe under emulation anyway,
 # so a native arm64 Windows build adds little. Revisit if cryptography ships a
 # win_arm64 wheel.
-# Private repo: GitHub Actions runs the same; releases need `contents: write`.
 #
 # Triggers:
 #   - manual "Run workflow"  → builds + uploads artifacts only (no release)
 #
-# Tag releases are owned by release.yml (which gates on tests and publishes to the
-# public showcase repo) — this workflow is purely for on-demand CI artifact builds,
-# so there's no tag trigger / Release step here (that double-released before).
+# Tag releases are owned by release.yml (gates on tests and publishes a GitHub
+# Release in this repo) — this workflow is purely for on-demand CI artifact builds,
+# so there's no tag trigger / Release step here (that would double-release).
 #
 # NOTE: builds are UNSIGNED. Windows shows a SmartScreen warning; macOS Gatekeeper
 # quarantines the .app (users right-click → Open, or `xattr -dr com.apple.quarantine`).

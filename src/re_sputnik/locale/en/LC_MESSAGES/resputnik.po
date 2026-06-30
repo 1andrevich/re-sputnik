@@ -4803,3 +4803,12 @@ msgstr "no link"
 #~ "possible (modules are tied to the "
 #~ "build). Use a release firmware."
 
+
+msgid "Re:Sputnik — свободное ПО с открытым исходным кодом (GNU GPLv3). Сторонние проекты, которые оно использует, и их лицензии перечислены в уведомлении о компонентах."
+msgstr "Re:Sputnik is free and open-source software (GNU GPLv3). The third-party projects it uses, and their licenses, are listed in the components notice."
+
+msgid "Текст лицензии (GPLv3)"
+msgstr "License text (GPLv3)"
+
+msgid "Лицензия (GPLv3)"
+msgstr "License (GPLv3)"

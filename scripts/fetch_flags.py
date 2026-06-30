@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """Dev-time only: vendor country-flag PNGs into ``resources/flags/<cc>.png``.
 
 Windows' Segoe UI Emoji has no flag glyphs (and the bundled Tk can't render

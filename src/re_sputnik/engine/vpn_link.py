@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """AmneziaVPN ``vpn://`` share-link import — decoded entirely on the PC.
 
 ``vpn://`` is a container format: ``vpn://`` + base64url( qCompress(JSON) ), where
@@ -92,8 +92,8 @@ def _awg_to_conf(container: dict, label: str) -> Optional[str]:
     if cfg.get("mtu"):
         lines.append(f"MTU = {cfg['mtu']}")
     # AmneziaWG obfuscation params (only if present → marks it AWG vs plain WG).
-    # Read from the merged cfg: exports put these at the top of awg, but others
-    # (incl. the Premium gateway) carry them only inside last_config.
+    # Read from the merged cfg: some exports put these at the top of awg, while
+    # others carry them only inside last_config.
     for k in ("Jc", "Jmin", "Jmax", "S1", "S2", "S3", "S4",
               "H1", "H2", "H3", "H4", "I1", "I2", "I3", "I4", "I5"):
         if cfg.get(k) not in (None, ""):

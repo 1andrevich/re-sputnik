@@ -72,12 +72,14 @@ represent.
 
 ## License
 
-Re:Sputnik is **closed-source freeware**: free to use and to share unmodified, but its
-source code is not distributed and modification/reverse-engineering is not permitted. See
-[`EULA.txt`](EULA.txt) for the full terms and [`NOTICE`](NOTICE) for third-party attributions.
+Re:Sputnik is **free software** licensed under the **GNU General Public License v3.0**
+(GPLv3): you may use, study, modify, and share it under those terms. See [`LICENSE`](LICENSE)
+for the full text and [`NOTICE`](NOTICE) for third-party attributions.
 
-Re:Sputnik is a separate program from **Re:HomeProxy** (which remains GPL-licensed): it talks
-to the router over SSH/RPC and does not bundle or link Re:HomeProxy's source, so the two
-licenses do not interact. All bundled third-party dependencies are under permissive or
-weak-copyleft licenses (MIT/BSD/HPND/MPL-2.0; paramiko under LGPL-2.1) that allow closed-source
-distribution with attribution — none are GPL.
+Re:Sputnik is a separate program from **Re:HomeProxy** (also GPL-licensed): it talks to the
+router over SSH/RPC and does not bundle or link Re:HomeProxy's source. All bundled third-party
+dependencies are under permissive or weak-copyleft licenses (MIT/BSD/HPND/MPL-2.0; paramiko
+under LGPL-2.1), compatible with the GPLv3.
+
+Outside contributions are accepted under the Developer Certificate of Origin — see
+[`CONTRIBUTING.md`](CONTRIBUTING.md).

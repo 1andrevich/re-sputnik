@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: LicenseRef-Proprietary
-# Copyright (c) 2026 1andrevich. All rights reserved. Licensed under EULA.txt.
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 1andrevich. Licensed under the GNU GPLv3 — see LICENSE.
 """Secrets: the app's SSH identity, generated passwords, and OS-keychain storage.
 
 Nothing sensitive is written to plaintext files. The app's SSH keypair and each
@@ -347,9 +347,10 @@ def forget_hostkey(host: str) -> None:
 
 # ----- disclaimer acceptance -------------------------------------------
 
-# Bump when the EULA / disclaimer changes materially so users re-accept.
+# Bump when the disclaimer changes materially so users re-accept.
 # v2: disclaimer became a full EULA acceptance gate (license + third-party credits).
-DISCLAIMER_VERSION = "2"
+# v3: relicensed to GPLv3 — EULA step removed, single plain-language disclaimer gate.
+DISCLAIMER_VERSION = "3"
 
 
 def disclaimer_accepted() -> bool:
@@ -368,7 +369,7 @@ def accept_disclaimer() -> None:
 
 
 def forget_disclaimer() -> None:
-    """Delete the stored EULA/disclaimer-accepted flag (gate reappears next launch)."""
+    """Delete the stored disclaimer-accepted flag (gate reappears next launch)."""
     _kr_cache.pop("disclaimer-accepted", None)
     try:
         keyring.delete_password(SERVICE, "disclaimer-accepted")

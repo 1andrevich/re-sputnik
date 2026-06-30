@@ -1,46 +1,61 @@
-name: Release (publish to public showcase repo)
+name: Release
 
-# SKELETON. Builds Re:Sputnik for Windows/macOS/Linux in THIS private repo and
-# publishes the binaries as a Release in a SEPARATE PUBLIC repo (the showcase:
-# releases + docs + issues, no source code).
+# Tagged releases for the (public, GPLv3) re-sputnik repo.
 #
-# Relationship to build.yml:
-#   - build.yml stays for CI artifact builds (manual dispatch / branch pushes).
-#   - This file owns TAG releases. To avoid a double-release, remove the
-#     `on: push: tags` trigger AND the "Attach to Release" step from build.yml,
-#     OR fold these deltas into build.yml and delete this file.
+# Flow: push a tag `vX.Y.Z` →
+#   1. test   — unit tests + compile check, and verify the tag matches __version__
+#   2. build  — PyInstaller build matrix (Windows x64, macOS arm64, Linux x86_64 +
+#               aarch64); each job uploads its packaged asset as a CI artifact
+#   3. release— gather every asset, pull the matching CHANGELOG section as notes,
+#               and publish ONE GitHub Release in THIS repo (built-in GITHUB_TOKEN,
+#               no PAT / no separate showcase repo).
 #
-# One-time setup before this works:
-#   1. Create the public repo, e.g.  <owner>/re-sputnik  (showcase).
-#   2. Create a fine-grained PAT with `contents: write` on ONLY that public repo.
-#   3. Add it to THIS repo:  Settings → Secrets → Actions → RELEASE_PAT
-#   4. Set the target:       Settings → Variables → Actions → PUBLIC_REPO = <owner>/re-sputnik
+# build.yml stays for on-demand (workflow_dispatch) CI artifact builds; this file
+# owns tag releases, so there is no double-publish.
 #
-# Builds are UNSIGNED by default — see the TODO blocks for signing/notarization.
+# Builds are UNSIGNED: Windows shows SmartScreen; macOS Gatekeeper quarantines the
+# .app (right-click → Open, or `xattr -dr com.apple.quarantine`). Add signing in the
+# marked TODO blocks + repo secrets when ready.
 
 on:
   push:
     tags: ["v*"]
-  workflow_dispatch:        # manual run = build only, no publish (see `if:` on publish step)
+  workflow_dispatch:        # manual run = build matrix only, no release (publish is tag-gated)
 
 permissions:
-  contents: read            # GITHUB_TOKEN isn't used to publish (we use RELEASE_PAT cross-repo)
+  contents: read
 
 jobs:
-  # Gate: a tagged release must not build/publish if the tests fail. Runs once on
-  # a single runner (the build matrix below `needs` it), so it's cheap insurance.
+  # Fast gate: tests must pass and (on a tag) the tag must equal __version__ before
+  # the expensive 4-platform build runs.
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+
+      - name: Verify tag matches __version__
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          file_ver=$(grep -oE '__version__[[:space:]]*=[[:space:]]*"[^"]+"' src/re_sputnik/__init__.py | grep -oE '[0-9][^"]*')
+          tag_ver="${GITHUB_REF_NAME#v}"
+          echo "file=$file_ver  tag=$tag_ver"
+          if [ "$file_ver" != "$tag_ver" ]; then
+            echo "::error::Tag '${GITHUB_REF_NAME}' != __version__ '${file_ver}'. Bump src/re_sputnik/__init__.py or retag."
+            exit 1
+          fi
+
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: |
+      - name: Install (with dev deps)
+        run: |
           python -m pip install --upgrade pip
           pip install ".[dev]"
-      - run: python -m compileall -q src
-      - run: pytest -q
+      - name: Compile check
+        run: python -m compileall -q src
+      - name: Run tests
+        run: pytest -q
 
   build:
     name: ${{ matrix.label }}
@@ -56,37 +71,24 @@ jobs:
           - os: macos-14            # Apple Silicon (arm64)
             label: macOS arm64
             asset: Re-Sputnik-macos-arm64.dmg
-          # - os: macos-13          # Intel — uncomment for a second mac build
-          #   label: macOS x64
-          #   asset: Re-Sputnik-macos-x64.dmg
-          - os: ubuntu-22.04        # OLD glibc on purpose → AppImage runs on older distros
+          - os: ubuntu-22.04        # old glibc on purpose → AppImage runs on older distros
             label: Linux x86_64
             asset: Re-Sputnik-linux-x86_64.AppImage
+            apparch: x86_64
+          - os: ubuntu-24.04-arm    # GitHub-hosted arm64 runner
+            label: Linux aarch64
+            asset: Re-Sputnik-linux-aarch64.AppImage
+            apparch: aarch64
 
     steps:
       - uses: actions/checkout@v7
-
-      # Single source of truth is src/re_sputnik/__init__.py (__version__). A release
-      # tag that disagrees with it is almost always a mistake — fail loudly so the
-      # exe's version, the UI, and the tag can never drift apart.
-      - name: Verify tag matches __version__
-        if: startsWith(github.ref, 'refs/tags/')
-        shell: bash
-        run: |
-          file_ver=$(grep -oE '__version__[[:space:]]*=[[:space:]]*"[^"]+"' src/re_sputnik/__init__.py | grep -oE '[0-9][^"]*')
-          tag_ver="${GITHUB_REF_NAME#v}"
-          echo "file=$file_ver  tag=$tag_ver"
-          if [ "$file_ver" != "$tag_ver" ]; then
-            echo "::error::Tag '${GITHUB_REF_NAME}' != __version__ '${file_ver}'. Bump src/re_sputnik/__init__.py or retag."
-            exit 1
-          fi
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
-      - name: Install Linux build deps (Tk + FUSE for AppImage)
+      - name: Install Linux build deps (Tk runtime + FUSE for AppImage)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -99,7 +101,7 @@ jobs:
           pip install ".[build]"
 
       - name: Bake icons (SVG → PNG)
-        continue-on-error: true
+        continue-on-error: true   # committed PNGs are the fallback if this can't run
         run: |
           python scripts/render_icons.py
           python scripts/gen_icons.py
@@ -108,6 +110,7 @@ jobs:
         if: runner.os == 'macOS'
         continue-on-error: true
         run: |
+          set -e
           ICONDIR=src/re_sputnik/resources/branding
           SRC_PNG="$ICONDIR/icon_256.png"
           if [ -f "$SRC_PNG" ]; then
@@ -131,11 +134,8 @@ jobs:
         run: cp "dist/Re-Sputnik.exe" "${{ matrix.asset }}"
 
       # ── macOS ────────────────────────────────────────────────────────────────
-      # TODO sign+notarize before the .dmg:
-      #   codesign --deep --force --options runtime --timestamp \
-      #            --sign "Developer ID Application: <NAME> (<TEAMID>)" dist/Re-Sputnik.app
-      #   xcrun notarytool submit ... --wait   (needs APPLE_ID / APPLE_PW / APPLE_TEAM_ID)
-      #   xcrun stapler staple dist/Re-Sputnik.app
+      # TODO sign+notarize before the .dmg (codesign --options runtime + notarytool
+      # + stapler; needs APPLE_ID / APPLE_PW / APPLE_TEAM_ID secrets).
       - name: Package (macOS → .dmg)
         if: runner.os == 'macOS'
         run: |
@@ -156,27 +156,53 @@ jobs:
           printf '[Desktop Entry]\nType=Application\nName=Re:Sputnik\nExec=%s\nIcon=%s\nCategories=Network;Utility;\nTerminal=false\n' "$APP" "$APP" > "AppDir/$APP.desktop"
           printf '#!/bin/sh\nHERE="$(dirname "$(readlink -f "$0")")"\nexec "$HERE/usr/bin/%s" "$@"\n' "$APP" > AppDir/AppRun
           chmod +x AppDir/AppRun
-          wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+          wget -q "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{ matrix.apparch }}.AppImage" -O appimagetool
           chmod +x appimagetool
-          ARCH=x86_64 ./appimagetool --appimage-extract-and-run AppDir "${{ matrix.asset }}"
+          ARCH=${{ matrix.apparch }} ./appimagetool --appimage-extract-and-run AppDir "${{ matrix.asset }}"
 
-      - name: Upload CI artifact (always)
+      - name: Upload asset as CI artifact
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.asset }}
           path: ${{ matrix.asset }}
+          if-no-files-found: error
 
-      # Publish ONLY on tag pushes, into the PUBLIC showcase repo via the PAT.
-      # Each matrix job appends its own asset to the same tagged Release.
-      - name: Publish to public repo (tag builds only)
-        if: startsWith(github.ref, 'refs/tags/')
+  # One Release in THIS repo, with every platform's asset attached. Tag pushes only.
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write          # GITHUB_TOKEN creates the Release in this repo
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download all build assets
+        uses: actions/download-artifact@v7
+        with:
+          path: _assets         # each artifact lands in _assets/<name>/<file>
+
+      - name: Extract release notes from CHANGELOG
+        shell: bash
+        run: |
+          ver="${GITHUB_REF_NAME#v}"
+          # index()-based, no regex — avoids awk treating "[ver]" as a char class.
+          awk -v marker="## [$ver]" '
+            index($0, marker)==1 {f=1; next}
+            f && index($0, "## [")==1 {exit}
+            f {print}
+          ' CHANGELOG.md > RELEASE_NOTES.md
+          if [ ! -s RELEASE_NOTES.md ]; then
+            printf 'Re:Sputnik %s\n' "$GITHUB_REF_NAME" > RELEASE_NOTES.md
+          fi
+          echo "----- notes -----"; cat RELEASE_NOTES.md
+
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          repository: ${{ vars.PUBLIC_REPO }}     # e.g. youruser/re-sputnik (public)
-          token: ${{ secrets.RELEASE_PAT }}        # fine-grained PAT, contents:write on that repo
           tag_name: ${{ github.ref_name }}
           name: Re:Sputnik ${{ github.ref_name }}
-          body_path: RELEASE_NOTES.md              # optional; remove if you don't keep one
-          draft: true                              # review assets, then publish manually
-          files: ${{ matrix.asset }}
+          body_path: RELEASE_NOTES.md
+          prerelease: ${{ contains(github.ref_name, '-') }}   # v1.2.3-beta etc. → prerelease
+          files: _assets/**/*
           fail_on_unmatched_files: true

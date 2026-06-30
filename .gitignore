@@ -34,6 +34,5 @@ Thumbs.db
 *.local
 secrets.json
 
-# Draft legal docs — not committed until finalized
-EULA.DRAFT.txt
+# Draft docs — not committed until finalized
 *.DRAFT.*

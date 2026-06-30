@@ -3,9 +3,9 @@ THIRD-PARTY LICENSE TEXTS
 
 This directory holds the full license texts of the third-party components
 redistributed in the Re:Sputnik binary. See the top-level NOTICE file for the
-attribution summary and trademark notices. Re:Sputnik itself is closed-source
-freeware governed by EULA.txt; the licenses below apply ONLY to the named
-components, not to Re:Sputnik.
+attribution summary and trademark notices. Re:Sputnik itself is free software
+under the GNU GPLv3 (see the top-level LICENSE file); the licenses below apply
+ONLY to the named components, not to Re:Sputnik.
 
 Bundled license texts in this directory:
 

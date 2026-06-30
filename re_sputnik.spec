@@ -42,7 +42,7 @@ hiddenimports += ck_hidden
 # Pillow's Tk bridge: ImageTk.PhotoImage (used by every CTkImage + the window
 # icon) imports PIL._tkinter_finder DYNAMICALLY, so PyInstaller's PIL hook misses
 # it and the freeze raises "No module named 'PIL._tkinter_finder'" the moment a
-# logo renders (e.g. the mode picker right after the EULA gate). Windows happened
+# logo renders (e.g. the mode picker right after the disclaimer gate). Windows happened
 # to resolve it; Linux did not. Force it in.
 hiddenimports += ["PIL._tkinter_finder"]
 
@@ -83,15 +83,14 @@ binaries += ce_binaries
 hiddenimports += ce_hidden
 
 # App data: the whole resources/ + assets/ trees, plus the legal files the About
-# screen / EULA prompt read (bundled into resources so their lookup finds them in
-# the freeze). EULA.txt and the THIRD_PARTY_LICENSES texts must ship with the
-# closed-source binary so users can read the terms and dependency licenses offline.
+# screen / disclaimer prompt read (bundled into resources so their lookup finds them
+# in the freeze). The GPLv3 LICENSE and the THIRD_PARTY_LICENSES texts must ship with
+# the binary so users can read the license and dependency licenses offline.
 datas += [
     (os.path.join(SRC, "resources"), "re_sputnik/resources"),
     (os.path.join(SRC, "assets"), "re_sputnik/assets"),
     (os.path.join(PROJ, "NOTICE"), "re_sputnik/resources"),
-    (os.path.join(PROJ, "EULA.txt"), "re_sputnik/resources"),
-    (os.path.join(PROJ, "EULA.ru.txt"), "re_sputnik/resources"),
+    (os.path.join(PROJ, "LICENSE"), "re_sputnik/resources"),
     (os.path.join(PROJ, "THIRD_PARTY_LICENSES"), "re_sputnik/resources/THIRD_PARTY_LICENSES"),
 ]
 
@@ -179,10 +178,10 @@ if IS_MAC:
         info_plist={
             "CFBundleName": "Re-Sputnik",
             "CFBundleDisplayName": "Re:Sputnik",
-            "CFBundleShortVersionString": "0.0.2",
-            "CFBundleVersion": "0.0.2",
+            "CFBundleShortVersionString": APP_VERSION,
+            "CFBundleVersion": APP_VERSION,
             "NSHighResolutionCapable": True,
             "LSMinimumSystemVersion": "11.0",
-            "NSHumanReadableCopyright": "© 2026 1andrevich. All rights reserved.",
+            "NSHumanReadableCopyright": "© 2026 1andrevich. Licensed under the GNU GPLv3.",
         },
     )
