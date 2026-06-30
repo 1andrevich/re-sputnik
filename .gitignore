@@ -24,9 +24,10 @@ env/
 # Generated icon PNGs (baked from SVG at build time)
 src/re_sputnik/assets/icons/*.png
 
-# IDE / OS
+# IDE / OS / tooling
 .idea/
 .vscode/
+.claude/
 .DS_Store
 Thumbs.db
 
