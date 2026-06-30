@@ -1,0 +1,189 @@
+Re:Sputnik — Third-Party Notices and Attributions
+===================================================
+
+This file documents third-party software and assets distributed with, or
+used by, Re:Sputnik, together with their licenses and trademark status.
+It is provided for informational purposes and to comply with the
+attribution requirements of the licenses listed below.
+
+
+1. Third-Party Software Dependencies
+------------------------------------
+
+Re:Sputnik depends on the following Python packages (installed from PyPI
+when running from source, and bundled unmodified inside the distributed
+binary builds). They are not modified; their licenses apply to those
+packages, not to Re:Sputnik's own source.
+
+  paramiko        — LGPL-2.1     — https://github.com/paramiko/paramiko
+  customtkinter   — MIT          — https://github.com/TomSchimansky/CustomTkinter
+  Pillow          — HPND (PIL)   — https://github.com/python-pillow/Pillow
+  keyring         — MIT          — https://github.com/jaraco/keyring
+  PyYAML          — MIT          — https://github.com/yaml/pyyaml
+  qrcode          — BSD-3-Clause — https://github.com/lincolnloop/python-qrcode
+  certifi         — MPL-2.0      — https://github.com/certifi/python-certifi
+  SecretStorage   — BSD-3-Clause — https://github.com/mitya57/secretstorage  (Linux only)
+  jeepney         — MIT          — https://gitlab.com/takluyver/jeepney        (Linux only)
+
+paramiko is licensed under the GNU Lesser General Public License v2.1.
+LGPL components are used as dynamically-available libraries; users may
+replace them with compatible versions. A copy of the LGPL-2.1 text is
+available at https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+
+certifi (the CA-certificate bundle) is licensed under the Mozilla Public
+License 2.0. Its source is available unmodified at the URL above; a copy of
+the MPL-2.0 text is at https://www.mozilla.org/MPL/2.0/. The MIT, BSD, and
+HPND components above permit redistribution in binary form provided their
+copyright and permission notices are retained, which this file does.
+
+Full license texts for the redistributed components are included in the
+THIRD_PARTY_LICENSES/ directory of the distribution.
+
+
+2. Bundled Fonts
+----------------
+
+Re:Sputnik bundles the following fonts for its interface. Both are licensed
+under the SIL Open Font License, Version 1.1; full license texts are in the
+THIRD_PARTY_LICENSES/ directory. They are redistributed unmodified, are not sold
+on their own, and their Reserved Font Names are not used by any derivative. They
+live in re_sputnik/assets/fonts/.
+
+  JetBrains Mono  — OFL-1.1 — https://github.com/JetBrains/JetBrainsMono
+                    Monospace for technical text (addresses, keys, logs).
+  Vazirmatn       — OFL-1.1 — https://github.com/rastikerdar/vazirmatn
+                    Persian/Arabic UI face for the Farsi locale.
+
+The Latin/Cyrillic UI uses Roboto, customtkinter's built-in font (Apache License
+2.0); Re:Sputnik does not bundle it separately. If a bundled font is absent at
+runtime, the app falls back gracefully (e.g. JetBrains Mono to a system monospace).
+
+
+3. Icons and Brand Logos
+------------------------
+
+Re:Sputnik's routing screens display small icons to help the user
+identify the service, network, or list that a routing rule applies to.
+
+The application's user-interface line icons are sourced from Lucide
+(https://lucide.dev, ISC License — some icons derived from Feather, MIT)
+and Phosphor Icons (https://phosphoricons.com, MIT License). The SVGs are
+rasterized to PNG at build time and are otherwise unmodified. Copies of the
+ISC and MIT license texts are included in the THIRD_PARTY_LICENSES/ directory
+(Lucide-ISC.txt, Phosphor-MIT.txt); the required copyright and permission
+notices are reproduced there.
+
+  Lucide          — ISC (+ Feather MIT) — https://github.com/lucide-icons/lucide
+  Phosphor Icons  — MIT                 — https://github.com/phosphor-icons/core
+
+Most brand icons are sourced from Simple Icons (https://simpleicons.org),
+whose icon artwork is released under the Creative Commons Zero v1.0
+Universal (CC0-1.0) public domain dedication. No copyright attribution is
+required for that artwork. The brand names and logos they depict remain
+the trademarks of their respective owners, as listed below.
+
+Country-flag images shown in server names (resources/flags/) are derived
+from Twemoji (https://github.com/jdecked/twemoji), copyright 2020 Twitter,
+Inc. and other contributors, licensed under CC-BY 4.0
+(https://creativecommons.org/licenses/by/4.0/). The flag artwork was
+trimmed and downscaled; no other changes were made.
+
+The following icons depict third-party brands and services. The logos and
+names are trademarks (registered or otherwise) of their respective owners.
+They are used here SOLELY to identify the corresponding service so that the
+user can recognize which traffic a routing rule affects. This is a
+nominative, descriptive use. It does NOT imply any affiliation with,
+sponsorship by, or endorsement from the trademark owners.
+
+  discord.png        — Discord       — Discord Inc.
+  telegram.png       — Telegram      — Telegram FZ-LLC
+  tiktok.png         — TikTok        — ByteDance Ltd.
+  twitter.png        — X / Twitter   — X Corp.
+  whatsapp.png       — WhatsApp      — Meta Platforms, Inc.
+  meta.png           — Meta          — Meta Platforms, Inc.
+  youtube.png        — YouTube       — Google LLC
+  google_play.png    — Google Play   — Google LLC
+  google_ai.png      — Google AI     — Google LLC
+  roblox.png         — Roblox        — Roblox Corporation
+  cloudflare.png     — Cloudflare    — Cloudflare, Inc.
+  digitalocean.png   — DigitalOcean  — DigitalOcean, LLC
+  hetzner.png        — Hetzner       — Hetzner Online GmbH
+  ovh.png            — OVH / OVHcloud— OVH Groupe SAS
+  hdrezka.png        — HDrezka       — respective owner
+
+The following icons refer to community-maintained routing lists or generic
+traffic categories and are used to identify those lists/categories:
+
+  refilter.png       — Re:filter routing list (by 1andrevich/re-filter)
+  russia-inside.png  — "Russia Inside" routing list (by itdoginfo)
+  hodca.png          — HODCA routing list (by itdoginfo)
+  cloudfront.png     — generic CDN icon (not Amazon's logo); label text
+                       "CloudFront" names the service nominatively only
+  geoblock.png       — generic geo-blocking category icon
+  anime.png          — generic category icon
+  news.png           — generic category icon
+  porn.png           — generic category icon
+  torrent.png        — generic BitTorrent category icon
+  _default.png       — generic fallback icon
+
+All trademarks, service marks, and logos are the property of their
+respective owners. If you are a rights holder and believe an icon is used
+improperly, please open an issue and it will be addressed promptly.
+
+
+4. Routing Lists and Rule-sets
+------------------------------
+
+Re:Sputnik configures Re:HomeProxy to route traffic using community-
+maintained domain/IP lists. Re:Sputnik does NOT bundle the list data; it
+references the lists by name and the router downloads them from their
+upstream sources. Ownership and credit:
+
+  - "Re:filter" — the RKN-registry blocklist (domains + IPs). Maintained by
+    1andrevich (https://github.com/1andrevich/re-filter).
+
+  - "Russia Inside" AND all of the per-service routing lists used here
+    (YouTube, Telegram, Discord, Twitter/X, TikTok, Meta, Roblox, anime,
+    HDRezka, news, 18+, Google AI, Google Play, GeoBlock, Cloudflare,
+    CloudFront, OVH, Hetzner, DigitalOcean, HODCA, and the rest) are made
+    and owned by ITDOG (https://github.com/itdoginfo). All rights and credit
+    for these lists belong to itdoginfo; consult that project for its
+    license and terms of use.
+
+The service names and trademarks above are used nominatively to identify
+which traffic each list affects (see section 2).
+
+
+5. Router-Side DPI-Bypass Tools
+-------------------------------
+
+Re:Sputnik can install and configure two on-router DPI-circumvention
+engines through Re:HomeProxy (the AntiDPI screen). Re:Sputnik does NOT
+bundle their source or binaries; the router fetches the packages from
+their upstream releases. Credit and licenses belong to the upstream
+projects:
+
+  - ByeDPI (ciadpi) — SOCKS-level DPI bypass by hufrea
+    (https://github.com/hufrea/byedpi). OpenWrt packages by 1andrevich
+    (https://github.com/1andrevich/ByeDPI-OpenWrt).
+
+  - zapret2 / nfqws2 / blockcheck2 — packet-level DPI bypass by bol-van
+    (https://github.com/bol-van/zapret2). OpenWrt packages by 1andrevich
+    (https://github.com/1andrevich/zapret2-openwrt). Some bundled strategy
+    presets were adapted from flowseal/zapret-discord-youtube
+    (https://github.com/flowseal/zapret-discord-youtube), MIT-licensed.
+
+Consult each upstream project for its license and terms of use.
+
+
+6. Notes for Redistributors and Branded Builds
+----------------------------------------------
+
+- The brand logos above may continue to be used as service identifiers in
+  derivative or rebranded builds, as this remains a nominative use.
+- Do NOT use any third-party logo as the application's own brand, launcher
+  icon, or in a manner that implies endorsement by the trademark owner.
+- Do NOT modify logos whose owners publish brand guidelines.
+- Re:Sputnik communicates with Re:HomeProxy over SSH/RPC as a separate
+  program and does not bundle its source; Re:HomeProxy is licensed
+  separately (GPL) and its source is available from its own repository.

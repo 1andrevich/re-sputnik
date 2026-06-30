@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.spec
+# keep the hand-written build config tracked despite *.spec above
+# (gitignore has no inline comments — the comment must be on its own line)
+!re_sputnik.spec
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Packaging output
+*.exe
+*.app
+*.dmg
+*.msix
+
+# Generated icon PNGs (baked from SVG at build time)
+src/re_sputnik/assets/icons/*.png
+
+# IDE / OS / tooling
+.idea/
+.vscode/
+.claude/
+.DS_Store
+Thumbs.db
+
+# Local secrets / scratch
+*.local
+secrets.json
+
+# Draft docs — not committed until finalized
+*.DRAFT.*

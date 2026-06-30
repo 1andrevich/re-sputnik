@@ -1,0 +1,155 @@
+name: Build (Windows + macOS + Linux)
+
+# Builds Re:Sputnik for Windows (x64 .exe), macOS (Apple Silicon .app), and
+# Linux (x86_64 + arm64 AppImage).
+#
+# No Windows arm64 row: cryptography (a hard paramiko dependency) ships no
+# win_arm64 wheel, so the runner would have to compile it from source (Rust +
+# OpenSSL) — brittle. Windows-on-ARM runs the x64 .exe under emulation anyway,
+# so a native arm64 Windows build adds little. Revisit if cryptography ships a
+# win_arm64 wheel.
+#
+# Triggers:
+#   - manual "Run workflow"  → builds + uploads artifacts only (no release)
+#
+# Tag releases are owned by release.yml (gates on tests and publishes a GitHub
+# Release in this repo) — this workflow is purely for on-demand CI artifact builds,
+# so there's no tag trigger / Release step here (that would double-release).
+#
+# NOTE: builds are UNSIGNED. Windows shows a SmartScreen warning; macOS Gatekeeper
+# quarantines the .app (users right-click → Open, or `xattr -dr com.apple.quarantine`).
+# To sign later, add the signing/notarization steps + repo secrets (see the
+# commented placeholders near each build step).
+
+on:
+  workflow_dispatch:   # on-demand artifact builds only; tag releases live in release.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: Windows x64
+            artifact: Re-Sputnik-windows-x64
+          - os: macos-14          # Apple Silicon (arm64) runner
+            label: macOS arm64
+            artifact: Re-Sputnik-macos-arm64
+          - os: ubuntu-latest
+            label: Linux x64
+            artifact: Re-Sputnik-linux-x86_64
+            apparch: x86_64
+          - os: ubuntu-24.04-arm   # GitHub-hosted arm64 runner (1x multiplier)
+            label: Linux arm64
+            artifact: Re-Sputnik-linux-aarch64
+            apparch: aarch64
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install Linux build deps (Tk runtime + FUSE for AppImage)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk libfuse2
+          # Fail fast with a clear signal if the build interpreter has no Tk
+          # (the app can't run without it; PyInstaller would bundle a broken build).
+          python -c "import tkinter; print('tkinter OK', tkinter.TkVersion)"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[build]"
+
+      - name: Bake icons (SVG → PNG)
+        continue-on-error: true   # committed PNGs are the fallback if this can't run
+        run: |
+          python scripts/render_icons.py
+          python scripts/gen_icons.py
+
+      - name: Generate .icns (macOS app icon)
+        if: runner.os == 'macOS'
+        continue-on-error: true
+        run: |
+          set -e
+          ICONDIR=src/re_sputnik/resources/branding
+          SRC_PNG="$ICONDIR/icon_256.png"
+          if [ -f "$SRC_PNG" ]; then
+            mkdir -p icon.iconset
+            for s in 16 32 64 128 256 512; do
+              sips -z $s $s "$SRC_PNG" --out "icon.iconset/icon_${s}x${s}.png" >/dev/null 2>&1 || true
+              d=$((s*2)); sips -z $d $d "$SRC_PNG" --out "icon.iconset/icon_${s}x${s}@2x.png" >/dev/null 2>&1 || true
+            done
+            iconutil -c icns icon.iconset -o "$ICONDIR/icon.icns" || true
+          fi
+
+      - name: Build with PyInstaller
+        run: pyinstaller --clean --noconfirm re_sputnik.spec
+
+      # --- Windows: sign here later (signtool + WINDOWS_CERT secrets) ---
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir staging
+          copy "dist\Re-Sputnik.exe" "staging\Re-Sputnik.exe"
+        shell: cmd
+
+      # --- macOS: codesign + notarize here later (APPLE_* secrets) ---
+
+      - name: Package (macOS — zip the .app, preserving bundle)
+        if: runner.os == 'macOS'
+        run: |
+          cd dist
+          ditto -c -k --keepParent "Re-Sputnik.app" "../${{ matrix.artifact }}.zip"
+
+      - name: Package (Linux — AppImage)
+        if: runner.os == 'Linux'
+        run: |
+          set -e
+          APP=Re-Sputnik
+          mkdir -p AppDir/usr/bin
+          cp "dist/$APP" "AppDir/usr/bin/$APP"
+          chmod +x "AppDir/usr/bin/$APP"
+          # Icon (best-effort: baked PNG; placeholder if absent so appimagetool is happy).
+          ICON=src/re_sputnik/resources/branding/icon_256.png
+          if [ -f "$ICON" ]; then cp "$ICON" "AppDir/$APP.png"; else : > "AppDir/$APP.png"; fi
+          # .desktop and AppRun via printf (no heredoc → no YAML-indent pitfalls).
+          printf '[Desktop Entry]\nType=Application\nName=Re:Sputnik\nExec=%s\nIcon=%s\nCategories=Network;Utility;\nTerminal=false\n' "$APP" "$APP" > "AppDir/$APP.desktop"
+          printf '#!/bin/sh\nHERE="$(dirname "$(readlink -f "$0")")"\nexec "$HERE/usr/bin/%s" "$@"\n' "$APP" > AppDir/AppRun
+          chmod +x AppDir/AppRun
+          wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{ matrix.apparch }}.AppImage -O appimagetool
+          chmod +x appimagetool
+          ARCH=${{ matrix.apparch }} ./appimagetool --appimage-extract-and-run AppDir "${{ matrix.artifact }}.AppImage"
+
+      - name: Upload artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/Re-Sputnik.exe
+
+      - name: Upload artifact (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.zip
+
+      - name: Upload artifact (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.AppImage

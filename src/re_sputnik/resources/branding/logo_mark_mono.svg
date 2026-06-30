@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Re:Sputnik mark" fill="currentColor" style="color:#1B2230">
+  <g transform="translate(-21,8)">
+    <g stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none">
+      <line x1="122" y1="94" x2="208" y2="60"></line>
+      <line x1="128" y1="102" x2="222" y2="98"></line>
+      <line x1="128" y1="112" x2="218" y2="142"></line>
+      <line x1="120" y1="123" x2="190" y2="178"></line>
+    </g>
+    <circle cx="208" cy="60" r="3.6"></circle>
+    <circle cx="222" cy="98" r="3.6"></circle>
+    <circle cx="218" cy="142" r="3.6"></circle>
+    <circle cx="190" cy="178" r="3.6"></circle>
+    <circle cx="102" cy="105" r="29"></circle>
+  </g>
+</svg>

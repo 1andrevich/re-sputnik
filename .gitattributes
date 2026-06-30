@@ -1,0 +1,7 @@
+# Binary assets — never apply text/EOL (CRLF) conversion; it would corrupt them.
+*.ttf  binary
+*.otf  binary
+*.mo   binary
+*.png  binary
+*.ico  binary
+*.icns binary
