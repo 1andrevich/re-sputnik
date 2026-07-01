@@ -27,7 +27,7 @@ and lets you manage Wi-Fi, diagnostics and security afterwards.
 ## Download
 
 Grab the latest build from the [**Releases**](https://github.com/1andrevich/re-sputnik/releases)
-page — no installer:
+page — no installer. Requires a router on **OpenWrt 23.05 or newer**.
 
 - **Windows** — `Re-Sputnik-windows-x64.exe`, double-click.
 - **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.zip`, unzip and drag `Re-Sputnik.app` to Applications.
@@ -48,7 +48,8 @@ Touch ID / password). You only need to do this once.
   (WireGuard/AmneziaWG); URLTest speed pools.
 - **Routing** — ready-made modes (Russia / China / Iran / global) over the Re:filter and
   Russia Inside rule-sets.
-- **DPI bypass** — built-in **ByeDPI** (47 presets) and **Zapret 2** (36 presets), plus a strategy tester that probes several sites in parallel and shows what actually works on your ISP.
+- **DPI bypass** — built-in **ByeDPI** (47 presets) and **Zapret 2** (36 presets), plus a
+  strategy tester that probes several sites in parallel and shows what actually works on your ISP.
 - **Manage** — diagnostics (core status, DNS, routes), Wi-Fi / LAN / DHCP, passwords and SSH keys,
   backup & maintenance, SQM / UPnP.
 - **Languages** — Russian, English, Persian, Chinese
@@ -74,7 +75,9 @@ Secrets (keyring)           router credentials in the OS keychain
 ```
 
 Commands run one at a time per connection, so concurrent requests can't get dropped by the
-router's SSH daemon. No telemetry; credentials never leave your machine.
+router's SSH daemon. No telemetry or analytics: the app talks only to the router you connect
+it to, any subscription/update URL you provide, and official package sources (GitHub, OpenWrt)
+when installing software. Credentials never leave your machine.
 
 ## Tech stack
 
@@ -94,7 +97,7 @@ python -m venv .venv
 . .venv/Scripts/activate      # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 python -m re_sputnik
-pytest -q                     # tests + compile check
+python -m compileall -q src && pytest -q
 ```
 
 CI runs the tests on every push ([`test.yml`](.github/workflows/test.yml)); on-demand multi-platform

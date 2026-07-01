@@ -26,7 +26,7 @@
 
 ## 下载
 
-从 [**Releases**](https://github.com/1andrevich/re-sputnik/releases) 页面获取最新构建——无需安装程序：
+从 [**Releases**](https://github.com/1andrevich/re-sputnik/releases) 页面获取最新构建——无需安装程序。需要路由器运行 **OpenWrt 23.05 或更高版本**。
 
 - **Windows** —— `Re-Sputnik-windows-x64.exe`，双击运行。
 - **macOS**（Apple Silicon）—— `Re-Sputnik-macos-arm64.zip`，解压后将 `Re-Sputnik.app` 拖入 Applications。
@@ -68,7 +68,9 @@ RouterClient (paramiko)     通往路由器的唯一入口：内置脚本、ubus
 Secrets (keyring)           路由器凭据存于操作系统密钥链
 ```
 
-每个连接上的命令逐条执行，因此并发请求不会被路由器的 SSH 守护进程丢弃。无遥测；凭据绝不离开你的设备。
+每个连接上的命令逐条执行，因此并发请求不会被路由器的 SSH 守护进程丢弃。无遥测、无统计分析：应用仅与
+你连接的路由器、你提供的订阅/更新 URL，以及安装软件时使用的官方软件源（GitHub、OpenWrt）通信。
+凭据绝不离开你的设备。
 
 ## 技术栈
 
@@ -88,7 +90,7 @@ python -m venv .venv
 . .venv/Scripts/activate      # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 python -m re_sputnik
-pytest -q                     # 测试 + 编译检查
+python -m compileall -q src && pytest -q
 ```
 
 CI 在每次 push 时运行测试（[`test.yml`](.github/workflows/test.yml)）；按需的多平台构建在

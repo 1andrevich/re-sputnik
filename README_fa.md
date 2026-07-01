@@ -29,7 +29,7 @@
 ## دانلود
 
 آخرین نسخه را از صفحهٔ [**Releases**](https://github.com/1andrevich/re-sputnik/releases) دریافت
-کنید — بدون نصب‌کننده:
+کنید — بدون نصب‌کننده. نیاز به روتری با **OpenWrt 23.05 یا جدیدتر** دارد.
 
 - **Windows** — `Re-Sputnik-windows-x64.exe`، دوبار کلیک کنید.
 - **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.zip`، از حالت فشرده خارج کنید و `Re-Sputnik.app` را به Applications بکشید.
@@ -75,8 +75,10 @@ RouterClient (paramiko)     تنها درِ ورود به روتر: اسکریپ
 Secrets (keyring)           اعتبارنامه‌های روتر در جاکلیدی سیستم‌عامل
 ```
 
-دستورها در هر اتصال یکی‌یکی اجرا می‌شوند تا درخواست‌های هم‌زمان توسط سرویس SSH روتر قطع نشوند. هیچ
-تله‌متری‌ای وجود ندارد؛ اعتبارنامه‌ها هرگز دستگاه شما را ترک نمی‌کنند.
+دستورها در هر اتصال یکی‌یکی اجرا می‌شوند تا درخواست‌های هم‌زمان توسط سرویس SSH روتر قطع نشوند. نه
+تله‌متری و نه تحلیل آماری: اپلیکیشن فقط با روتری که به آن وصل شده‌اید، هر URL اشتراک/به‌روزرسانی
+که خودتان می‌دهید، و منابع رسمی بسته‌ها (GitHub، OpenWrt) هنگام نصب نرم‌افزار ارتباط دارد.
+اعتبارنامه‌ها هرگز دستگاه شما را ترک نمی‌کنند.
 
 ## پشتهٔ فناوری
 
@@ -96,7 +98,7 @@ python -m venv .venv
 . .venv/Scripts/activate      # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 python -m re_sputnik
-pytest -q                     # تست‌ها + بررسی کامپایل
+python -m compileall -q src && pytest -q
 ```
 
 CI در هر push تست‌ها را اجرا می‌کند ([`test.yml`](.github/workflows/test.yml))؛ ساخت چندسکویی

@@ -32,4 +32,4 @@ Your contribution always remains available to everyone under the GPLv3.
 - Keep changes focused; match the surrounding code style.
 - Any new or changed user-facing `_()` string must update the translation
   catalogs in the same change (`src/re_sputnik/locale/*/LC_MESSAGES`).
-- Run the smoke checks before opening a PR (`python -m compileall src` at minimum).
+- Run the smoke checks before opening a PR: `python -m compileall -q src && pytest -q`.

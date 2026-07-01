@@ -26,7 +26,7 @@
 
 ## Загрузка
 
-Скачайте свежую сборку со страницы [**Releases**](https://github.com/1andrevich/re-sputnik/releases) — без установщика:
+Скачайте свежую сборку со страницы [**Releases**](https://github.com/1andrevich/re-sputnik/releases) — без установщика. Нужен роутер на **OpenWrt 23.05 или новее**.
 
 - **Windows** — `Re-Sputnik-windows-x64.exe`, двойной клик.
 - **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.zip`, распакуйте и перетащите `Re-Sputnik.app` в Applications.
@@ -75,7 +75,9 @@ Secrets (keyring)           учётные данные роутера в хра
 ```
 
 Команды выполняются по очереди в рамках соединения, поэтому одновременные запросы не
-обрываются SSH-демоном роутера. Телеметрии нет; учётные данные не покидают ваш компьютер.
+обрываются SSH-демоном роутера. Ни телеметрии, ни аналитики: приложение обращается только к
+роутеру, к которому вы подключились, к указанным вами URL подписок/обновлений и к официальным
+источникам пакетов (GitHub, OpenWrt) при установке ПО. Учётные данные не покидают ваш компьютер.
 
 ## Технологии
 
@@ -95,7 +97,7 @@ python -m venv .venv
 . .venv/Scripts/activate      # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 python -m re_sputnik
-pytest -q                     # тесты + проверка компиляции
+python -m compileall -q src && pytest -q
 ```
 
 CI прогоняет тесты на каждый push ([`test.yml`](.github/workflows/test.yml)); сборки под все
