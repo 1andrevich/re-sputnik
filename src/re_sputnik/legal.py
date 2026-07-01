@@ -18,7 +18,7 @@ import sys
 _FALLBACK_NOTICE = (
     "Сторонние компоненты:\n"
     "  • paramiko (LGPL-2.1), customtkinter (MIT), Pillow (HPND), keyring (MIT),\n"
-    "    PyYAML (MIT), qrcode (BSD), certifi (MPL-2.0)\n"
+    "    qrcode (BSD), certifi (MPL-2.0)\n"
     "  • Иконки сервисов — Simple Icons (CC0-1.0); товарные знаки принадлежат "
     "их владельцам и используются только для обозначения сервисов.\n\n"
     "Полный текст — в файле NOTICE в каталоге программы."

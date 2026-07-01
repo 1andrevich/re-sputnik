@@ -13,7 +13,6 @@ Bundled license texts in this directory:
   Pillow-HPND.txt            Pillow            (HPND / PIL)
   customtkinter-MIT.txt      customtkinter     (MIT)
   keyring-MIT.txt            keyring           (MIT)
-  PyYAML-MIT.txt             PyYAML            (MIT)
   qrcode-BSD-3-Clause.txt    qrcode            (BSD-3-Clause)
   certifi-MPL-2.0.txt        certifi           (MPL-2.0)
   Lucide-ISC.txt             Lucide icons      (ISC, + Feather MIT)

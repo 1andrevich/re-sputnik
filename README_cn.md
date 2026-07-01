@@ -43,8 +43,7 @@
 - **服务器** —— 导入订阅（sing-box/Hiddify JSON 和 Xray/V2Ray JSON）、分享链接（VLESS/Reality、
   Hysteria2、Trojan、Shadowsocks…）、`vpn://` 以及 `.conf` 文件（WireGuard/AmneziaWG）；URLTest
   测速分组。
-- **路由** —— 基于 Re:filter 和 Russia Inside 规则集的预设模式（俄罗斯 / 中国 / 伊朗 / 全局 /
-  自定义）。
+- **路由** —— 基于 Re:filter 和 Russia Inside 规则集的预设模式（俄罗斯 / 中国 / 伊朗 / 全局）。
 - **DPI 绕过** —— 内置 **ByeDPI**（47 个预设）和 **Zapret 2**（36 个预设），以及一个策略测试器，
   并行探测多个站点，显示在你的 ISP 上实际有效的方案。
 - **管理** —— 诊断（内核状态、DNS、路由）、Wi-Fi / LAN / DHCP、密码和 SSH 密钥、备份与维护、
@@ -62,9 +61,8 @@
 ## 架构（简述）
 
 ```
-UI (customtkinter)          向导界面、进度、提示——引擎之上的薄层
-Orchestrator                基于声明式阶段方案（YAML）的状态机
-SecurityGate                同意 / 来源 / 日志——每个执行器之上的统一关卡
+UI (customtkinter)          向导与设置界面；驱动配置流程
+engine/*                    各功能的逻辑（安装、节点、规则、ByeDPI、Zapret、诊断…）
 RouterClient (paramiko)     通往路由器的唯一入口：内置脚本、ubus、uci
 Secrets (keyring)           路由器凭据存于操作系统密钥链
 ```
@@ -80,7 +78,6 @@ Secrets (keyring)           路由器凭据存于操作系统密钥链
 | 界面 | customtkinter (Tk) |
 | 路由器通信 | paramiko (SSH) |
 | 凭据 | keyring（操作系统密钥链） |
-| 方案 | PyYAML |
 | 图标 | Lucide/Phosphor（界面）+ Simple Icons（品牌），构建时 SVG→PNG |
 
 ## 开发

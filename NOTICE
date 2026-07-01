@@ -19,7 +19,6 @@ packages, not to Re:Sputnik's own source.
   customtkinter   — MIT          — https://github.com/TomSchimansky/CustomTkinter
   Pillow          — HPND (PIL)   — https://github.com/python-pillow/Pillow
   keyring         — MIT          — https://github.com/jaraco/keyring
-  PyYAML          — MIT          — https://github.com/yaml/pyyaml
   qrcode          — BSD-3-Clause — https://github.com/lincolnloop/python-qrcode
   certifi         — MPL-2.0      — https://github.com/certifi/python-certifi
   SecretStorage   — BSD-3-Clause — https://github.com/mitya57/secretstorage  (Linux only)

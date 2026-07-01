@@ -19,7 +19,6 @@ dependencies = [
     "customtkinter>=5.2",   # modern Tk-based UI, pure Python (MIT)
     "Pillow>=10.0",         # CTkImage backing for icons (HPND)
     "keyring>=24.0",        # store router secrets in OS keychain (MIT)
-    "PyYAML>=6.0",          # declarative phase recipes (MIT)
     "qrcode>=7.4",          # Wi-Fi join QR on the overview page, pure Python (BSD), renders via Pillow
     "certifi>=2024.0",      # pinned CA bundle so HTTPS verifies in the frozen app (MPL-2.0)
     # Linux keyring backend (Secret Service over D-Bus). Windows/macOS use their

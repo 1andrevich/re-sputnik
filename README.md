@@ -44,7 +44,7 @@ Gatekeeper quarantines the app (right-click → Open, or `xattr -dr com.apple.qu
 - **Servers** — import subscriptions (sing-box/Hiddify JSON and Xray/V2Ray JSON), share-links
   (VLESS/Reality, Hysteria2, Trojan, Shadowsocks…), `vpn://`, and `.conf` files
   (WireGuard/AmneziaWG); URLTest speed pools.
-- **Routing** — ready-made modes (Russia / China / Iran / global / custom) over the Re:filter and
+- **Routing** — ready-made modes (Russia / China / Iran / global) over the Re:filter and
   Russia Inside rule-sets.
 - **DPI bypass** — built-in **ByeDPI** (47 presets) and **Zapret 2** (36 presets), plus a strategy tester that probes several sites in parallel and shows what actually works on your ISP.
 - **Manage** — diagnostics (core status, DNS, routes), Wi-Fi / LAN / DHCP, passwords and SSH keys,
@@ -65,9 +65,8 @@ Any mode picks up the router's current configuration instead of starting from sc
 ## Architecture (short)
 
 ```
-UI (customtkinter)          wizard screens, progress, hints — a thin layer over the engine
-Orchestrator                state machine over declarative phase recipes (YAML)
-SecurityGate                consent / source / log — one gate over every executor
+UI (customtkinter)          wizard + settings screens; drives the setup flow
+engine/*                    per-feature logic (install, nodes, rules, ByeDPI, Zapret, diagnostics…)
 RouterClient (paramiko)     the ONLY door to the router: built-in scripts, ubus, uci
 Secrets (keyring)           router credentials in the OS keychain
 ```
@@ -84,7 +83,6 @@ Pure Python + a few libraries — no web/HTML/CSS/JS:
 | UI | customtkinter (Tk) |
 | Router comms | paramiko (SSH) |
 | Secrets | keyring (OS keychain) |
-| Recipes | PyYAML |
 | Icons | Lucide/Phosphor (UI) + Simple Icons (brands), baked SVG→PNG at build time |
 
 ## Develop
