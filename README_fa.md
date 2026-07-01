@@ -32,11 +32,13 @@
 کنید — بدون نصب‌کننده:
 
 - **Windows** — `Re-Sputnik-windows-x64.exe`، دوبار کلیک کنید.
-- **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.dmg`، به Applications بکشید.
+- **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.zip`، از حالت فشرده خارج کنید و `Re-Sputnik.app` را به Applications بکشید.
 - **Linux** — `Re-Sputnik-linux-x86_64.AppImage` / `-aarch64.AppImage`، `chmod +x` و اجرا کنید.
 
-نسخه‌ها فعلاً **امضا نشده‌اند**: SmartScreen ویندوز هشدار می‌دهد (More info → Run anyway)؛
-Gatekeeper مک اپلیکیشن را قرنطینه می‌کند (راست‌کلیک → Open یا `xattr -dr com.apple.quarantine`).
+نسخه‌ها فعلاً **امضا نشده‌اند**. SmartScreen ویندوز هشدار می‌دهد (More info → Run anyway). در
+macOS اجرای اولیه مسدود می‌شود — به **System Settings → Privacy & Security** بروید، تا بخش
+**Security** پایین بروید و کنار پیام Re-Sputnik روی **Open Anyway** بزنید (با Touch ID / گذرواژه
+تأیید کنید). فقط یک‌بار لازم است.
 
 ## امکانات
 

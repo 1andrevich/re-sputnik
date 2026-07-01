@@ -29,12 +29,13 @@
 Скачайте свежую сборку со страницы [**Releases**](https://github.com/1andrevich/re-sputnik/releases) — без установщика:
 
 - **Windows** — `Re-Sputnik-windows-x64.exe`, двойной клик.
-- **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.dmg`, перетащите в Applications.
+- **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.zip`, распакуйте и перетащите `Re-Sputnik.app` в Applications.
 - **Linux** — `Re-Sputnik-linux-x86_64.AppImage` / `-aarch64.AppImage`, `chmod +x` и запустите.
 
-Сборки пока **без подписи**: Windows SmartScreen предупредит (Подробнее → Выполнить в любом
-случае); macOS Gatekeeper поместит приложение в карантин (правый клик → Открыть, или
-`xattr -dr com.apple.quarantine`).
+Сборки пока **без подписи**. Windows SmartScreen предупредит (Подробнее → Выполнить в любом
+случае). На macOS первый запуск блокируется — откройте **Системные настройки → Конфиденциальность
+и безопасность**, прокрутите до раздела **Безопасность** и нажмите **Открыть всё равно** рядом с
+сообщением про Re-Sputnik (подтвердите паролем / Touch ID). Нужно сделать один раз.
 
 ## Возможности
 

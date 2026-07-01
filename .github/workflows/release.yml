@@ -70,7 +70,7 @@ jobs:
             asset: Re-Sputnik-windows-x64.exe
           - os: macos-14            # Apple Silicon (arm64)
             label: macOS arm64
-            asset: Re-Sputnik-macos-arm64.dmg
+            asset: Re-Sputnik-macos-arm64.zip
           - os: ubuntu-22.04        # old glibc on purpose → AppImage runs on older distros
             label: Linux x86_64
             asset: Re-Sputnik-linux-x86_64.AppImage
@@ -134,13 +134,14 @@ jobs:
         run: cp "dist/Re-Sputnik.exe" "${{ matrix.asset }}"
 
       # ── macOS ────────────────────────────────────────────────────────────────
-      # TODO sign+notarize before the .dmg (codesign --options runtime + notarytool
-      # + stapler; needs APPLE_ID / APPLE_PW / APPLE_TEAM_ID secrets).
-      - name: Package (macOS → .dmg)
+      # Ship the .app zipped with ditto (preserves the bundle's structure/symlinks/
+      # permissions — plain `zip` can corrupt it). A .dmg with an Applications
+      # symlink + background is a nicer "later" once the app is signed/notarized
+      # (codesign --options runtime + notarytool + stapler; needs APPLE_* secrets).
+      - name: Package (macOS → zipped .app)
         if: runner.os == 'macOS'
         run: |
-          hdiutil create -volname "Re-Sputnik" -srcfolder "dist/Re-Sputnik.app" \
-            -ov -format UDZO "${{ matrix.asset }}"
+          ditto -c -k --keepParent "dist/Re-Sputnik.app" "${{ matrix.asset }}"
 
       # ── Linux ────────────────────────────────────────────────────────────────
       - name: Package (Linux → AppImage)

@@ -29,11 +29,12 @@
 从 [**Releases**](https://github.com/1andrevich/re-sputnik/releases) 页面获取最新构建——无需安装程序：
 
 - **Windows** —— `Re-Sputnik-windows-x64.exe`，双击运行。
-- **macOS**（Apple Silicon）—— `Re-Sputnik-macos-arm64.dmg`，拖入 Applications。
+- **macOS**（Apple Silicon）—— `Re-Sputnik-macos-arm64.zip`，解压后将 `Re-Sputnik.app` 拖入 Applications。
 - **Linux** —— `Re-Sputnik-linux-x86_64.AppImage` / `-aarch64.AppImage`，`chmod +x` 后运行。
 
-当前构建**未签名**：Windows SmartScreen 会警告（More info → Run anyway）；macOS Gatekeeper 会隔离
-应用（右键 → 打开，或 `xattr -dr com.apple.quarantine`）。
+当前构建**未签名**。Windows SmartScreen 会警告（More info → Run anyway）。在 macOS 上首次启动会被
+拦截——打开**系统设置 → 隐私与安全性**，滚动到**安全性**部分，点击 Re-Sputnik 旁边的**仍要打开**
+（用 Touch ID / 密码确认）。只需一次。
 
 ## 功能
 

@@ -30,11 +30,13 @@ Grab the latest build from the [**Releases**](https://github.com/1andrevich/re-s
 page — no installer:
 
 - **Windows** — `Re-Sputnik-windows-x64.exe`, double-click.
-- **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.dmg`, drag to Applications.
+- **macOS** (Apple Silicon) — `Re-Sputnik-macos-arm64.zip`, unzip and drag `Re-Sputnik.app` to Applications.
 - **Linux** — `Re-Sputnik-linux-x86_64.AppImage` / `-aarch64.AppImage`, `chmod +x` and run.
 
-Builds are currently **unsigned**: Windows SmartScreen warns (More info → Run anyway); macOS
-Gatekeeper quarantines the app (right-click → Open, or `xattr -dr com.apple.quarantine`).
+Builds are currently **unsigned**. Windows SmartScreen warns (More info → Run anyway). On macOS
+the first launch is blocked — open **System Settings → Privacy & Security**, scroll to the
+**Security** section, and click **Open Anyway** next to the Re-Sputnik message (confirm with
+Touch ID / password). You only need to do this once.
 
 ## Features
 
