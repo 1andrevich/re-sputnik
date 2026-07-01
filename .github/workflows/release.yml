@@ -20,7 +20,12 @@ name: Release
 on:
   push:
     tags: ["v*"]
-  workflow_dispatch:        # manual run = build matrix only, no release (publish is tag-gated)
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to build AND publish (e.g. v0.1.0). Leave empty = build only."
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -33,15 +38,17 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Verify tag matches __version__
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Verify release tag matches __version__
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
         shell: bash
+        env:
+          REL_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           file_ver=$(grep -oE '__version__[[:space:]]*=[[:space:]]*"[^"]+"' src/re_sputnik/__init__.py | grep -oE '[0-9][^"]*')
-          tag_ver="${GITHUB_REF_NAME#v}"
+          tag_ver="${REL_TAG#v}"
           echo "file=$file_ver  tag=$tag_ver"
           if [ "$file_ver" != "$tag_ver" ]; then
-            echo "::error::Tag '${GITHUB_REF_NAME}' != __version__ '${file_ver}'. Bump src/re_sputnik/__init__.py or retag."
+            echo "::error::Tag '${REL_TAG}' != __version__ '${file_ver}'. Bump src/re_sputnik/__init__.py or fix the tag."
             exit 1
           fi
 
@@ -168,10 +175,11 @@ jobs:
           path: ${{ matrix.asset }}
           if-no-files-found: error
 
-  # One Release in THIS repo, with every platform's asset attached. Tag pushes only.
+  # One Release in THIS repo, with every platform's asset attached. Runs on a tag
+  # push, or on a manual dispatch that provides a `tag` input.
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
     runs-on: ubuntu-latest
     permissions:
       contents: write          # GITHUB_TOKEN creates the Release in this repo
@@ -185,8 +193,10 @@ jobs:
 
       - name: Extract release notes from CHANGELOG
         shell: bash
+        env:
+          REL_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          ver="${GITHUB_REF_NAME#v}"
+          ver="${REL_TAG#v}"
           # index()-based, no regex — avoids awk treating "[ver]" as a char class.
           awk -v marker="## [$ver]" '
             index($0, marker)==1 {f=1; next}
@@ -194,16 +204,16 @@ jobs:
             f {print}
           ' CHANGELOG.md > RELEASE_NOTES.md
           if [ ! -s RELEASE_NOTES.md ]; then
-            printf 'Re:Sputnik %s\n' "$GITHUB_REF_NAME" > RELEASE_NOTES.md
+            printf 'Re:Sputnik %s\n' "$REL_TAG" > RELEASE_NOTES.md
           fi
           echo "----- notes -----"; cat RELEASE_NOTES.md
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Re:Sputnik ${{ github.ref_name }}
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          name: Re:Sputnik ${{ inputs.tag || github.ref_name }}
           body_path: RELEASE_NOTES.md
-          prerelease: ${{ contains(github.ref_name, '-') }}   # v1.2.3-beta etc. → prerelease
+          prerelease: ${{ contains(inputs.tag || github.ref_name, '-') }}   # v1.2.3-beta → prerelease
           files: _assets/**/*
           fail_on_unmatched_files: true
