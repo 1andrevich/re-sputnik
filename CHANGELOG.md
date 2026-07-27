@@ -10,6 +10,22 @@ commit, then push the matching tag.
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-07-27
+- Fixed the LuCI app failing to install on a router whose package index is empty
+  (#1) — reported as `luci-app-re-homeproxy: incompatible with the architectures
+  configured` on OpenWrt 24.10/opkg. The architecture was a red herring: the app
+  depends on `ucode-mod-digest` (absent from a stock 24.10 image) and
+  `kmod-nft-tproxy`, and opkg reports *any* unresolvable dependency as an arch
+  mismatch. The package file is local, its dependencies are not — so `opkg update`
+  now runs before the install (once per run, best-effort, so a flaky feed still
+  can't abort it). Applies to both fresh install and update; the offline path
+  already staged the dependency itself, and apk is untouched because apk-tools 3
+  fetches a missing index on `apk add` by itself.
+- Install failures on the app step now name the missing package/dependency instead
+  of a blind 200-character tail of opkg's output (which surfaced opkg's misleading
+  last line, cut mid-word). A kernel-module blocker additionally gets the firmware
+  diagnosis that previously only the later kmod step produced.
+
 ## [0.1.0] — 2026-06-30
 - **Relicensed from proprietary freeware to the GNU General Public License v3.0.**
   Re:Sputnik is now free/libre, open-source software: the source is published and
