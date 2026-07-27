@@ -261,6 +261,61 @@ def _run_retry(client: RouterClient, command: str, *, timeout: int, attempts: in
     raise AssertionError("unreachable")  # loop body either returns or raises
 
 
+# Has the router's package index been refreshed in THIS install/update run? The
+# refresh is needed once; without the latch the app install and the LuCI i18n step
+# right after it would each pay for a full index download.
+_feeds_refreshed = False
+
+
+def reset_feed_refresh() -> None:
+    """Clear the 'index already refreshed' latch, so every install/update run
+    refreshes once. Called alongside ``reset_session_mirror()``."""
+    global _feeds_refreshed
+    _feeds_refreshed = False
+
+
+def refresh_feeds(client: RouterClient, pm: str, say: Optional[Progress] = None) -> None:
+    """Refresh the router's package index — OPKG ONLY — before installing a LOCAL
+    package file.
+
+    The .ipk carries the package, but NOT its dependencies. The app declares
+    ``Depends: libc, firewall4, kmod-nft-tproxy, ucode-mod-digest``, and
+    ``ucode-mod-digest`` is absent from a stock 24.10 image — so on a router whose
+    ``/var/opkg-lists`` is empty (never updated, or wiped by a reboot: it lives in
+    tmpfs) the dependency cannot be resolved and the install fails.
+
+    Worse, opkg misreports that failure. In ``pkg_hash_fetch_best_installation_
+    candidate()`` a candidate with unresolvable dependencies is dropped from
+    ``matching_pkgs``, and the empty list then sets ``wrong_arch_found`` regardless
+    of the real cause — printing "Packages for <pkg> found, but incompatible with
+    the architectures configured" for a plain ``Architecture: all`` package. The
+    architecture is a red herring; the missing dependency is the bug (issue #1).
+
+    apk needs no help here and deliberately gets none: ``apk add`` opens the database
+    with ``APK_OPENF_WRITE`` and never sets ``APK_OPENF_NO_AUTOUPDATE``, so apk-tools
+    3 (OpenWrt builds 3.0.5) sets ``db->autoupdate``, treats an index whose cache file
+    is merely ABSENT as stale in ``is_index_stale()``, and fetches it from
+    ``open_repository()`` on its own. An explicit ``apk update`` would just duplicate
+    that — and charge every apk failure the retry budget below for nothing.
+
+    Best-effort by design: a slow/broken feed must never abort the install, so
+    failures are swallowed — the install then reports its own precise error. The
+    180s cap plus retry is because the index download is all-or-nothing and a slow
+    uplink can outrun a single cap without ever being stuck.
+    """
+    global _feeds_refreshed
+    if pm == "apk" or _feeds_refreshed:
+        return
+    _feeds_refreshed = True
+    if say:
+        say(_("Обновляю список пакетов роутера…"))
+    try:
+        _run_retry(client, "opkg update 2>/dev/null", timeout=180, say=say,
+                   what=_("обновление репозитория"))
+    except Exception:  # noqa: BLE001 — never block the install on the index refresh
+        pass
+
+
 def _core_mgmt(client: RouterClient, *args: str, timeout: int = 300, attempts: int = 1,
                say: Optional["Progress"] = None, what: str = "операции с ядром") -> dict:
     """Run a core_mgmt.uc action and parse its JSON reply. Network-bound actions
@@ -412,18 +467,11 @@ def _install_luci_i18n(client: RouterClient, pm: str, language: str,
     if not language or language == "en":
         return False
     say(_("Устанавливаю язык интерфейса LuCI ({0})…").format(language))
-    # 180s caps + retry: on a slow uplink the repo refresh alone can run past 90s
-    # without ever stalling, and the index download is all-or-nothing — so give it
-    # ~3 min and retry a couple of times before giving up (rather than aborting the
-    # whole install on a single slow fetch).
-    if pm == "apk":
-        _run_retry(client, "apk update 2>/dev/null", timeout=180, say=say,
-                   what=_("обновление репозитория"))
-        add = "apk add"
-    else:
-        _run_retry(client, "opkg update 2>/dev/null", timeout=180, say=say,
-                   what=_("обновление репозитория"))
-        add = "opkg install"
+    # Feed index (opkg): already refreshed before the app install in the same run —
+    # the latch makes this a no-op there — but this must still work when it runs
+    # alone. These are NAMED packages, so apk pulls its own index as needed.
+    refresh_feeds(client, pm, say)
+    add = "apk add" if pm == "apk" else "opkg install"
     for comp in luci_i18n_components(client):
         # Per-package so one missing pack can't abort the rest; failures ignored.
         _run_retry(client, f"{add} luci-i18n-{comp}-{language} 2>/dev/null", timeout=180,
@@ -458,6 +506,28 @@ def legacy_app_installed(client: RouterClient, pm: str) -> str:
         if real:
             return old
     return ""
+
+
+def _app_install_error(client: RouterClient, pm: str, output: str) -> str:
+    """Why the app install failed, in words a user can act on.
+
+    Runs the raw opkg/apk output through ``explain_install_failure()``, which names
+    the missing package/dependency from opkg's ``Collected errors:`` block — a blind
+    character tail instead surfaced opkg's LAST line, i.e. its bogus "incompatible
+    with the architectures configured" (see ``refresh_feeds``), cut mid-word.
+
+    When a kernel module is implicated the firmware diagnosis is appended: the app
+    hard-depends on ``kmod-nft-tproxy``, so on a firmware whose kernel cannot supply
+    it the install now fails HERE rather than at the later kmod step — where that
+    explanation used to come from."""
+    from .preinstall import explain_install_failure
+    reason = explain_install_failure(output)
+    if "kmod-" in (output or ""):
+        from . import firmware
+        detail = firmware.diagnose_kmods(client, pm)
+        if detail:
+            return f"{reason} — {detail}"
+    return reason
 
 
 def remove_legacy_app(client: RouterClient, pm: str, say: "Optional[Progress]" = None) -> None:
@@ -509,6 +579,7 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
     ti = get_target_info(client)
     from .mirror import reset_session_mirror
     reset_session_mirror()  # fresh GitHub-throttle decision per install
+    reset_feed_refresh()    # …and a fresh package-index refresh
     from .preinstall import unsupported_version_error
     too_old = unsupported_version_error(ti)
     if too_old:
@@ -568,8 +639,11 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
             return res
         # Clean replacement if the router still has the pre-rename package.
         remove_legacy_app(client, pm, say)
-        # A local-file install doesn't need a repo refresh — skipping `apk update`
-        # avoids a flaky feed index aborting the app install.
+        # The package file is local, its DEPENDENCIES are not: without a package
+        # index opkg can't pull ucode-mod-digest/kmod-nft-tproxy and the install
+        # fails, blaming the architecture (see refresh_feeds, #1). No-op on apk,
+        # which refreshes itself; best-effort, so a flaky feed can't abort us.
+        refresh_feeds(client, pm, say)
         # Streamed so the (slow over Wi-Fi) dependency pulls show live in the log.
         # The 180s here is a STALL timeout — it only trips after 180s with no output,
         # so a slow-but-progressing install isn't killed, but a wedged one is.
@@ -582,7 +656,8 @@ def run(client: RouterClient, core: str, *, with_byedpi: bool = False,
                                      on_line=say_line, timeout=180)
         client.run(f"rm -f /tmp/{APP_PKG}{ti.ext}")
         if not inst.ok:
-            res.error = f"установка приложения не удалась: {inst.stdout.strip()[-200:]}"
+            res.error = ("установка приложения не удалась: "
+                         + _app_install_error(client, pm, inst.stdout))
             return res
         res.steps.append(_("Приложение установлено"))
 
@@ -831,6 +906,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
 
     from .mirror import reset_session_mirror, set_session_mirror, mirror_url
     reset_session_mirror()  # fresh throttle decision per update
+    reset_feed_refresh()    # …and a fresh package-index refresh
     pm = ti.pkg_manager
     ensure_clock(client, say)  # a wrong router clock fails GitHub's TLS cert
     say(_("Определяю последнюю версию приложения…"))
@@ -857,6 +933,10 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
     if not ok_app:
         return False, _("не удалось скачать пакет приложения") + f": {why_app}"
     remove_legacy_app(client, pm, say)  # clean replacement if old-name pkg present
+    # Same reason as the install path: the local file's dependencies come from the
+    # feed. It bites hardest on the legacy → new migration, since the pre-rename
+    # package never depended on ucode-mod-digest, so the router won't have it.
+    refresh_feeds(client, pm, say)
     if pm == "apk":
         flag = "" if trusted else "--allow-untrusted "
         inst = client.run_stream(f"apk add {flag}/tmp/{APP_PKG}{ti.ext} 2>&1",
@@ -866,8 +946,7 @@ def update_app(client: RouterClient, ti: TargetInfo, language: str = "ru", *,
                                  on_line=say_line, timeout=180)
     client.run(f"rm -f /tmp/{APP_PKG}{ti.ext}")
     if not inst.ok:
-        from .preinstall import explain_install_failure
-        return False, f"установка не удалась: {explain_install_failure(inst.stdout)}"
+        return False, f"установка не удалась: {_app_install_error(client, pm, inst.stdout)}"
     # Update EVERY homeproxy language pack the router already has (not just the
     # app's current UI language), so an installed translation like
     # luci-i18n-homeproxy-ru is bumped to the new version too — otherwise it stays

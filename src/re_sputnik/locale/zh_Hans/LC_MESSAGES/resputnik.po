@@ -460,6 +460,10 @@ msgstr "时间已同步。"
 msgid "не удалось синхронизировать время роутера"
 msgstr "无法同步路由器时钟"
 
+#: src/re_sputnik/engine/install_app.py:307
+msgid "Обновляю список пакетов роутера…"
+msgstr "正在更新路由器的软件包列表…"
+
 #: src/re_sputnik/engine/install_app.py:430
 #: src/re_sputnik/engine/install_app.py:434
 msgid "обновление репозитория"
