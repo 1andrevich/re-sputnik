@@ -508,6 +508,10 @@ msgstr "Time synced."
 msgid "не удалось синхронизировать время роутера"
 msgstr "couldn't sync the router clock"
 
+#: src/re_sputnik/engine/install_app.py:307
+msgid "Обновляю список пакетов роутера…"
+msgstr "Refreshing the router's package list…"
+
 #: src/re_sputnik/engine/install_app.py:430
 #: src/re_sputnik/engine/install_app.py:434
 msgid "обновление репозитория"

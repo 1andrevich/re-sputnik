@@ -504,6 +504,10 @@ msgstr "زمان هم‌گام شد."
 msgid "не удалось синхронизировать время роутера"
 msgstr "هم‌گام‌سازی ساعت روتر ناموفق بود"
 
+#: src/re_sputnik/engine/install_app.py:307
+msgid "Обновляю список пакетов роутера…"
+msgstr "در حال به‌روزرسانی فهرست بسته‌های روتر…"
+
 #: src/re_sputnik/engine/install_app.py:430
 #: src/re_sputnik/engine/install_app.py:434
 msgid "обновление репозитория"
